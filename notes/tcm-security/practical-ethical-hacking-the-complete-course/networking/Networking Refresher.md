@@ -60,3 +60,39 @@ or, diagnostic stack/six sigma/whatever:
 5. ???
 6. Profit?
 7. Are there error logs????
+
+
+## subnetting :)
+
+```
+~/Git/dotfiles master  
+❯ ip a show enp10s0  
+3: enp10s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000  
+   link/ether [[MAC]] brd ff:ff:ff:ff:ff:ff  
+   altname enx22274d05238c  
+   inet 192.168.0.[[REDACTED]]/24 brd 192.168.0.255 scope global dynamic noprefixroute enp10s0  
+      valid_lft 5857sec preferred_lft 5857sec  
+   inet6 [[REDACTED]]/64 scope link noprefixroute    
+      valid_lft forever preferred_lft forever
+```
+
+my desktop's wireless card.
+
+`192.168.0.x/24` is the subnet in CIDR notation.
+we can derive a "netmask" from it.
+
+```py
+from ipaddress import IPv4Network
+
+def cidr_to_netmask(cidr):
+    network = IPv4Network(cidr)
+    return str(network.netmask)
+```
+
+```bash
+~/Git/oscp/notes/tcm-security/practical-ethical-hacking-the-complete-course/networking main*
+❯ python cidrToNetmask.py
+255.255.255.0
+
+```
+
