@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "notes/tcm-security/practical-ethical-hacking-the-complete-course/networking/Networking Refresher.md",
+                "file": "oscp-prep.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Networking Refresher"
+              "title": "oscp-prep"
             }
           }
         ]
@@ -185,8 +185,9 @@
   },
   "active": "fcf868e7b4d5dd4e",
   "lastOpenFiles": [
-    "notes/tcm-security/practical-ethical-hacking-the-complete-course/networking/Intro Networking topics.md",
+    "tjnull-oscp-list.md",
     "notes/tcm-security/practical-ethical-hacking-the-complete-course/networking/Networking Refresher.md",
+    "notes/tcm-security/practical-ethical-hacking-the-complete-course/networking/Intro Networking topics.md",
     "notes/tcm-security/practical-ethical-hacking-the-complete-course/networking/cidrToNetmask.py",
     "notes/tcm-security/practical-ethical-hacking-the-complete-course/networking/Subnetting Cheat Sheet.ods",
     "Pasted image 20251221130542.png",
