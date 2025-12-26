@@ -1,0 +1,86 @@
+
+- you go thru this on every assessment.
+
+- don't do illegal stuff ;3c
+
+
+1. recon/info gathering
+	1. active
+		1. poke a thing, see what it spits out
+	2. passive
+		1. use background info
+		2. google their twitter, etc.
+2. scanning (nmap, rustscan etc)
+3. gaining access
+	1. sending thos lil tcp/udp packets woohoo
+4. maintaining access
+	1. this is a blind spot for me
+	2. HENRY: STUDY THIS!!!!
+5. covering tracks
+	1. vague idea (file handles, ps -aux, file traces, etc)
+	2. also blind spot
+	3. HENRY: STUDY THIS!!!!!
+
+
+## 1a. passive recon
+
+- sat imgs
+- drone recon
+- building layout (gmaps, OGNSS, GLONASS, etc)
+
+job info
+- employee name
+- job title
+- phone #
+- pictures
+- badge photos
+- desk photos
+- computer photos
+
+### web/host
+
+target validation: 
+- whois
+- nslookup
+- dnsrecon
+
+subdomains
+- googe-fu
+- dig
+- nmap
+- sublist3r
+- bluto
+- crt.sh
+- etc
+
+fingerprinting
+- nmap
+- wappalyzer
+- whatweb
+- builtwith
+- netcat/nc
+
+data breaches
+- ddosecrets
+- HIBP
+- breach-parse
+- weleakinfo
+- .onion etc
+- i2p
+- breachforums
+
+
+
+## identifying our target.
+(literally read bug bounty.)
+
+
+## discovering email addresses
+hunter.io
+yeeeeeep......
+
+domain search "tesla.com"
+
+phonebook.cz
+
+intelx.io

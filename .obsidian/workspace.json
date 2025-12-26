@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "oscp-prep.md",
+                "file": "notes/tcm-security/practical-ethical-hacking-the-complete-course/The Five Stages of Ethical Hacking.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "oscp-prep"
+              "title": "The Five Stages of Ethical Hacking"
             }
           }
         ]
@@ -185,6 +185,8 @@
   },
   "active": "fcf868e7b4d5dd4e",
   "lastOpenFiles": [
+    "oscp-prep.md",
+    "notes/tcm-security/practical-ethical-hacking-the-complete-course/The Five Stages of Ethical Hacking.md",
     "tjnull-oscp-list.md",
     "notes/tcm-security/practical-ethical-hacking-the-complete-course/networking/Networking Refresher.md",
     "notes/tcm-security/practical-ethical-hacking-the-complete-course/networking/Intro Networking topics.md",
