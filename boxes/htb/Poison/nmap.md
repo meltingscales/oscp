@@ -113,3 +113,9 @@ wew user flag `~/user.txt`
 let's uh. apparently we can steal the .zip password
 
 but uh. i have a local gpu, so...let's see if we can crack it :3c
+
+hashcat -m 3600 -a 0 secret.hash /usr/share/wordlists/rockyou.txt
+...
+
+
+hashcat -m 1500 -a 0 secret.hash /usr/share/wordlists/rockyou.txt
