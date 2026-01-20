@@ -180,3 +180,15 @@ after i gen the php webshell, i need to run this on my attacker machine:
 of course, also after creating the file `revshell.php` and populating it with whatever my localAI abliterated model spits out, seen below:
 
     echo 'FILL ME IN WITH AI REV SHELL' > /usr/local/www/apache24/data/revshell.php
+
+okay...I don't have access as user `charix` to modify files under `/usr/local/www/apache24/data/revshell.php`.
+
+WAIIIIT...the hint says `poison the access log with...`. This means I need to be a bit more crafty,
+
+I need to send HTTP traffic that includes a webshell, that causes the apache process to spit PHP code into `/var/log/httpd-access.log`.
+
+After I poison the log, I can trigger the victim to execute the web shell by running this code from the attacker machine:
+
+    curl -vvvk http://$HTBIP/browse.php?file=/var/log/httpd-access.log
+
+See [./poison-log.bash](./poison-log.bash)
