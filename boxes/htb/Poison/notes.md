@@ -262,3 +262,34 @@ the password for the zip file is also Charix!2#4%6&8(0
 d'oh!!
 
 yeah. i over engineer stuff. wow!!!!! how do I stop doing this?
+
+```
+┌──(henrypost㉿kali-toughwolf)-[~/…/oscp/boxes/htb/Poison]
+└─$ ls
+browse.php      httpd-access.log  poison-log.bash  secret       secret.zip
+decodemepls.py  notes.md          pwdbackup.txt    secret.hash
+                                                                             
+┌──(henrypost㉿kali-toughwolf)-[~/…/oscp/boxes/htb/Poison]
+└─$ hexdump secret
+0000000 a8bd 7c5b 96d5 217a                    
+0000008
+```
+
+i wonder what `secret` is. perhaps aes128 key?
+
+so, copy-paste:
+claude: sycophancy and doesn't really give me anything useful except for some self help guide i don't care about 
+z.ai: extremely blunt and gives me solution.
+
+z.ai sez:
+
+secret==vnc password file... we should ssh port tunnel
+
+```bash
+export HTBIP=10.129.1.254
+
+ssh -N -L 5901:127.0.0.1:5901 charix@$HTBIP
+# Enter password: Charix!2#4%6&8(0
+
+vncviewer -passwd ./secret localhost:5901
+```
