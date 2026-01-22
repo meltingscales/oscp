@@ -50,7 +50,11 @@ def shell_repl():
 
             # PRINT: Show the output
             # We strip trailing whitespace to clean up the look, but keep internal formatting
-            print(response.text.strip())
+            final_data=(response.text.strip())
+
+            # <pre></pre> removal. hacky pos-based but works
+            final_data = final_data[5:-6]
+            print(final_data)
 
         except KeyboardInterrupt:
             print("\n[*] Interrupted by user. Exiting...")
