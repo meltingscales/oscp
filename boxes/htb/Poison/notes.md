@@ -288,8 +288,18 @@ secret==vnc password file... we should ssh port tunnel
 ```bash
 export HTBIP=10.129.1.254
 
-ssh -N -L 5901:127.0.0.1:5901 charix@$HTBIP
+ssh -L 5901:127.0.0.1:5901 charix@$HTBIP
 # Enter password: Charix!2#4%6&8(0
+# optional -N flag to not allow stdin
 
 vncviewer -passwd ./secret localhost:5901
 ```
+
+
+okay. `-N` JUST forwards ports, it doesn't allow stdin. I didn't know that! I'm glad I read the man page. I assumed that because I couldn't type anything, it was not working.
+
+so, yeah, `z.ai` assumes I'm smarter than I am, and claude seems to treat me like a kid.
+
+I think that using `z.ai` will force me to become smarter.
+
+okay. i just used `cp` and `chown` to get `root.txt` into `/home/charix/root.txt` and then read it from my old non-root rev shell. hooray!
