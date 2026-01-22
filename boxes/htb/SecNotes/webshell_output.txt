@@ -1,0 +1,617 @@
+2026-01-22 14:39:10.444674 - handle.exe -accepteula
+
+Nthandle v5.0 - Handle viewer
+Copyright (C) 1997-2022 Mark Russinovich
+Sysinternals - www.sysinternals.com
+
+------------------------------------------------------------------------------
+System pid: 4 \NT AUTHORITY\SYSTEM
+------------------------------------------------------------------------------
+smss.exe pid: 296 \<unable to open process>
+------------------------------------------------------------------------------
+csrss.exe pid: 388 \<unable to open process>
+------------------------------------------------------------------------------
+csrss.exe pid: 496 \<unable to open process>
+------------------------------------------------------------------------------
+wininit.exe pid: 516 \<unable to open process>
+------------------------------------------------------------------------------
+winlogon.exe pid: 560 \<unable to open process>
+------------------------------------------------------------------------------
+services.exe pid: 636 \<unable to open process>
+------------------------------------------------------------------------------
+lsass.exe pid: 652 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 760 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 780 \<unable to open process>
+------------------------------------------------------------------------------
+fontdrvhost.exe pid: 800 \<unable to open process>
+------------------------------------------------------------------------------
+fontdrvhost.exe pid: 808 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 900 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 940 \<unable to open process>
+------------------------------------------------------------------------------
+dwm.exe pid: 992 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 272 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 364 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 488 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 724 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 1032 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 1132 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 1188 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 1248 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 1272 \<unable to open process>
+------------------------------------------------------------------------------
+vm3dservice.exe pid: 1336 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 1432 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 1448 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 1528 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 1536 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 1544 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 1552 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 1628 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 1676 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 1752 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 1764 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 1812 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 1976 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 2000 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 2024 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 2052 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 2060 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 2092 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 2124 \<unable to open process>
+------------------------------------------------------------------------------
+spoolsv.exe pid: 2236 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 2316 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 2520 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 2532 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 2540 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 2552 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 2564 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 2588 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 2612 \<unable to open process>
+------------------------------------------------------------------------------
+SecurityHealthService.exe pid: 2648 \<unable to open process>
+------------------------------------------------------------------------------
+mysqld.exe pid: 2696 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 2684 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 2720 \<unable to open process>
+------------------------------------------------------------------------------
+vmtoolsd.exe pid: 2732 \<unable to open process>
+------------------------------------------------------------------------------
+VGAuthService.exe pid: 2748 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 2780 \<unable to open process>
+------------------------------------------------------------------------------
+MsMpEng.exe pid: 2812 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 2976 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 3032 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 3092 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 3200 \<unable to open process>
+------------------------------------------------------------------------------
+mysqld.exe pid: 3340 \<unable to open process>
+------------------------------------------------------------------------------
+conhost.exe pid: 3432 \<unable to open process>
+------------------------------------------------------------------------------
+dllhost.exe pid: 3856 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 3876 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 3904 \<unable to open process>
+------------------------------------------------------------------------------
+WmiPrvSE.exe pid: 4036 \<unable to open process>
+------------------------------------------------------------------------------
+msdtc.exe pid: 4256 \<unable to open process>
+------------------------------------------------------------------------------
+sihost.exe pid: 4988 SECNOTES\tyler
+    4: File          C:\Windows\System32
+  184: File          C:\Windows\Registration\R000000000018.clb
+  600: File          C:\Windows\System32\en-US\KernelBase.dll.mui
+------------------------------------------------------------------------------
+svchost.exe pid: 5008 SECNOTES\tyler
+   44: File          C:\Windows\System32
+  118: File          C:\Windows\System32\en-US\svchost.exe.mui
+  228: File          C:\Windows\Registration\R000000000018.clb
+  284: File          C:\Users\tyler\AppData\Local\ConnectedDevicesPlatform\L.tyler\ActivitiesCache.db-shm
+  2B0: File          C:\Users\tyler\AppData\Local\ConnectedDevicesPlatform\L.tyler\ActivitiesCache.db
+  3FC: File          C:\Users\tyler\AppData\Local\ConnectedDevicesPlatform\L.tyler\ActivitiesCache.db-wal
+------------------------------------------------------------------------------
+svchost.exe pid: 5048 SECNOTES\tyler
+   44: File          C:\Windows\System32
+  118: File          C:\Windows\System32\en-US\svchost.exe.mui
+  1D8: File          C:\Windows\Registration\R000000000018.clb
+  328: File          C:\Users\tyler\AppData\Local\Microsoft\Windows\Notifications\wpndatabase.db
+  32C: File          C:\Users\tyler\AppData\Local\Microsoft\Windows\Notifications\wpndatabase.db-wal
+  330: File          C:\Users\tyler\AppData\Local\Microsoft\Windows\Notifications\wpndatabase.db-shm
+  51C: File          C:\Windows\System32\en-US\QuietHours.dll.mui
+  520: File          C:\Windows\System32\en-US\KernelBase.dll.mui
+  5C4: File          C:\Windows\System32\en-US\netmsg.dll.mui
+  798: File          C:\Windows\System32\en-US\winnlsres.dll.mui
+------------------------------------------------------------------------------
+taskhostw.exe pid: 5108 SECNOTES\tyler
+   3C: File          C:\Windows\System32
+  104: File          C:\Windows\System32\en-US\taskhostw.exe.mui
+  1A0: File          C:\Windows\Registration\R000000000018.clb
+  1C4: File          C:\Windows\System32\en-US\MsCtfMonitor.dll.mui
+  2C0: File          C:\Windows\System32\en-US\winmm.dll.mui
+  2CC: File          C:\Windows\System32\en-US\ESENT.dll.mui
+  2E4: File          C:\Users\tyler\AppData\Local\Microsoft\Windows\WebCache\V01.log
+  310: File          C:\Users\tyler\AppData\Local\Microsoft\Windows\WebCacheLock.dat
+  338: File          C:\Users\tyler\AppData\Local\Microsoft\Windows\WebCache\WebCacheV01.jfm
+  350: File          C:\Users\tyler\AppData\Local\Microsoft\Windows\WebCache\WebCacheV01.dat
+------------------------------------------------------------------------------
+svchost.exe pid: 4508 \<unable to open process>
+------------------------------------------------------------------------------
+ctfmon.exe pid: 2160 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 5172 \<unable to open process>
+------------------------------------------------------------------------------
+explorer.exe pid: 5316 SECNOTES\tyler
+   44: File          C:\Windows\System32
+  10C: File          C:\Windows\en-US\explorer.exe.mui
+  318: File          C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.17134.228_none_fb4599993062b194
+  334: File          C:\Windows\Registration\R000000000018.clb
+  4BC: File          C:\Users\tyler\AppData\Roaming\Microsoft\Windows\Start Menu
+  500: File          C:\Windows\System32\en-US\shell32.dll.mui
+  564: File          C:\Users\Public\Desktop
+  5A4: File          C:\Windows\System32\en-US\oleaccrc.dll.mui
+  5B0: File          C:\Windows\Fonts\StaticCache.dat
+  668: File          C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.17134.228_none_fb4599993062b194
+  7C0: File          C:\Windows\System32\en-US\PeopleBand.dll.mui
+  7CC: File          C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.17134.228_none_fb4599993062b194
+  7D4: File          C:\Users\tyler\AppData\Roaming\Microsoft\Windows\Libraries
+  7D8: File          C:\Windows\System32\en-US\propsys.dll.mui
+  808: File          \FileSystem\Filters\FltMgrMsg
+  82C: File          C:\Users\tyler\AppData\Roaming\Microsoft\Windows\Printer Shortcuts
+  84C: File          C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.17134.228_none_fb4599993062b194
+  864: File          C:\Users\tyler\AppData\Roaming\Microsoft\Windows\Network Shortcuts
+  888: File          C:\Users\tyler\AppData\Roaming\Microsoft\Windows\Start Menu\Programs
+  8A4: File          C:\Users\tyler\AppData\Roaming\Microsoft\Windows\Start Menu\Programs
+  8E8: File          C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.17134.228_none_fb4599993062b194
+  904: File          C:\Windows\System32\en-US\ActionCenter.dll.mui
+  9CC: File          C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.17134.228_none_fb4599993062b194
+  A54: File          C:\Windows\System32\en-US\windows.storage.dll.mui
+  B0C: File          C:\Windows\System32\en-US\hcproviders.dll.mui
+  B30: File          C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.17134.228_none_fb4599993062b194
+  B3C: File          C:\Users\tyler\AppData\Local\Microsoft\Windows\WER\ERC
+  B4C: File          C:\ProgramData\Microsoft\Windows\WER\ReportArchive
+  BC8: File          C:\Windows\System32\en-US\wscui.cpl.mui
+  C04: File          C:\Users\tyler\AppData\Roaming\Microsoft\Windows\Libraries
+  C54: File          C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.17134.228_none_fb4599993062b194
+  D4C: File          C:\Windows\System32\en-US\twinui.dll.mui
+  E90: File          C:\Users\tyler\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned
+  E94: File          C:\Users\tyler\Desktop
+  EF8: File          C:\Users\Public\Desktop
+ 1098: File          C:\ProgramData\Microsoft\Windows\Start Menu\Programs
+ 12C8: File          C:\Windows\System32\en-US\dsreg.dll.mui
+ 131C: File          C:\Windows\System32\en-US\sndvolsso.dll.mui
+ 1374: File          C:\Program Files\WindowsApps\Microsoft.XboxGameOverlay_1.54.4001.0_x64__8wekyb3d8bbwe
+ 1484: File          C:\Users\tyler\AppData\Local\Microsoft\GameDVR\KnownGameList.bin
+ 14CC: File          C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.17134.228_none_fb4599993062b194
+ 14D8: File          C:\Program Files\WindowsApps\Microsoft.XboxGameOverlay_1.54.4001.0_x64__8wekyb3d8bbwe
+ 14E0: File          C:\Program Files\WindowsApps\Microsoft.XboxGameOverlay_1.54.4001.0_x64__8wekyb3d8bbwe
+ 14E8: File          C:\Users\tyler\AppData\Local\Microsoft\GameDVR
+ 14EC: File          C:\Windows\bcastdvr
+ 1510: File          C:\Windows\System32\en-US\KernelBase.dll.mui
+ 153C: File          C:\Users\tyler\AppData\Roaming\Microsoft\Windows\Start Menu
+ 1548: File          C:\Users\tyler\AppData\Local\Microsoft\Windows\Burn
+ 1550: File          C:\Windows\System32\en-US\ApplicationFrame.dll.mui
+ 1588: File          C:\Users\tyler\AppData\Local\Microsoft\Windows\Burn
+ 15F0: File          C:\Windows\System32\en-US\stobject.dll.mui
+ 1600: File          C:\Windows\System32\en-US\InputSwitch.dll.mui
+ 161C: File          C:\Windows\System32\en-US\winnlsres.dll.mui
+ 1620: File          C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.17134.228_none_fb4599993062b194
+ 17C0: File          C:\Windows\System32\en-US\netmsg.dll.mui
+ 1890: File          C:\Users\tyler\AppData\Roaming\Microsoft\Windows\Network Shortcuts
+ 1918: File          C:\Users\tyler\Desktop
+ 1A9C: File          C:\Windows\System32\en-US\pnidui.dll.mui
+ 1ADC: File          C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.17134.228_none_fb4599993062b194
+ 1AE4: File          C:\Windows\System32\en-US\bthprops.cpl.mui
+ 1B10: File          C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.17134.228_none_fb4599993062b194
+ 1B3C: File          C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.17134.228_none_fb4599993062b194
+ 1B64: File          C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.17134.228_none_fb4599993062b194
+ 1BD0: File          C:\ProgramData\Microsoft\Windows\Start Menu
+ 1BF4: File          C:\Windows\WinSxS\amd64_microsoft.windows.gdiplus_6595b64144ccf1df_1.1.17134.228_none_2c308c7e8af52b62
+ 1C58: File          C:\ProgramData\Microsoft\Windows\Start Menu
+ 1C60: File          C:\ProgramData\Microsoft\Windows\Start Menu\Programs
+ 1C98: File          C:\ProgramData\Microsoft\Windows\Start Menu Places
+ 1CF4: File          C:\ProgramData\Microsoft\Windows\Start Menu Places
+ 1DDC: File          C:\Windows\Fonts\segoeui.ttf
+ 1F14: File          C:\Windows\System32\en-US\mpr.dll.mui
+ 2008: File          C:\Users\tyler\AppData\Roaming\Microsoft\Windows\Printer Shortcuts
+ 2010: File          C:\Users\tyler\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned
+------------------------------------------------------------------------------
+svchost.exe pid: 5436 \<unable to open process>
+------------------------------------------------------------------------------
+ShellExperienceHost.exe pid: 5720 SECNOTES\tyler
+   3C: File          C:\Windows\SystemApps\ShellExperienceHost_cw5n1h2txyewy
+  44C: File          C:\Windows\Fonts\segoeui.ttf
+  764: File          C:\Windows\System32\en-US\windows.storage.dll.mui
+  9F4: File          C:\Windows\Fonts\segmdl2.ttf
+  9F8: File          C:\Windows\Fonts\segoeuib.ttf
+  A34: File          C:\Windows\System32\en-US\windows.ui.xaml.dll.mui
+  A44: File          C:\Windows\SystemResources\Windows.UI.ShellCommon\StartUI\Assets\Fonts\BitMDL2.ttf
+  A54: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.Windows.ShellExperienceHost_cw5n1h2txyewy\TempState\TileCache_100_0_Header.bin
+  A58: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.Windows.ShellExperienceHost_cw5n1h2txyewy\TempState\TileCache_100_0_Data.bin
+  B28: File          C:\Windows\System32\en-US\GlobCollationHost.dll.mui
+  EB0: File          C:\Windows\Fonts\seguisb.ttf
+  FD0: File          C:\Windows\System32\en-US\KernelBase.dll.mui
+  FE4: File          C:\Windows\System32\en-US\mferror.dll.mui
+  FE8: File          C:\Windows\System32\en-US\netmsg.dll.mui
+------------------------------------------------------------------------------
+SearchUI.exe pid: 5860 SECNOTES\tyler
+   3C: File          C:\Windows\SystemApps\Microsoft.Windows.Cortana_cw5n1h2txyewy
+  4B4: File          C:\Windows\Fonts\segoeui.ttf
+  7F4: File          C:\Windows\System32\en-US\windows.storage.dll.mui
+  83C: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.Windows.Cortana_cw5n1h2txyewy\TempState\Traces\CortanaTrace1.etl
+  964: File          C:\Windows\System32\en-US\KernelBase.dll.mui
+  ADC: File          C:\Windows\Fonts\segoeuisl.ttf
+  AE4: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.Windows.Cortana_cw5n1h2txyewy\AC\Microsoft\Internet Explorer\DOMStore\HZ05Y6UY
+  B40: File          C:\Windows\SystemApps\Microsoft.Windows.Cortana_cw5n1h2txyewy\Assets\HCWhite_Cortana_TraySearchBox_Glyph_100.png
+  D18: File          C:\Windows\System32\en-US\edgehtml.dll.mui
+  E64: File          C:\Windows\SystemApps\Microsoft.Windows.Cortana_cw5n1h2txyewy\Cortana.Internal.Search.winmd
+  E6C: File          C:\Windows\SystemApps\Microsoft.Windows.Cortana_cw5n1h2txyewy\Cortana.Search.winmd
+  E74: File          C:\Windows\System32\WinMetadata\Windows.Foundation.winmd
+  E7C: File          C:\Windows\System32\WinMetadata\Windows.Security.winmd
+  E84: File          C:\Windows\SystemApps\Microsoft.Windows.Cortana_cw5n1h2txyewy\Cortana.Tips.winmd
+  E8C: File          C:\Windows\System32\WinMetadata\Windows.Storage.winmd
+  E94: File          C:\Windows\SystemApps\Microsoft.Windows.Cortana_cw5n1h2txyewy\Cortana.SPA.winmd
+  E9C: File          C:\Windows\System32\WinMetadata\Windows.System.winmd
+  EA4: File          C:\Windows\System32\en-US\crypt32.dll.mui
+  EBC: File          C:\Windows\System32\en-US\dnsapi.dll.mui
+  F2C: File          C:\Windows\System32\en-US\Chakra.dll.mui
+------------------------------------------------------------------------------
+RuntimeBroker.exe pid: 5940 SECNOTES\tyler
+   44: File          C:\Windows\System32
+  1D0: File          C:\Windows\Registration\R000000000018.clb
+  2D4: File          C:\Windows\System32\en-US\KernelBase.dll.mui
+  440: File          C:\Windows\System32\en-US\windows.storage.dll.mui
+  464: File          C:\Windows\System32\en-US\propsys.dll.mui
+  4A4: File          C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.17134.228_none_fb4599993062b194
+------------------------------------------------------------------------------
+RuntimeBroker.exe pid: 5992 SECNOTES\tyler
+   3C: File          C:\Windows\System32
+  218: File          C:\Windows\Registration\R000000000018.clb
+  444: File          C:\Windows\System32\en-US\windows.storage.dll.mui
+  464: File          C:\Windows\System32\en-US\propsys.dll.mui
+  484: File          C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.17134.228_none_fb4599993062b194
+  588: File          C:\Windows\System32\en-US\mpr.dll.mui
+------------------------------------------------------------------------------
+SearchIndexer.exe pid: 6188 \<unable to open process>
+------------------------------------------------------------------------------
+ApplicationFrameHost.exe pid: 6232 SECNOTES\tyler
+   3C: File          C:\Windows\System32
+  11C: File          C:\Windows\Registration\R000000000018.clb
+  3BC: File          C:\Windows\System32\en-US\user32.dll.mui
+  3C4: File          C:\Windows\System32\en-US\ApplicationFrame.dll.mui
+  55C: File          C:\Windows\Fonts\StaticCache.dat
+------------------------------------------------------------------------------
+svchost.exe pid: 6288 \<unable to open process>
+------------------------------------------------------------------------------
+SkypeBackgroundHost.exe pid: 6464 SECNOTES\tyler
+   3C: File          C:\Program Files\WindowsApps\Microsoft.SkypeApp_14.56.102.0_x64__kzf8qxf38zg5c
+  250: File          C:\Windows\System32\en-US\KernelBase.dll.mui
+------------------------------------------------------------------------------
+MicrosoftEdge.exe pid: 6492 SECNOTES\tyler
+   3C: File          C:\Windows\SystemApps\Microsoft.MicrosoftEdge_8wekyb3d8bbwe
+  68C: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.MicrosoftEdge_8wekyb3d8bbwe\AC\MicrosoftEdge\User\Default\DataStore\Data\nouser1\120712-0049\DBStore\LogFiles\edb.log
+  794: File          C:\Windows\System32\en-US\ESENT.dll.mui
+  79C: File          C:\Windows\System32\WinMetadata\Windows.System.winmd
+  808: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.MicrosoftEdge_8wekyb3d8bbwe\AC\MicrosoftEdge\User\Default\DataStore\Data\nouser1\120712-0049\DBStore\spartan.jfm
+  80C: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.MicrosoftEdge_8wekyb3d8bbwe\AC\MicrosoftEdge\User\Default\DataStore\Data\nouser1\120712-0049\DBStore\spartan.edb
+  950: File          C:\Windows\Fonts\segoeui.ttf
+  9B4: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.MicrosoftEdge_8wekyb3d8bbwe\AC\MicrosoftEdge\User\Default\Recovery\Active\RecoveryStore.{3F54E62E-78F7-4E88-9F70-C8B1D3ACE408}.dat
+  9F0: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.MicrosoftEdge_8wekyb3d8bbwe\AC\Temp\~DFFE513A58705AAD52.TMP
+  AD0: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.MicrosoftEdge_8wekyb3d8bbwe\AC\MicrosoftEdge\User\Default\Recovery\Active\RecoveryStore.{B8A6FE69-2F71-4207-A060-DCBFC7CDB0C6}.dat
+  AEC: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.MicrosoftEdge_8wekyb3d8bbwe\AC\Temp\~DFB8440D5D8B013D5F.TMP
+  B68: File          C:\Windows\System32\en-US\KernelBase.dll.mui
+  C78: File          C:\Windows\SystemApps\Microsoft.MicrosoftEdge_8wekyb3d8bbwe\Assets\Fonts\BrowserMDL.ttf
+  D10: File          C:\Windows\SystemResources\Windows.UI.ShellCommonInetCore\WindowsInternal.Xaml.Controls.Tabs\Assets\Fonts\BrowserMDL.ttf
+------------------------------------------------------------------------------
+browser_broker.exe pid: 6596 SECNOTES\tyler
+   3C: File          C:\Windows\System32
+  254: File          C:\Windows\Registration\R000000000018.clb
+------------------------------------------------------------------------------
+svchost.exe pid: 6648 \<unable to open process>
+------------------------------------------------------------------------------
+Windows.WARP.JITService.exe pid: 6768 \<unable to open process>
+------------------------------------------------------------------------------
+RuntimeBroker.exe pid: 6952 SECNOTES\tyler
+   44: File          C:\Windows\System32
+  20C: File          C:\Windows\Registration\R000000000018.clb
+------------------------------------------------------------------------------
+MicrosoftEdgeCP.exe pid: 7072 SECNOTES\tyler
+   3C: File          C:\Windows\SystemApps\Microsoft.MicrosoftEdge_8wekyb3d8bbwe
+------------------------------------------------------------------------------
+MicrosoftEdgeCP.exe pid: 7080 SECNOTES\tyler
+   3C: File          C:\Windows\SystemApps\Microsoft.MicrosoftEdge_8wekyb3d8bbwe
+------------------------------------------------------------------------------
+svchost.exe pid: 7312 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 7352 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 7544 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 7596 \<unable to open process>
+------------------------------------------------------------------------------
+RuntimeBroker.exe pid: 7956 SECNOTES\tyler
+   44: File          C:\Windows\System32
+  25C: File          C:\Windows\Registration\R000000000018.clb
+  3AC: File          C:\Windows\System32\en-US\propsys.dll.mui
+  4B8: File          C:\Windows\System32\en-US\shell32.dll.mui
+  4F8: File          C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.17134.228_none_fb4599993062b194
+  584: File          C:\Windows\System32\en-US\windows.storage.dll.mui
+  754: File          C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.17134.228_none_fb4599993062b194
+  760: File          C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.17134.228_none_fb4599993062b194
+------------------------------------------------------------------------------
+vm3dservice.exe pid: 3332 SECNOTES\tyler
+   3C: File          C:\Windows\System32
+------------------------------------------------------------------------------
+vmtoolsd.exe pid: 5080 SECNOTES\tyler
+   3C: File          C:\Windows\System32
+  1F4: File          C:\Windows\Temp\vmware-vmusr-tyler.log
+  24C: File          C:\Windows\System32\en-US\KernelBase.dll.mui
+  298: File          C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_5.82.17134.228_none_f95000f73097dead
+  370: File          C:\Windows\Registration\R000000000018.clb
+------------------------------------------------------------------------------
+OneDrive.exe pid: 4288 SECNOTES\tyler
+   3C: File          C:\Windows
+   7C: File          C:\Windows\SysWOW64
+  288: File          C:\Users\tyler\AppData\Local\Microsoft\OneDrive\logs\Personal\SyncEngine-2026-01-22.1724.4288.1.aodl
+  2E0: File          C:\Windows\Registration\R000000000018.clb
+  384: File          C:\Windows\WinSxS\x86_microsoft.windows.gdiplus_6595b64144ccf1df_1.1.17134.228_none_73ddc3559f715468
+  388: File          C:\Windows\WinSxS\x86_microsoft.windows.common-controls_6595b64144ccf1df_6.0.17134.228_none_42f2d07044deda9a
+  480: File          \FileSystem\Filters\FltMgrMsg
+  4A4: File          C:\Users\tyler\AppData\Local\Microsoft\OneDrive\logs\Personal\TraceCurrent.0211.0002.etl
+  4BC: File          C:\Users\tyler\AppData\Local\Microsoft\OneDrive\21.030.0211.0002\en\FileSync.LocalizedResources.dll.mui
+  4D4: File          C:\Windows\SysWOW64\en-US\KernelBase.dll.mui
+  54C: File          C:\Windows\SysWOW64\WinMetadata\Windows.Security.winmd
+  554: File          C:\Users\tyler\AppData\Local\Microsoft\OneDrive\setup\logs\Update_2026-01-22_172449_4288-1904.log
+  5B0: File          C:\Users\tyler\AppData\Local\Microsoft\OneDrive\21.030.0211.0002\en\FileSync.LocalizedResources.dll.mui
+  86C: File          C:\Windows\WinSxS\x86_microsoft.windows.common-controls_6595b64144ccf1df_6.0.17134.228_none_42f2d07044deda9a
+  8FC: File          C:\Windows\SysWOW64\ieframe.dll
+  914: File          C:\Windows\SysWOW64\en-US\ieframe.dll.mui
+  9B4: File          C:\Windows\SysWOW64\en-US\Windows.Security.Authentication.Web.Core.dll.mui
+  9FC: File          C:\Windows\SysWOW64\en-US\urlmon.dll.mui
+------------------------------------------------------------------------------
+powershell.exe pid: 4328 SECNOTES\tyler
+   3C: File          C:\Windows\System32\WindowsPowerShell\v1.0
+   AC: File          C:\Windows\System32\WindowsPowerShell\v1.0\en-US\powershell.exe.mui
+   B4: File          C:\Windows\System32\en-US\winnlsres.dll.mui
+  154: File          C:\Windows\Registration\R000000000018.clb
+  244: File          C:\Windows\System32\en-US\propsys.dll.mui
+  614: File          C:\Windows\Microsoft.NET\assembly\GAC_MSIL\Microsoft.CSharp\v4.0_4.0.0.0__b03f5f7f11d50a3a\Microsoft.CSharp.dll
+  744: File          C:\Windows\Microsoft.NET\assembly\GAC_MSIL\System.Dynamic\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Dynamic.dll
+  74C: File          C:\Windows\System32\en-US\crypt32.dll.mui
+  A5C: File          C:\Windows\System32\en-US\KernelBase.dll.mui
+  BF8: File          C:\Windows\Microsoft.NET\assembly\GAC_64\System.Transactions\v4.0_4.0.0.0__b77a5c561934e089\System.Transactions.dll
+------------------------------------------------------------------------------
+conhost.exe pid: 772 SECNOTES\tyler
+   40: File          C:\Windows
+  128: File          C:\Windows\System32\en-US\Conhost.exe.mui
+  1E0: File          C:\Windows\Registration\R000000000018.clb
+  208: File          C:\Windows\System32\en-US\propsys.dll.mui
+  304: File          C:\Windows\System32\en-US\user32.dll.mui
+  30C: File          C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.17134.228_none_fb4599993062b194
+------------------------------------------------------------------------------
+powershell.exe pid: 6500 SECNOTES\tyler
+   3C: File          C:\Windows\System32\WindowsPowerShell\v1.0
+   9C: File          C:\Windows\System32\WindowsPowerShell\v1.0\en-US\powershell.exe.mui
+  154: File          C:\Windows\Registration\R000000000018.clb
+  244: File          C:\Windows\System32\en-US\propsys.dll.mui
+  530: File          C:\Windows\System32\en-US\winnlsres.dll.mui
+  5E4: File          C:\Windows\System32\en-US\KernelBase.dll.mui
+  738: File          C:\Windows\System32\en-US\crypt32.dll.mui
+  A00: File          C:\Windows\Microsoft.NET\assembly\GAC_64\System.Transactions\v4.0_4.0.0.0__b77a5c561934e089\System.Transactions.dll
+------------------------------------------------------------------------------
+conhost.exe pid: 4156 SECNOTES\tyler
+   40: File          C:\Windows
+  11C: File          C:\Windows\System32\en-US\Conhost.exe.mui
+  1D0: File          C:\Windows\System32\en-US\user32.dll.mui
+  1D4: File          C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.17134.228_none_fb4599993062b194
+  1E4: File          C:\Windows\Registration\R000000000018.clb
+  20C: File          C:\Windows\System32\en-US\propsys.dll.mui
+------------------------------------------------------------------------------
+w3wp.exe pid: 8424 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 8968 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 9040 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 9168 SECNOTES\tyler
+   44: File          C:\Windows\System32
+  118: File          C:\Windows\System32\en-US\svchost.exe.mui
+  28C: File          C:\Windows\Registration\R000000000018.clb
+  358: File          C:\Windows\System32\en-US\ESENT.dll.mui
+  35C: File          C:\Users\tyler\AppData\Local\Comms\UnistoreDB\USS.jtx
+  36C: File          C:\Users\tyler\AppData\Local\Comms\UnistoreDB\store.jfm
+  37C: File          C:\Users\tyler\AppData\Local\Comms\UnistoreDB\store.vol
+  3C4: File          C:\Users\tyler\AppData\Local\Comms\UnistoreDB\tmp.edb
+------------------------------------------------------------------------------
+SgrmBroker.exe pid: 3300 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 6272 \<unable to open process>
+------------------------------------------------------------------------------
+Microsoft.Photos.exe pid: 5952 SECNOTES\tyler
+   3C: File          C:\Program Files\WindowsApps\Microsoft.Windows.Photos_2020.20120.4004.0_x64__8wekyb3d8bbwe
+  4D8: File          C:\Windows\Fonts\segoeui.ttf
+  588: File          C:\Windows\System32\en-US\windows.storage.dll.mui
+  6C0: File          C:\Windows\System32\WinMetadata\Windows.Foundation.winmd
+  710: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.Windows.Photos_8wekyb3d8bbwe\LocalState\PhotosAppTracing_startedInBGMode.etl
+  AC8: File          C:\Windows\System32\en-US\KernelBase.dll.mui
+  B00: File          C:\Windows\System32\en-US\wininet.dll.mui
+  B08: File          C:\Windows\System32\en-US\netmsg.dll.mui
+  B50: File          C:\Windows\System32\WinMetadata\Windows.System.winmd
+  B78: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.Windows.Photos_8wekyb3d8bbwe\LocalState\MediaDb.v1.sqlite-shm
+  B80: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.Windows.Photos_8wekyb3d8bbwe\LocalState\MediaDb.v1.sqlite
+  B88: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.Windows.Photos_8wekyb3d8bbwe\LocalState\MediaDb.v1.sqlite-wal
+  B8C: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.Windows.Photos_8wekyb3d8bbwe\LocalState\MediaDb.v1.sqlite
+  B90: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.Windows.Photos_8wekyb3d8bbwe\LocalState\MediaDb.v1.sqlite-wal
+  BBC: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.Windows.Photos_8wekyb3d8bbwe\LocalState\MediaDb.v1.sqlite
+  BC0: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.Windows.Photos_8wekyb3d8bbwe\LocalState\MediaDb.v1.sqlite-wal
+  BC4: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.Windows.Photos_8wekyb3d8bbwe\LocalState\MediaDb.v1.sqlite
+  BC8: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.Windows.Photos_8wekyb3d8bbwe\LocalState\MediaDb.v1.sqlite
+  BD4: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.Windows.Photos_8wekyb3d8bbwe\LocalState\MediaDb.v1.sqlite
+  BDC: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.Windows.Photos_8wekyb3d8bbwe\LocalState\MediaDb.v1.sqlite
+  BFC: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.Windows.Photos_8wekyb3d8bbwe\LocalState\MediaDb.v1.sqlite
+  C08: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.Windows.Photos_8wekyb3d8bbwe\LocalState\MediaDb.v1.sqlite-wal
+  C1C: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.Windows.Photos_8wekyb3d8bbwe\LocalState\MediaDb.v1.sqlite
+  C20: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.Windows.Photos_8wekyb3d8bbwe\LocalState\MediaDb.v1.sqlite-wal
+  C2C: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.Windows.Photos_8wekyb3d8bbwe\LocalState\MediaDb.v1.sqlite
+  C34: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.Windows.Photos_8wekyb3d8bbwe\LocalState\MediaDb.v1.sqlite
+  C38: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.Windows.Photos_8wekyb3d8bbwe\LocalState\MediaDb.v1.sqlite-wal
+  C3C: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.Windows.Photos_8wekyb3d8bbwe\LocalState\MediaDb.v1.sqlite-wal
+  C40: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.Windows.Photos_8wekyb3d8bbwe\LocalState\MediaDb.v1.sqlite-wal
+  C4C: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.Windows.Photos_8wekyb3d8bbwe\LocalState\MediaDb.v1.sqlite
+  C50: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.Windows.Photos_8wekyb3d8bbwe\LocalState\MediaDb.v1.sqlite-wal
+  C70: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.Windows.Photos_8wekyb3d8bbwe\LocalState\MediaDb.v1.sqlite
+  C74: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.Windows.Photos_8wekyb3d8bbwe\LocalState\MediaDb.v1.sqlite-wal
+  C78: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.Windows.Photos_8wekyb3d8bbwe\LocalState\MediaDb.v1.sqlite
+  C7C: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.Windows.Photos_8wekyb3d8bbwe\LocalState\MediaDb.v1.sqlite-wal
+  C80: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.Windows.Photos_8wekyb3d8bbwe\LocalState\MediaDb.v1.sqlite
+  C84: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.Windows.Photos_8wekyb3d8bbwe\LocalState\MediaDb.v1.sqlite-wal
+  CBC: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.Windows.Photos_8wekyb3d8bbwe\LocalState\MediaDb.v1.sqlite-wal
+  CC0: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.Windows.Photos_8wekyb3d8bbwe\LocalState\MediaDb.v1.sqlite
+  CC8: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.Windows.Photos_8wekyb3d8bbwe\LocalState\MediaDb.v1.sqlite-wal
+  CCC: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.Windows.Photos_8wekyb3d8bbwe\LocalState\MediaDb.v1.sqlite
+  CD0: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.Windows.Photos_8wekyb3d8bbwe\LocalState\MediaDb.v1.sqlite
+  CEC: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.Windows.Photos_8wekyb3d8bbwe\LocalState\MediaDb.v1.sqlite
+  CF4: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.Windows.Photos_8wekyb3d8bbwe\LocalState\MediaDb.v1.sqlite-wal
+  CF8: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.Windows.Photos_8wekyb3d8bbwe\LocalState\MediaDb.v1.sqlite-wal
+------------------------------------------------------------------------------
+RuntimeBroker.exe pid: 7336 SECNOTES\tyler
+   44: File          C:\Windows\System32
+  184: File          C:\Windows\Registration\R000000000018.clb
+  410: File          C:\Windows\System32\en-US\propsys.dll.mui
+  478: File          C:\Windows\System32\en-US\shell32.dll.mui
+  518: File          C:\Windows\System32\en-US\windows.storage.dll.mui
+  554: File          C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.17134.228_none_fb4599993062b194
+------------------------------------------------------------------------------
+WinStore.App.exe pid: 1464 SECNOTES\tyler
+   3C: File          C:\Program Files\WindowsApps\Microsoft.WindowsStore_12101.1001.14.0_x64__8wekyb3d8bbwe
+  438: File          C:\Windows\System32\WinMetadata\Windows.UI.Xaml.winmd
+  4F0: File          C:\Windows\Fonts\segoeui.ttf
+  510: File          C:\Windows\System32\WinMetadata\Windows.Foundation.winmd
+  7A0: File          C:\Windows\System32\en-US\KernelBase.dll.mui
+  7A4: File          C:\Windows\System32\en-US\Windows.Security.Authentication.Web.Core.dll.mui
+  834: File          C:\Windows\System32\WinMetadata\Windows.ApplicationModel.winmd
+  970: File          C:\Windows\System32\WinMetadata\Windows.System.winmd
+  D14: File          C:\Windows\System32\en-US\windows.storage.dll.mui
+  DC4: File          C:\Windows\System32\WinMetadata\Windows.Security.winmd
+ 1110: File          C:\Windows\System32\en-US\crypt32.dll.mui
+ 1160: File          C:\Windows\System32\en-US\wininet.dll.mui
+ 11F0: File          C:\Windows\System32\en-US\winnlsres.dll.mui
+ 11F8: File          C:\Windows\System32\en-US\winhttp.dll.mui
+ 1200: File          C:\Windows\System32\en-US\netmsg.dll.mui
+------------------------------------------------------------------------------
+RuntimeBroker.exe pid: 5916 SECNOTES\tyler
+   44: File          C:\Windows\System32
+  1DC: File          C:\Windows\Registration\R000000000018.clb
+------------------------------------------------------------------------------
+SystemSettings.exe pid: 7904 SECNOTES\tyler
+   44: File          C:\Windows\ImmersiveControlPanel
+  16C: File          C:\Windows\ImmersiveControlPanel\en-US\SystemSettings.exe.mui
+  1A0: File          C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.17134.228_none_fb4599993062b194
+  374: File          C:\Windows\Registration\R000000000018.clb
+  4DC: File          C:\Windows\Fonts\segoeui.ttf
+  8A8: File          C:\Windows\SystemResources\Windows.UI.SettingsAppThreshold\SystemSettings\Assets\Fonts\MemMDL2.2.2.ttf
+  AA4: File          C:\Windows\Fonts\segoeuil.ttf
+  B18: File          C:\Windows\System32\en-US\windows.ui.xaml.dll.mui
+  B38: File          C:\Windows\SystemResources\Windows.UI.SettingsAppThreshold\SystemSettings\Assets\Fonts\SetMDL2.ttf
+------------------------------------------------------------------------------
+svchost.exe pid: 792 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 8788 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 9024 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 4796 \<unable to open process>
+------------------------------------------------------------------------------
+SkypeApp.exe pid: 9184 SECNOTES\tyler
+   3C: File          C:\Program Files\WindowsApps\Microsoft.SkypeApp_14.56.102.0_x64__kzf8qxf38zg5c
+  4E0: File          C:\Windows\Fonts\segoeui.ttf
+  538: File          C:\Windows\System32\en-US\windows.storage.dll.mui
+  570: File          C:\Windows\System32\WinMetadata\Windows.System.winmd
+  5AC: File          C:\Windows\System32\WinMetadata\Windows.Foundation.winmd
+  5E0: File          C:\Users\tyler\AppData\Local\Packages\Microsoft.SkypeApp_kzf8qxf38zg5c\LocalState\DiagOutputDir\SkypeApp0.txt
+  624: File          C:\Windows\System32\en-US\KernelBase.dll.mui
+  6C0: File          C:\Windows\System32\en-US\Windows.Security.Authentication.Web.Core.dll.mui
+------------------------------------------------------------------------------
+RuntimeBroker.exe pid: 2516 SECNOTES\tyler
+   44: File          C:\Windows\System32
+  22C: File          C:\Windows\Registration\R000000000018.clb
+  298: File          C:\Windows\System32\en-US\propsys.dll.mui
+------------------------------------------------------------------------------
+w3wp.exe pid: 2040 \<unable to open process>
+------------------------------------------------------------------------------
+php-cgi.exe pid: 1740 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 5492 \<unable to open process>
+------------------------------------------------------------------------------
+svchost.exe pid: 9084 \<unable to open process>
+------------------------------------------------------------------------------
+php-cgi.exe pid: 3916 \<unable to open process>
+------------------------------------------------------------------------------
+SearchProtocolHost.exe pid: 8044 \<unable to open process>
+------------------------------------------------------------------------------
+SearchFilterHost.exe pid: 8888 \<unable to open process>
+------------------------------------------------------------------------------
+cmd.exe pid: 3644 SECNOTES\tyler
+   3C: File          C:\inetpub\new-site
+------------------------------------------------------------------------------
+conhost.exe pid: 3252 SECNOTES\tyler
+   40: File          C:\Windows
+  11C: File          C:\Windows\System32\en-US\Conhost.exe.mui
+------------------------------------------------------------------------------
+handle.exe pid: 8436 SECNOTES\tyler
+   40: File          C:\Windows
+   80: File          C:\inetpub\new-site
+   B0: File          C:\Windows\WinSxS\x86_microsoft.windows.common-controls_6595b64144ccf1df_5.82.17134.228_none_40fd37ce451407b3
+------------------------------------------------------------------------------
+handle64.exe pid: 612 SECNOTES\tyler
+   48: File          C:\inetpub\new-site
+   78: File          C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_5.82.17134.228_none_f95000f73097dead
