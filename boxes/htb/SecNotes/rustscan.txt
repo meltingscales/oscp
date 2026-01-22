@@ -1,0 +1,53 @@
+# Nmap 7.98 scan initiated Thu Jan 22 11:38:25 2026 as: /usr/lib/nmap/nmap --privileged -vvv -p 80,445,8808 -4 -sC -sV -oN rustscan.txt 10.129.6.180
+Nmap scan report for 10.129.6.180
+Host is up, received echo-reply ttl 127 (0.100s latency).
+Scanned at 2026-01-22 11:38:26 CST for 52s
+
+PORT     STATE SERVICE      REASON          VERSION
+80/tcp   open  http         syn-ack ttl 127 Microsoft IIS httpd 10.0
+|_http-server-header: Microsoft-IIS/10.0
+| http-methods: 
+|   Supported Methods: OPTIONS TRACE GET HEAD POST
+|_  Potentially risky methods: TRACE
+| http-title: Secure Notes - Login
+|_Requested resource was login.php
+445/tcp  open  microsoft-ds syn-ack ttl 127 Windows 10 Enterprise 17134 microsoft-ds (workgroup: HTB)
+8808/tcp open  http         syn-ack ttl 127 Microsoft IIS httpd 10.0
+|_http-server-header: Microsoft-IIS/10.0
+|_http-title: IIS Windows
+| http-methods: 
+|   Supported Methods: OPTIONS TRACE GET HEAD POST
+|_  Potentially risky methods: TRACE
+Service Info: Host: SECNOTES; OS: Windows; CPE: cpe:/o:microsoft:windows
+
+Host script results:
+| smb-os-discovery: 
+|   OS: Windows 10 Enterprise 17134 (Windows 10 Enterprise 6.3)
+|   OS CPE: cpe:/o:microsoft:windows_10::-
+|   Computer name: SECNOTES
+|   NetBIOS computer name: SECNOTES\x00
+|   Workgroup: HTB\x00
+|_  System time: 2026-01-22T09:38:42-08:00
+|_clock-skew: mean: 2h40m01s, deviation: 4h37m10s, median: 0s
+| smb-security-mode: 
+|   account_used: guest
+|   authentication_level: user
+|   challenge_response: supported
+|_  message_signing: disabled (dangerous, but default)
+| smb2-security-mode: 
+|   3.1.1: 
+|_    Message signing enabled but not required
+| p2p-conficker: 
+|   Checking for Conficker.C or higher...
+|   Check 1 (port 11997/tcp): CLEAN (Timeout)
+|   Check 2 (port 19917/tcp): CLEAN (Timeout)
+|   Check 3 (port 40188/udp): CLEAN (Timeout)
+|   Check 4 (port 10709/udp): CLEAN (Timeout)
+|_  0/4 checks are positive: Host is CLEAN or ports are blocked
+| smb2-time: 
+|   date: 2026-01-22T17:38:43
+|_  start_date: N/A
+
+Read data files from: /usr/share/nmap
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Thu Jan 22 11:39:18 2026 -- 1 IP address (1 host up) scanned in 53.27 seconds

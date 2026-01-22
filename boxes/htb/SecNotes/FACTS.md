@@ -1,0 +1,4 @@
+- `tyler` exists as a user.
+- `tyler` has an arbitrary password.
+- 80/tcp website is running php that accepts POST requests.
+- SMB is open.

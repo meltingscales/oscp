@@ -1,0 +1,42 @@
+# Nmap 7.98 scan initiated Thu Jan 22 11:29:08 2026 as: /usr/lib/nmap/nmap --privileged -sC -sV -p- -oN nmap.txt 10.129.6.180
+Nmap scan report for 10.129.6.180
+Host is up (0.100s latency).
+Not shown: 65532 filtered tcp ports (no-response)
+PORT     STATE SERVICE      VERSION
+80/tcp   open  http         Microsoft IIS httpd 10.0
+|_http-server-header: Microsoft-IIS/10.0
+| http-title: Secure Notes - Login
+|_Requested resource was login.php
+| http-methods: 
+|_  Potentially risky methods: TRACE
+445/tcp  open  microsoft-ds Windows 10 Enterprise 17134 microsoft-ds (workgroup: HTB)
+8808/tcp open  http         Microsoft IIS httpd 10.0
+|_http-server-header: Microsoft-IIS/10.0
+| http-methods: 
+|_  Potentially risky methods: TRACE
+|_http-title: IIS Windows
+Service Info: Host: SECNOTES; OS: Windows; CPE: cpe:/o:microsoft:windows
+
+Host script results:
+| smb-security-mode: 
+|   account_used: guest
+|   authentication_level: user
+|   challenge_response: supported
+|_  message_signing: disabled (dangerous, but default)
+| smb2-security-mode: 
+|   3.1.1: 
+|_    Message signing enabled but not required
+| smb-os-discovery: 
+|   OS: Windows 10 Enterprise 17134 (Windows 10 Enterprise 6.3)
+|   OS CPE: cpe:/o:microsoft:windows_10::-
+|   Computer name: SECNOTES
+|   NetBIOS computer name: SECNOTES\x00
+|   Workgroup: HTB\x00
+|_  System time: 2026-01-22T09:32:29-08:00
+| smb2-time: 
+|   date: 2026-01-22T17:32:28
+|_  start_date: N/A
+|_clock-skew: mean: 2h40m01s, deviation: 4h37m10s, median: 0s
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Thu Jan 22 11:33:05 2026 -- 1 IP address (1 host up) scanned in 236.66 seconds

@@ -1,3 +1,3 @@
-1. poison
-2. secnotes
+1. poison [done]
+2. secnotes [wip]
 3. cronos
