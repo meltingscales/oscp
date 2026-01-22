@@ -90,3 +90,28 @@ session setup failed: NT_STATUS_LOGON_FAILURE
 ```
 
 useful. `tyler` exists as a user.
+
+okay.
+
+the guided mode seems to focus on `/change_pass.php` and HTTP methods.
+
+it makes me think that it's vulnerable to ...well. spoofing the username? i don't know.
+
+so...POST /change_pass.php and GET /change_pass.php both work. it seems like the victim doesn't care about what verb we use. but changing the verb and the HTTP body doesn't do anything.
+
+okay. so I just learned that `tyler`...is...well, the HTB box wants us to pretend like tyler is actually a physical person. So, we're meant to trigger a CSRF attack against `tyler` by sending a malicious request that comes from `tyler`'s browser, because they clicked a link we sent them in the login form.
+
+this ONLY WORKS because GET is an allowed verb. if it wasn't, we couldn't embed the GET body in the url.
+
+```payload
+Hello! Your password has expired. Please click this link to reset it.
+
+http://10.129.6.180/change_pass.php?user=tyler&password=password&confirm_password=password&submit=submit
+```
+
+i need to not use `zed`'s autocomplete, because it populated the wrong values for the GET url fragments.
+
+
+sweet, we logged in as `tyler`. see `tylernotes.txt`
+
+I bet `92g!mA8BGjOirkL%OG*&` is the password to log in via SMB...
