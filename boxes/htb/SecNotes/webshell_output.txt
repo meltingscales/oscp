@@ -615,3 +615,163 @@ handle.exe pid: 8436 SECNOTES\tyler
 handle64.exe pid: 612 SECNOTES\tyler
    48: File          C:\inetpub\new-site
    78: File          C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_5.82.17134.228_none_f95000f73097dead
+2026-01-22 14:41:08.756011 - tree
+Folder PATH listing
+Volume serial number is 1E7B-9B76
+C:.
+No subfolders exist 
+
+
+
+2026-01-22 14:41:14.241248 - tree C:
+Folder PATH listing
+Volume serial number is 1E7B-9B76
+C:\INETPUB\NEW-SITE
+No subfolders exist 
+
+
+
+2026-01-23 12:31:28.309665 - dir C:\Users\tyler\AppData\Local\Packages\
+ Volume in drive C has no label.
+ Volume Serial Number is 1E7B-9B76
+
+ Directory of C:\Users\tyler\AppData\Local\Packages
+
+04/09/2021  04:03 AM    <DIR>          .
+04/09/2021  04:03 AM    <DIR>          ..
+06/21/2018  05:06 PM    <DIR>          1527c705-839a-4832-9118-54d4Bd6a0c89_cw5n1h2txyewy
+06/21/2018  04:51 PM    <DIR>          ActiveSync
+06/21/2018  05:06 PM    <DIR>          c5e2524a-ea46-4f67-841f-6a9465d9d515_cw5n1h2txyewy
+06/21/2018  05:00 PM    <DIR>          CanonicalGroupLimited.Ubuntu18.04onWindows_79rhkp1fndgsc
+06/21/2018  05:06 PM    <DIR>          E2A4F912-2574-4A75-9BB0-0D023378592B_cw5n1h2txyewy
+06/21/2018  05:06 PM    <DIR>          F46D4000-FD22-4DB4-AC8E-4E1DDDE828FE_cw5n1h2txyewy
+06/21/2018  05:06 PM    <DIR>          InputApp_cw5n1h2txyewy
+06/21/2018  05:06 PM    <DIR>          Microsoft.3DBuilder_8wekyb3d8bbwe
+06/21/2018  04:49 PM    <DIR>          Microsoft.AAD.BrokerPlugin_cw5n1h2txyewy
+06/21/2018  05:06 PM    <DIR>          Microsoft.AccountsControl_cw5n1h2txyewy
+06/21/2018  04:50 PM    <DIR>          Microsoft.Advertising.Xaml_8wekyb3d8bbwe
+06/21/2018  05:06 PM    <DIR>          Microsoft.Appconnector_8wekyb3d8bbwe
+06/21/2018  05:06 PM    <DIR>          Microsoft.AsyncTextService_8wekyb3d8bbwe
+06/21/2018  04:57 PM    <DIR>          Microsoft.BingFinance_8wekyb3d8bbwe
+06/21/2018  04:57 PM    <DIR>          Microsoft.BingNews_8wekyb3d8bbwe
+06/21/2018  04:57 PM    <DIR>          Microsoft.BingSports_8wekyb3d8bbwe
+06/21/2018  04:57 PM    <DIR>          Microsoft.BingWeather_8wekyb3d8bbwe
+06/21/2018  05:06 PM    <DIR>          Microsoft.BioEnrollment_cw5n1h2txyewy
+06/21/2018  05:06 PM    <DIR>          Microsoft.CredDialogHost_cw5n1h2txyewy
+06/21/2018  04:57 PM    <DIR>          Microsoft.DesktopAppInstaller_8wekyb3d8bbwe
+06/21/2018  05:06 PM    <DIR>          Microsoft.ECApp_8wekyb3d8bbwe
+06/21/2018  05:06 PM    <DIR>          Microsoft.EdgeDevtoolsPlugin_cw5n1h2txyewy
+06/21/2018  04:56 PM    <DIR>          Microsoft.GetHelp_8wekyb3d8bbwe
+06/21/2018  05:06 PM    <DIR>          Microsoft.Getstarted_8wekyb3d8bbwe
+06/21/2018  05:06 PM    <DIR>          Microsoft.LockApp_cw5n1h2txyewy
+06/21/2018  05:06 PM    <DIR>          Microsoft.Messaging_8wekyb3d8bbwe
+06/21/2018  05:06 PM    <DIR>          Microsoft.Microsoft3DViewer_8wekyb3d8bbwe
+06/21/2018  05:06 PM    <DIR>          Microsoft.MicrosoftEdgeDevToolsClient_8wekyb3d8bbwe
+06/21/2018  04:50 PM    <DIR>          Microsoft.MicrosoftEdge_8wekyb3d8bbwe
+06/21/2018  05:06 PM    <DIR>          Microsoft.MicrosoftOfficeHub_8wekyb3d8bbwe
+06/21/2018  05:06 PM    <DIR>          Microsoft.MicrosoftSolitaireCollection_8wekyb3d8bbwe
+06/21/2018  04:57 PM    <DIR>          Microsoft.MicrosoftStickyNotes_8wekyb3d8bbwe
+06/21/2018  05:06 PM    <DIR>          Microsoft.MSPaint_8wekyb3d8bbwe
+06/21/2018  04:49 PM    <DIR>          Microsoft.NET.Native.Framework.1.0_8wekyb3d8bbwe
+06/21/2018  04:49 PM    <DIR>          Microsoft.NET.Native.Framework.1.3_8wekyb3d8bbwe
+06/21/2018  04:49 PM    <DIR>          Microsoft.NET.Native.Framework.1.6_8wekyb3d8bbwe
+06/21/2018  04:49 PM    <DIR>          Microsoft.NET.Native.Framework.1.7_8wekyb3d8bbwe
+02/17/2021  07:10 AM    <DIR>          Microsoft.NET.Native.Framework.2.2_8wekyb3d8bbwe
+06/21/2018  04:49 PM    <DIR>          Microsoft.NET.Native.Runtime.1.0_8wekyb3d8bbwe
+06/21/2018  04:49 PM    <DIR>          Microsoft.NET.Native.Runtime.1.3_8wekyb3d8bbwe
+06/21/2018  04:49 PM    <DIR>          Microsoft.NET.Native.Runtime.1.4_8wekyb3d8bbwe
+06/21/2018  04:49 PM    <DIR>          Microsoft.NET.Native.Runtime.1.6_8wekyb3d8bbwe
+06/21/2018  04:49 PM    <DIR>          Microsoft.NET.Native.Runtime.1.7_8wekyb3d8bbwe
+02/17/2021  07:10 AM    <DIR>          Microsoft.NET.Native.Runtime.2.2_8wekyb3d8bbwe
+06/21/2018  05:06 PM    <DIR>          Microsoft.Office.OneNote_8wekyb3d8bbwe
+06/21/2018  04:57 PM    <DIR>          Microsoft.OneConnect_8wekyb3d8bbwe
+06/21/2018  04:57 PM    <DIR>          Microsoft.People_8wekyb3d8bbwe
+06/21/2018  05:06 PM    <DIR>          Microsoft.PPIProjection_cw5n1h2txyewy
+06/21/2018  05:06 PM    <DIR>          Microsoft.Print3D_8wekyb3d8bbwe
+06/21/2018  04:57 PM    <DIR>          Microsoft.SkypeApp_kzf8qxf38zg5c
+06/21/2018  04:56 PM    <DIR>          Microsoft.StorePurchaseApp_8wekyb3d8bbwe
+04/09/2021  04:00 AM    <DIR>          Microsoft.UI.Xaml.2.0_8wekyb3d8bbwe
+02/17/2021  07:10 AM    <DIR>          Microsoft.UI.Xaml.2.1_8wekyb3d8bbwe
+04/09/2021  04:00 AM    <DIR>          Microsoft.UI.Xaml.2.3_8wekyb3d8bbwe
+02/17/2021  07:11 AM    <DIR>          Microsoft.UI.Xaml.2.4_8wekyb3d8bbwe
+04/09/2021  03:57 AM    <DIR>          Microsoft.UI.Xaml.2.5_8wekyb3d8bbwe
+06/21/2018  05:06 PM    <DIR>          Microsoft.VCLibs.140.00.UWPDesktop_8wekyb3d8bbwe
+06/21/2018  04:49 PM    <DIR>          Microsoft.VCLibs.140.00_8wekyb3d8bbwe
+06/21/2018  05:06 PM    <DIR>          Microsoft.Wallet_8wekyb3d8bbwe
+06/21/2018  04:57 PM    <DIR>          Microsoft.WebMediaExtensions_8wekyb3d8bbwe
+06/21/2018  05:06 PM    <DIR>          Microsoft.Win32WebViewHost_cw5n1h2txyewy
+06/21/2018  05:06 PM    <DIR>          Microsoft.Windows.Apprep.ChxApp_cw5n1h2txyewy
+06/21/2018  05:06 PM    <DIR>          Microsoft.Windows.AssignedAccessLockApp_cw5n1h2txyewy
+06/21/2018  05:06 PM    <DIR>          Microsoft.Windows.CapturePicker_cw5n1h2txyewy
+06/21/2018  04:49 PM    <DIR>          Microsoft.Windows.CloudExperienceHost_cw5n1h2txyewy
+06/21/2018  04:50 PM    <DIR>          Microsoft.Windows.ContentDeliveryManager_cw5n1h2txyewy
+06/21/2018  04:50 PM    <DIR>          Microsoft.Windows.Cortana_cw5n1h2txyewy
+06/21/2018  05:06 PM    <DIR>          Microsoft.Windows.HolographicFirstRun_cw5n1h2txyewy
+06/21/2018  05:06 PM    <DIR>          Microsoft.Windows.OOBENetworkCaptivePortal_cw5n1h2txyewy
+06/21/2018  05:06 PM    <DIR>          Microsoft.Windows.OOBENetworkConnectionFlow_cw5n1h2txyewy
+06/21/2018  05:06 PM    <DIR>          Microsoft.Windows.ParentalControls_cw5n1h2txyewy
+06/21/2018  05:06 PM    <DIR>          Microsoft.Windows.PeopleExperienceHost_cw5n1h2txyewy
+06/21/2018  04:50 PM    <DIR>          Microsoft.Windows.Photos_8wekyb3d8bbwe
+06/21/2018  05:06 PM    <DIR>          Microsoft.Windows.PinningConfirmationDialog_cw5n1h2txyewy
+06/21/2018  05:06 PM    <DIR>          Microsoft.Windows.SecHealthUI_cw5n1h2txyewy
+06/21/2018  05:06 PM    <DIR>          Microsoft.Windows.SecureAssessmentBrowser_cw5n1h2txyewy
+06/21/2018  04:50 PM    <DIR>          Microsoft.Windows.ShellExperienceHost_cw5n1h2txyewy
+06/21/2018  04:57 PM    <DIR>          Microsoft.WindowsAlarms_8wekyb3d8bbwe
+06/21/2018  04:57 PM    <DIR>          Microsoft.WindowsCalculator_8wekyb3d8bbwe
+06/21/2018  04:50 PM    <DIR>          Microsoft.WindowsCamera_8wekyb3d8bbwe
+06/21/2018  04:50 PM    <DIR>          microsoft.windowscommunicationsapps_8wekyb3d8bbwe
+06/21/2018  04:57 PM    <DIR>          Microsoft.WindowsFeedbackHub_8wekyb3d8bbwe
+06/21/2018  04:57 PM    <DIR>          Microsoft.WindowsMaps_8wekyb3d8bbwe
+06/21/2018  04:56 PM    <DIR>          Microsoft.WindowsPhone_8wekyb3d8bbwe
+06/21/2018  05:06 PM    <DIR>          Microsoft.WindowsSoundRecorder_8wekyb3d8bbwe
+06/21/2018  04:50 PM    <DIR>          Microsoft.WindowsStore_8wekyb3d8bbwe
+06/21/2018  05:06 PM    <DIR>          Microsoft.Xbox.TCUI_8wekyb3d8bbwe
+06/21/2018  05:06 PM    <DIR>          Microsoft.XboxApp_8wekyb3d8bbwe
+06/21/2018  05:06 PM    <DIR>          Microsoft.XboxGameCallableUI_cw5n1h2txyewy
+06/21/2018  04:57 PM    <DIR>          Microsoft.XboxGameOverlay_8wekyb3d8bbwe
+06/21/2018  05:06 PM    <DIR>          Microsoft.XboxGamingOverlay_8wekyb3d8bbwe
+06/21/2018  04:50 PM    <DIR>          Microsoft.XboxIdentityProvider_8wekyb3d8bbwe
+06/21/2018  04:57 PM    <DIR>          Microsoft.XboxSpeechToTextOverlay_8wekyb3d8bbwe
+06/21/2018  04:56 PM    <DIR>          Microsoft.ZuneMusic_8wekyb3d8bbwe
+06/21/2018  04:57 PM    <DIR>          Microsoft.ZuneVideo_8wekyb3d8bbwe
+06/21/2018  05:06 PM    <DIR>          Windows.CBSPreview_cw5n1h2txyewy
+06/21/2018  04:49 PM    <DIR>          Windows.ContactSupport_cw5n1h2txyewy
+06/21/2018  04:49 PM    <DIR>          windows.devicesflow_cw5n1h2txyewy
+06/21/2018  04:50 PM    <DIR>          windows.immersivecontrolpanel_cw5n1h2txyewy
+06/21/2018  05:06 PM    <DIR>          Windows.PrintDialog_cw5n1h2txyewy
+06/21/2018  04:49 PM    <DIR>          windows_ie_ac_001
+               0 File(s)              0 bytes
+             103 Dir(s)  13,824,606,208 bytes free
+
+
+2026-01-23 12:37:28.919289 - locate
+TYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+<title>404 - File or directory not found.</title>
+<style type="text/css">
+<!--
+body{margin:0;font-size:.7em;font-family:Verdana, Arial, Helvetica, sans-serif;background:#EEEEEE;}
+fieldset{padding:0 15px 10px 15px;} 
+h1{font-size:2.4em;margin:0;color:#FFF;}
+h2{font-size:1.7em;margin:0;color:#CC0000;} 
+h3{font-size:1.2em;margin:10px 0 0 0;color:#000000;} 
+#header{width:96%;margin:0 0 0 0;padding:6px 2% 6px 2%;font-family:"trebuchet MS", Verdana, sans-serif;color:#FFF;
+background-color:#555555;}
+#content{margin:0 0 0 2%;position:relative;}
+.content-container{background:#FFF;width:96%;margin-top:8px;padding:10px;position:relative;}
+-->
+</style>
+</head>
+<body>
+<div id="header"><h1>Server Error</h1></div>
+<div id="content">
+ <div class="content-container"><fieldset>
+  <h2>404 - File or directory not found.</h2>
+  <h3>The resource you are looking for might have been removed, had its name changed, or is temporarily unavailable.</h3>
+ </fieldset></div>
+</div>
+</body>
+<
+

