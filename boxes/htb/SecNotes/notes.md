@@ -261,3 +261,6 @@ rlwrap nc -lvnp 4444
 ```py
 (see ./trigger_reverse_shell.py)
 ```
+
+
+so, ...
