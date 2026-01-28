@@ -1,0 +1,15 @@
+┌──(henrypost㉿kali-toughwolf)-[~/…/oscp/boxes/htb/MonitorsFour]
+└─$ nmap $(cat IP) -sS -sV -p-
+Starting Nmap 7.98 ( https://nmap.org ) at 2026-01-28 14:25 -0600
+Stats: 0:02:20 elapsed; 0 hosts completed (1 up), 1 undergoing SYN Stealth Scan
+SYN Stealth Scan Timing: About 35.32% done; ETC: 14:32 (0:04:15 remaining)
+Nmap scan report for 10.129.10.236
+Host is up (0.15s latency).
+Not shown: 65533 filtered tcp ports (no-response)
+PORT     STATE SERVICE VERSION
+80/tcp   open  http    nginx
+5985/tcp open  http    Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)
+Service Info: OS: Windows; CPE: cpe:/o:microsoft:windows
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 308.68 seconds
