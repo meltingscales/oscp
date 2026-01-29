@@ -185,9 +185,11 @@
   },
   "active": "fcf868e7b4d5dd4e",
   "lastOpenFiles": [
+    "boxes/htb/MonitorsFour/typeJuggling.py",
+    "boxes/htb/MonitorsFour/Untitled.md",
+    "boxes/htb/MonitorsFour/notes.md",
     "boxes/htb/MonitorsFour/ffuf.txt.md",
     "boxes/htb/MonitorsFour/ffuf.txt",
-    "boxes/htb/MonitorsFour/notes.md",
     "boxes/CLAIM_ME.md",
     "boxes/htb/Active/notes.md",
     "boxes/htb/MonitorsFour/poke5985.py",

