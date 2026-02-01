@@ -6,7 +6,7 @@ The purpose of this list is because I wanted an organized list to keep it neat a
 
 
 <h2><p align="center"> Disclaimer </p></h2>
-This is not my list. I mereley modified to fit "my" needs.<br>
+This is not my list. I merely modified to fit "my" needs.<br>
 These rankings are not absolute. They are ranked based off the registered users on https://www.hackthebox.com/ who have successfully captured a user or root flag and rated the difficulty of capturing that user or root flag. Example a veteran user may have scored the machine easy but a beginner user may have scored that same machine hard. This is based off https://www.hackthebox.com/ ranking system alone.<br>
 The pdf file should be the main list. This way you can track your progress.<br>
 Let me know what rating you gave the machine 😄
@@ -37,53 +37,53 @@ Purple = Other<br>
 
 # Easy
 
-Here is a list of machines that are on Tj Null's List and on https://www.hackthebox.com/ that have the rank considered "<em><strong>Easy</em></strong>" by registered users who have completed caputuring the user flag or root flag and have voted the difficulty rating. Along with the machines OS. 
+Here is a list of machines that are on Tj Null's List and on https://www.hackthebox.com/ that have the rank considered "<em><strong>Easy</em></strong>" by registered users who have completed capturing the user flag or root flag and have voted the difficulty rating. Along with the machines OS. 
 
-| Easy | Machine |
-| ---- | ------- |
-| Active | Windows |
-| Armageddon | Linux |
-| Bashed | Linux |
-| Bastion | Windows |  
-| Beep | Linux |
-| Blocky | Linux |
-| Blunder | Linux |
-| Bounty | Windows |
-| Bust |  Windows |
-| Delivery | Linux |
-| Devel | Windows |
-| Doctor | Linux |
-| Forest | Windows |
-| FriendZone | Linux |
-| Frolic | Linux |
-| Grandpa | Windows |
-| Granny | Windows |
-| Horizontall | Linux |
-| Irked | Linux |
-| Jerry | Windows |
-| Knife | Linux |
-| Love |  Windows |
-| Legacy | Windows |
-| Luanne | Other |
-| Mirai | Linux |
-| Networked | Linux |
-| Nibbles | Linux |
-| Omni | Windows |
-| OpenAdmin | Linux |
-| Optimum | Windoows |
-| Previse | Linux |
-| Postman | Linux |
-| Remote | Windows |
-| ScriptKiddie | Linux |
-| Sense | FreeBSD |
-| ServerMon | Windows |
-| Shocker | Linux |
-| Sunday | Solaris |
-| Support | Windows |
-| Swagshop | Linux |
-| Traverxec | Linux |
-| Tabby | Linux |
-| Valentine | Linux |
+| Easy         | Machine  | Done? |
+| ------------ | -------- | ----- |
+| Active       | Windows  |       |
+| Armageddon   | Linux    |       |
+| Bashed       | Linux    |       |
+| Bastion      | Windows  |       |
+| Beep         | Linux    |       |
+| Blocky       | Linux    |       |
+| Blunder      | Linux    |       |
+| Bounty       | Windows  |       |
+| Bust         | Windows  |       |
+| Delivery     | Linux    |       |
+| Devel        | Windows  |       |
+| Doctor       | Linux    |       |
+| Forest       | Windows  |       |
+| FriendZone   | Linux    |       |
+| Frolic       | Linux    |       |
+| Grandpa      | Windows  |       |
+| Granny       | Windows  |       |
+| Horizontall  | Linux    |       |
+| Irked        | Linux    |       |
+| Jerry        | Windows  |       |
+| Knife        | Linux    |       |
+| Love         | Windows  |       |
+| Legacy       | Windows  |       |
+| Luanne       | Other    |       |
+| Mirai        | Linux    |       |
+| Networked    | Linux    |       |
+| Nibbles      | Linux    |       |
+| Omni         | Windows  |       |
+| OpenAdmin    | Linux    |       |
+| Optimum      | Windoows |       |
+| Previse      | Linux    |       |
+| Postman      | Linux    |       |
+| Remote       | Windows  |       |
+| ScriptKiddie | Linux    |       |
+| Sense        | FreeBSD  |       |
+| ServerMon    | Windows  |       |
+| Shocker      | Linux    |       |
+| Sunday       | Solaris  |       |
+| Support      | Windows  |       |
+| Swagshop     | Linux    |       |
+| Traverxec    | Linux    |       |
+| Tabby        | Linux    |       |
+| Valentine    | Linux    |       |
 
 <a href="#top">Back to top</a>
 
