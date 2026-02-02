@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "a13c95b1208cab16",
+        "id": "1027145c2315b3dd",
         "type": "tabs",
         "children": [
           {
-            "id": "fcf868e7b4d5dd4e",
+            "id": "fb115b8ec30b56da",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -183,8 +183,12 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "9c082d0d61c37b0c",
+  "active": "fb115b8ec30b56da",
   "lastOpenFiles": [
+    "user.txt",
+    "tjnull-oscp-list.md",
+    "README.md",
+    "boxes/htb/Active/notes.md",
     "boxes/htb/Active/goldenticketiguess.xml",
     "boxes/htb/Active/Replication/active.htb/Policies/{6AC1786C-016F-11D2-945F-00C04fB984F9}/MACHINE/Microsoft/Windows NT/SecEdit/GptTmpl.inf",
     "boxes/htb/Active/Replication/active.htb/Policies/{31B2F340-016D-11D2-945F-00C04FB984F9}/MACHINE/Microsoft/Windows NT/SecEdit/GptTmpl.inf",
@@ -195,11 +199,8 @@
     "boxes/htb/Active/Replication/active.htb/Policies/{31B2F340-016D-11D2-945F-00C04FB984F9}/MACHINE/Preferences/Groups",
     "boxes/htb/Active/Replication/active.htb/Policies/{31B2F340-016D-11D2-945F-00C04FB984F9}/MACHINE/Microsoft/Windows NT",
     "boxes/htb/Active/Replication/active.htb/Policies/{6AC1786C-016F-11D2-945F-00C04fB984F9}/MACHINE/Microsoft",
-    "boxes/htb/Active/Replication/active.htb/Policies/{31B2F340-016D-11D2-945F-00C04FB984F9}/MACHINE/Registry.pol",
     "boxes/htb/MonitorsFour.pwned/notes.md",
     "boxes/htb/Poison.pwned/notes.md",
-    "boxes/htb/Active/notes.md",
-    "tjnull-oscp-list.md",
     "boxes/CLAIM_ME.md",
     "boxes/htb/MonitorsFour/Untitled.md",
     "boxes/htb/MonitorsFour/notes.md",
@@ -211,7 +212,6 @@
     "notes/tcm-security/practical-ethical-hacking-the-complete-course/Pasted image 20251219172621.png",
     "notes/tcm-security/practical-ethical-hacking-the-complete-course/The Five Stages of Ethical Hacking.md",
     "notes/tcm-security/practical-ethical-hacking-the-complete-course/Why you shouldnt be an ethical hacker.md",
-    "README.md",
     "oscp-prep.md",
     "Pasted image 20251219174116.png",
     "Pasted image 20251219173942.png",

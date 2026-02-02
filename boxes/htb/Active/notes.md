@@ -4,7 +4,7 @@ this is a windows machine.
 lets get crackin.
 
 ```
-nmap $(cat ./IP) -sS -sV -p- -oN nmap.txt
+nmap $(cat ./IP) -sS -sV -oN nmap.txt
 ```
 
 sweet. we need to find out how many SMB shares are on this.
@@ -250,3 +250,23 @@ smbmap -H active.htb -u 'SVC_TGS' -p 'GPPstillStandingStrong2k18'
 sick, nuts. got 4 shares RO access. time to keep digging.
 
 
+lets use the last command that claude recommended.
+
+```bash
+smbclient //active.htb/Users    -U 'SVC_TGS%GPPstillStandingStrong2k18'
+smbclient //active.htb/NETLOGON -U 'SVC_TGS%GPPstillStandingStrong2k18'
+smbclient //active.htb/SYSVOL   -U 'SVC_TGS%GPPstillStandingStrong2k18'
+smbclient //active.htb/Users    -U 'SVC_TGS%GPPstillStandingStrong2k18'
+```
+
+
+```
+smb: \SVC_TGS\Desktop\> get user.txt
+```
+sweet. user flag pwned.
+
+
+hm. well. going to ask claude what i should do next.
+...or,
+
+nah, screw AI. i could try to just uh. spider? how to spider smb? dunno. `hacktricks.xyz` to the rescue!
