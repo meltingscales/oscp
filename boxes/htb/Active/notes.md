@@ -270,3 +270,5 @@ hm. well. going to ask claude what i should do next.
 ...or,
 
 nah, screw AI. i could try to just uh. spider? how to spider smb? dunno. `hacktricks.xyz` to the rescue!
+
+woof. exhausted. time to resume later.
