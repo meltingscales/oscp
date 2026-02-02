@@ -41,7 +41,7 @@ Here is a list of machines that are on Tj Null's List and on https://www.hackthe
 
 | Easy         | Machine  | Done? |
 | ------------ | -------- | ----- |
-| Active       | Windows  |       |
+| Active       | Windows  | WIP   |
 | Armageddon   | Linux    |       |
 | Bashed       | Linux    |       |
 | Bastion      | Windows  |       |

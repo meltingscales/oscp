@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "tjnull-oscp-list.md",
+                "file": "boxes/htb/Active/notes.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "tjnull-oscp-list"
+              "title": "notes"
             }
           }
         ]
@@ -78,7 +78,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 455.5
+    "width": 560.5
   },
   "right": {
     "id": "6f47b96814d09569",
@@ -183,22 +183,28 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "fcf868e7b4d5dd4e",
+  "active": "9c082d0d61c37b0c",
   "lastOpenFiles": [
-    "boxes/htb/MonitorsFour/typeJuggling.py",
+    "boxes/htb/Active/goldenticketiguess.xml",
+    "boxes/htb/Active/Replication/active.htb/Policies/{6AC1786C-016F-11D2-945F-00C04fB984F9}/MACHINE/Microsoft/Windows NT/SecEdit/GptTmpl.inf",
+    "boxes/htb/Active/Replication/active.htb/Policies/{31B2F340-016D-11D2-945F-00C04FB984F9}/MACHINE/Microsoft/Windows NT/SecEdit/GptTmpl.inf",
+    "boxes/htb/Active/Replication/active.htb/Policies/{6AC1786C-016F-11D2-945F-00C04fB984F9}/MACHINE/Microsoft/Windows NT/SecEdit",
+    "boxes/htb/Active/Replication/active.htb/Policies/{31B2F340-016D-11D2-945F-00C04FB984F9}/MACHINE/Preferences/Groups/Groups.xml",
+    "boxes/htb/Active/Replication/active.htb/Policies/{31B2F340-016D-11D2-945F-00C04FB984F9}/MACHINE/Microsoft/Windows NT/SecEdit",
+    "boxes/htb/Active/Replication/active.htb/Policies/{6AC1786C-016F-11D2-945F-00C04fB984F9}/MACHINE/Microsoft/Windows NT",
+    "boxes/htb/Active/Replication/active.htb/Policies/{31B2F340-016D-11D2-945F-00C04FB984F9}/MACHINE/Preferences/Groups",
+    "boxes/htb/Active/Replication/active.htb/Policies/{31B2F340-016D-11D2-945F-00C04FB984F9}/MACHINE/Microsoft/Windows NT",
+    "boxes/htb/Active/Replication/active.htb/Policies/{6AC1786C-016F-11D2-945F-00C04fB984F9}/MACHINE/Microsoft",
+    "boxes/htb/Active/Replication/active.htb/Policies/{31B2F340-016D-11D2-945F-00C04FB984F9}/MACHINE/Registry.pol",
+    "boxes/htb/MonitorsFour.pwned/notes.md",
+    "boxes/htb/Poison.pwned/notes.md",
+    "boxes/htb/Active/notes.md",
+    "tjnull-oscp-list.md",
+    "boxes/CLAIM_ME.md",
     "boxes/htb/MonitorsFour/Untitled.md",
     "boxes/htb/MonitorsFour/notes.md",
     "boxes/htb/MonitorsFour/ffuf.txt.md",
-    "boxes/htb/MonitorsFour/ffuf.txt",
-    "boxes/CLAIM_ME.md",
-    "boxes/htb/Active/notes.md",
-    "boxes/htb/MonitorsFour/poke5985.py",
-    "boxes/htb/MonitorsFour/rustscan.txt",
-    "boxes/htb/MonitorsFour/nmap.txt",
-    "boxes/htb/MonitorsFour/IP",
-    "boxes/htb/MonitorsFour",
     "boxes/htb/SecNotes/FACTS.md",
-    "boxes/htb/Active",
     "boxes/CLAIM_ME.windowsAD.md",
     "notes/tcm-security/practical-ethical-hacking-the-complete-course/A Day in the Life of an Ethical Hacker.md",
     "notes/tcm-security/practical-ethical-hacking-the-complete-course/Information Gathering.md",
@@ -209,13 +215,9 @@
     "oscp-prep.md",
     "Pasted image 20251219174116.png",
     "Pasted image 20251219173942.png",
-    "tjnull-oscp-list.md",
     "notes/tcm-security/practical-ethical-hacking-the-complete-course/networking/Networking Refresher.md",
     "notes/tcm-security/practical-ethical-hacking-the-complete-course/networking/Intro Networking topics.md",
-    "notes/tcm-security/practical-ethical-hacking-the-complete-course/networking/cidrToNetmask.py",
-    "notes/tcm-security/practical-ethical-hacking-the-complete-course/networking/Subnetting Cheat Sheet.ods",
     "Pasted image 20251221130542.png",
-    "notes/tcm-security/practical-ethical-hacking-the-complete-course/Effective Notetaking.md",
-    "notes/tcm-security/practical-ethical-hacking-the-complete-course/networking"
+    "notes/tcm-security/practical-ethical-hacking-the-complete-course/Effective Notetaking.md"
   ]
 }
