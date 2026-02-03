@@ -253,10 +253,10 @@ sick, nuts. got 4 shares RO access. time to keep digging.
 lets use the last command that claude recommended.
 
 ```bash
-smbclient //active.htb/Users    -U 'SVC_TGS%GPPstillStandingStrong2k18'
-smbclient //active.htb/NETLOGON -U 'SVC_TGS%GPPstillStandingStrong2k18'
-smbclient //active.htb/SYSVOL   -U 'SVC_TGS%GPPstillStandingStrong2k18'
-smbclient //active.htb/Users    -U 'SVC_TGS%GPPstillStandingStrong2k18'
+smbclient //active.htb/Users          -U 'SVC_TGS%GPPstillStandingStrong2k18'
+smbclient //active.htb/NETLOGON       -U 'SVC_TGS%GPPstillStandingStrong2k18' # doesnt work
+smbclient //active.htb/SYSVOL         -U 'SVC_TGS%GPPstillStandingStrong2k18' # doesnt work
+smbclient //active.htb/Replication    -U 'SVC_TGS%GPPstillStandingStrong2k18'
 ```
 
 
@@ -272,3 +272,29 @@ hm. well. going to ask claude what i should do next.
 nah, screw AI. i could try to just uh. spider? how to spider smb? dunno. `hacktricks.xyz` to the rescue!
 
 woof. exhausted. time to resume later.
+
+okay. awake again, yay.
+
+let's try to spider SMB.
+
+https://www.netexec.wiki/smb-protocol/spidering-shares
+
+```bash
+nxc smb active.htb -u 'SVC_TGS' -p 'GPPstillStandingStrong2k18' --spider "//active.htb/Users" --pattern txt
+
+# why doesn't above work? users works with smb_client but not with nxc? asked claude.
+
+# ok so apparently above is wrong. and we should use:
+
+nxc smb active.htb -u 'SVC_TGS' -p 'GPPstillStandingStrong2k18' --spider Users --pattern txt
+
+# timeout. hm. i guess we cant use nxc spider?
+
+	
+```
+
+OKAY, so, claude sez:
+
+	For privesc on this box, you probably want to look into **Kerberoasting** that `SVC_TGS` account (hint: the username is a clue! 😉).
+
+alright. leave this for later b/c work demands i do other tasks.

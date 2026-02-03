@@ -78,7 +78,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 560.5
+    "width": 316.5
   },
   "right": {
     "id": "6f47b96814d09569",
@@ -185,10 +185,15 @@
   },
   "active": "fb115b8ec30b56da",
   "lastOpenFiles": [
+    "Pasted image 20251221130542.png",
+    "Pasted image 20251219174116.png",
+    "Pasted image 20251219173942.png",
+    "TECHNIQUES.md",
+    "TOOLS.md",
+    "boxes/htb/Active/notes.md",
     "user.txt",
     "tjnull-oscp-list.md",
     "README.md",
-    "boxes/htb/Active/notes.md",
     "boxes/htb/Active/goldenticketiguess.xml",
     "boxes/htb/Active/Replication/active.htb/Policies/{6AC1786C-016F-11D2-945F-00C04fB984F9}/MACHINE/Microsoft/Windows NT/SecEdit/GptTmpl.inf",
     "boxes/htb/Active/Replication/active.htb/Policies/{31B2F340-016D-11D2-945F-00C04FB984F9}/MACHINE/Microsoft/Windows NT/SecEdit/GptTmpl.inf",
@@ -198,7 +203,6 @@
     "boxes/htb/Active/Replication/active.htb/Policies/{6AC1786C-016F-11D2-945F-00C04fB984F9}/MACHINE/Microsoft/Windows NT",
     "boxes/htb/Active/Replication/active.htb/Policies/{31B2F340-016D-11D2-945F-00C04FB984F9}/MACHINE/Preferences/Groups",
     "boxes/htb/Active/Replication/active.htb/Policies/{31B2F340-016D-11D2-945F-00C04FB984F9}/MACHINE/Microsoft/Windows NT",
-    "boxes/htb/Active/Replication/active.htb/Policies/{6AC1786C-016F-11D2-945F-00C04fB984F9}/MACHINE/Microsoft",
     "boxes/htb/MonitorsFour.pwned/notes.md",
     "boxes/htb/Poison.pwned/notes.md",
     "boxes/CLAIM_ME.md",
@@ -213,11 +217,8 @@
     "notes/tcm-security/practical-ethical-hacking-the-complete-course/The Five Stages of Ethical Hacking.md",
     "notes/tcm-security/practical-ethical-hacking-the-complete-course/Why you shouldnt be an ethical hacker.md",
     "oscp-prep.md",
-    "Pasted image 20251219174116.png",
-    "Pasted image 20251219173942.png",
     "notes/tcm-security/practical-ethical-hacking-the-complete-course/networking/Networking Refresher.md",
     "notes/tcm-security/practical-ethical-hacking-the-complete-course/networking/Intro Networking topics.md",
-    "Pasted image 20251221130542.png",
     "notes/tcm-security/practical-ethical-hacking-the-complete-course/Effective Notetaking.md"
   ]
 }
