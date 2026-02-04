@@ -10,3 +10,7 @@ https://0xdf.gitlab.io/cheatsheets/offsec
 do oscp like labs.
 
 or read `./tjnull-oscp-list.md`
+
+## see also
+
+see also <https://github.com/meltingscales/hackthebox>
