@@ -90,35 +90,35 @@ Here is a list of machines that are on Tj Null's List and on https://www.hackthe
 # Medium
 Here is a list of machines that are on Tj Null's List and on https://www.hackthebox.com/ that have the rank considered "<em><strong>Medium</em></strong>" by registered users who have completed caputuring the user flag or root flag and have voted the difficulty rating. Along with the machines OS. 
 
-| Medium | Machine |
-| ------ | ------- |
-| Bastard | Windows |
-| Chatterbox | Windows |
-| Cronos | Linux |
-| Forge | Linux |
-| Fuse | Windows |
-| Haircut | Linux |
+| Medium       | Machine |
+| ------------ | ------- |
+| Bastard      | Windows |
+| Chatterbox   | Windows |
+| Cronos       | Linux   |
+| Forge        | Linux   |
+| Fuse         | Windows |
+| Haircut      | Linux   |
 | Intelligence | Windows |
-| Jarvis | Linux |
-| Magic | Linux |
-| Mango | Linux |
-| Nineneh | Linux |
-| Node | Linux |
-| Ophiuchi | Linux |
-| Passage | Linux |
-| Pit | Linux |
-| Poison | Linux |
-| Popcorn | Linux |
-| Ready | Linux |
-| Seal | Linux |
-| SecNotes | Windows |
-| Shiboleth | Linux |
-| Silo | Windows |
-| SolidState | Linux
-| SneakyMailer | Linux
-| Tartarsauce | Linux
-| Worker | Windows |
-| Writer | Linux |
+| Jarvis       | Linux   |
+| Magic        | Linux   |
+| Mango        | Linux   |
+| Nineneh      | Linux   |
+| Node         | Linux   |
+| Ophiuchi     | Linux   |
+| Passage      | Linux   |
+| Pit          | Linux   |
+| Poison       | Linux   |
+| Popcorn      | Linux   |
+| Ready        | Linux   |
+| Seal         | Linux   |
+| SecNotes     | Windows |
+| Shiboleth    | Linux   |
+| Silo         | Windows |
+| SolidState   | Linux   |
+| SneakyMailer | Linux   |
+| Tartarsauce  | Linux   |
+| Worker       | Windows |
+| Writer       | Linux   |
 
 <a href="#top">Back to top</a>
 
