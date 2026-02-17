@@ -21,13 +21,13 @@
 ### 1. Finish these boxes ASAP (in order)
 From tjnull's list, prioritize:
 
-| Box         | Why                                                 |
-| ----------- | --------------------------------------------------- |
-| **Forest**  | AS-REP Roasting + DCSync - fundamental AD attacks   |
-| **Sauna**   | Similar to Forest, reinforces the pattern           |
-| **Bastion** | VHD mount + SAM dump - common Windows foothold      |
-| **Devel**   | Classic IIS + SeImpersonate (do the potato privesc) |
-| **Jeeves**  | Jenkins exploitation + JuicyPotato                  |
+| Box                   | Why                                                 |
+| --------------------- | --------------------------------------------------- |
+| **Forest** [FAIL/OLD] | AS-REP Roasting + DCSync - fundamental AD attacks   |
+| **Sauna**             | Similar to Forest, reinforces the pattern           |
+| **Bastion**           | VHD mount + SAM dump - common Windows foothold      |
+| **Devel**             | Classic IIS + SeImpersonate (do the potato privesc) |
+| **Jeeves**            | Jenkins exploitation + JuicyPotato                  |
 
 ### 2. Skills to drill before exam
 
