@@ -16,8 +16,19 @@ I searched `msfconsole` for a payload that matched CVE-2017-0143.
 
 A few came up, and I used the fourth one, as it matches the target's technology.
 
-I used the msfconsole module called `TODO`.
+I used the msfconsole module called `windows/smb/ms17_010_eternalblue`. 
 
+![](./msf1.png)
+
+This failed.
+
+![](./msf2.png)
+
+Then, the summary, I remembered that CVE-2009-3103 was mentioned, and I decided to search for it in msfconsole and pick the first one.
+
+![](./msf3.png)
+
+After running it, TODO
 
 ## Recommendations
 
