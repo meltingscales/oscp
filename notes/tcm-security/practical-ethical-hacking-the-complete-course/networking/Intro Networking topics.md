@@ -15,10 +15,10 @@ inet6=ipv6
 
 OSI model
 
-![[Pasted image 20251219173942.png]]
+![](ipv4-address-anatomy.png)
 
 
-![[Pasted image 20251219174116.png]]
+![](binary-bit-values.png)
 
 
 IPv4 addresses have run out.

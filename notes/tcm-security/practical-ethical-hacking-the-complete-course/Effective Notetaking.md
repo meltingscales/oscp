@@ -22,7 +22,7 @@ make sure you take good notes!!! !! !
 
 literally just pick a notebook.
 
-![[Pasted image 20251219172621.png]]
+![](pick-a-notebook.png)
 
 notion is good
 joplin is good

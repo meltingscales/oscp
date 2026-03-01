@@ -1,7 +1,7 @@
 
 lmao i am skipping ALL of this, we r good on networking :)
 
-![[Pasted image 20251221130542.png]]
+![](udp-joke-meme.png)
 
 ..........WOW!!!! packets. ports. wowie!!
 
