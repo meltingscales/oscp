@@ -4,21 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "1027145c2315b3dd",
+        "id": "646d48bf0aa62ab3",
         "type": "tabs",
         "children": [
           {
-            "id": "fb115b8ec30b56da",
+            "id": "63af07803ac3d2b9",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "boxes/htb/Forest/notes.md",
+                "file": "boxes/provinggrounds/Internal/report.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "notes"
+              "title": "report"
             }
           }
         ]
@@ -183,8 +183,19 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "fb115b8ec30b56da",
+  "active": "63af07803ac3d2b9",
   "lastOpenFiles": [
+    "Pasted image 20260228193903.png",
+    "Pasted image 20260228193739.png",
+    "Pasted image 20260228193337.png",
+    "Pasted image 20260228192806.png",
+    "Pasted image 20260228192246.png",
+    "Pasted image 20260228192105.png",
+    "Pasted image 20260228191856.png",
+    "Pasted image 20260228190155.png",
+    "ASSESSMENT-HOMEWORK-FEBRUARY-2026.md",
+    "boxes/provinggrounds/Internal/report.md",
+    "Pasted image 20260228181924.png",
     "boxes/htb/Forest/someaddump.txt",
     "boxes/htb/Forest/h4ck3r_sid.txt",
     "sessionresume_RjjCDIJP",
@@ -197,10 +208,8 @@
     "sessionresume_oDYcnPwf",
     "sessionresume_vUWCiJAx",
     "sessionresume_NhNAEPSG",
-    "boxes/htb/Forest/hash.txt",
     "boxes/htb/Active.pwned/notes.md",
     "boxes/htb/Forest/notes.md.md",
-    "ASSESSMENT-HOMEWORK-FEBRUARY-2026.md",
     "CLAIM_ME.windowsAD.md",
     "boxes/CLAIM_ME.md",
     "tjnull-oscp-list.md",
@@ -210,7 +219,6 @@
     "boxes/htb/Active/active.hash.md",
     "Pasted image 20251221130542.png",
     "Pasted image 20251219174116.png",
-    "Pasted image 20251219173942.png",
     "README.md",
     "boxes/htb/MonitorsFour.pwned/notes.md",
     "boxes/htb/Poison.pwned/notes.md",
@@ -220,10 +228,8 @@
     "boxes/htb/SecNotes/FACTS.md",
     "notes/tcm-security/practical-ethical-hacking-the-complete-course/A Day in the Life of an Ethical Hacker.md",
     "notes/tcm-security/practical-ethical-hacking-the-complete-course/Information Gathering.md",
-    "notes/tcm-security/practical-ethical-hacking-the-complete-course/Pasted image 20251219172621.png",
     "notes/tcm-security/practical-ethical-hacking-the-complete-course/The Five Stages of Ethical Hacking.md",
     "notes/tcm-security/practical-ethical-hacking-the-complete-course/Why you shouldnt be an ethical hacker.md",
-    "oscp-prep.md",
-    "notes/tcm-security/practical-ethical-hacking-the-complete-course/networking/Networking Refresher.md"
+    "oscp-prep.md"
   ]
 }
