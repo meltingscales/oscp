@@ -13,7 +13,7 @@ function get_tun0_ip() {
 
 function oscp_rprompt() {
     local tun0="%F{cyan}tun0:%F{white}$(get_tun0_ip)%f"
-    local target="%F{cyan}target:%F{white}${TARGET:--}%f"
+    local target="%F{cyan}TARGET:%F{white}${TARGET:--}%f"
     local ts="%F{cyan}$(date '+%m-%d-%y') %*%f"
     echo "$tun0 | $target | $ts"
 }
