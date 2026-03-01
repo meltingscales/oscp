@@ -1,4 +1,7 @@
 {
   "showUnsupportedFiles": true,
-  "promptDelete": false
+  "promptDelete": false,
+  "attachmentFolderPath": "./",
+  "newFileLocation": "current",
+  "useMarkdownLinks": true
 }

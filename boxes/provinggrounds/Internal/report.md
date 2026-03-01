@@ -4,6 +4,7 @@
 
 I ran a script scan with `sudo nmap -sVC 192.168.55.40 --script vuln` against the target to enumerate it.
 
+
 ![](./nmap.png)
 
 The victim seemed to be running Windows Server 2008 R2.
