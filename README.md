@@ -9,6 +9,7 @@ you are meant to use `obsidian` <https://obsidian.md> gui to write notes.
 1. enumerate everything
 2. exploits are usually simple
 3. proving grounds labs ONLY
+4. avoid rabbit holes if you can
 
 ## see also
 
