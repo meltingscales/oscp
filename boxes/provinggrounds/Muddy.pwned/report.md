@@ -4,17 +4,17 @@
 
 I ran `nmap -sS -sV $TARGET`.
 
-![](Pasted%20image%2020260301204358.png)
+![](nmap-scan.png)
 
 I added the IP to /etc/hosts for the host `muddy.ugc`. I notice a "Ladon" server is hosted on port 8888.
 
-![](Pasted%20image%2020260301204507.png)
+![](ladon-interface.png)
 
 There are some endpoints accepting POST: `xmlrpc`, `jsonrpc10`, `jsonwsp`, etc. Let me do some research on it. Looks like we need to pop an XXE vulnerability.
 
 I also noticed that `gobuster` shows me that WebDAV is enabled. I will likely need to login later with stolen credentials.
 
-![](Pasted%20image%2020260302131339.png)
+![](gobuster-webdav.png)
 
 I searched `exploit-db.com` for Ladon XXE vulnerabilities. Apparently all we need for LFI is a `curl` command with the right payload.
 
@@ -23,26 +23,26 @@ I searched `exploit-db.com` for Ladon XXE vulnerabilities. Apparently all we nee
 ### XML XXE Local File Inclusion
 I was able to trigger XML LFI with an HTTP POST:
 
-![](Pasted%20image%2020260302133649.png)
+![](xxe-lfi-request.png)
 
-![](Pasted%20image%2020260302133716.png)
+![](xxe-lfi-response.png)
 
 The next step is to use this to steal WebDAV credentials so we can upload a webshell.
 
 I then obtained the `passwd.dav` file by targeting `/var/www/html/webdav/passwd.dav`:
 
-![](Pasted%20image%2020260302134324.png)
+![](passwd-dav-lfi.png)
 
-![](Pasted%20image%2020260302134418.png)
+![](passwd-dav-contents.png)
 ### Cracking WebDAV Credentials
 
 I first need to crack the hashed password for the user `administrant`.
 
-![](Pasted%20image%2020260302135402.png)
+![](hashcat-cracking.png)
 
 Shortly after that, we get `sleepless` as the password:
 
-![](Pasted%20image%2020260302135434.png)
+![](password-cracked.png)
 
 The cred is `administrant:sleepless`.
 
@@ -50,29 +50,29 @@ The cred is `administrant:sleepless`.
 
 I prepared a PHP web shell to upload, and started a `nc` listener.
 
-![](Pasted%20image%2020260302150652.png)
+![](webshell-prep.png)
 
-![](Pasted%20image%2020260302150748.png)
+![](nc-listener.png)
 
 I then uploaded the reverse shell payload:
 
-![](Pasted%20image%2020260302151036.png)
+![](webdav-upload.png)
 
 And then I caused the victim PHP runtime to execute our code:
 
-![](Pasted%20image%2020260302151205.png)
+![](trigger-shell.png)
 
 Resulting in a functioning reverse shell running in the php user context, `www-data`:
 
-![](Pasted%20image%2020260302151239.png)
+![](www-data-shell.png)
 
 I stabilized my shell with `python3`:
 
-![](Pasted%20image%2020260302151443.png)
+![](stabilize-shell.png)
 
 ### Pivoting: Cron Job Exploitation
 
-![](Pasted%20image%2020260302153022.png)
+![](cron-job-discovery.png)
 
 `/dev/shm` is writeable by us.
 
@@ -80,15 +80,15 @@ Because the command `netstat` gets run every 1 minute by `root` user, we can use
 
 We just need to create an executable named `netstat` within the `/dev/shm` folder to achieve root access.
 
-![](Pasted%20image%2020260302153603.png)
+![](fake-netstat.png)
 
 The `s` bit is set on the file `/bin/bash`, meaning we can use `/bin/bash -p` to get a root shell. `p` means "Preserve effective UID", which is `root` in this case.
 
-![](Pasted%20image%2020260302153734.png)
+![](suid-bash.png)
 
 And, we have root access and flag.
 
-![](Pasted%20image%2020260302153838.png)
+![](root-proof.png)
 
 
 ## Guidance
