@@ -66,9 +66,30 @@ Resulting in a functioning reverse shell running in the php user context, `www-d
 
 ![](Pasted%20image%2020260302151239.png)
 
+I stabilized my shell with `python3`:
+
+![](Pasted%20image%2020260302151443.png)
+
 ### Pivoting: Cron Job Exploitation
 
-tbd.
+![](Pasted%20image%2020260302153022.png)
+
+`/dev/shm` is writeable by us.
+
+Because the command `netstat` gets run every 1 minute by `root` user, we can use this to get a root shell on our victim.
+
+We just need to create an executable named `netstat` within the `/dev/shm` folder to achieve root access.
+
+![](Pasted%20image%2020260302153603.png)
+
+The `s` bit is set on the file `/bin/bash`, meaning we can use `/bin/bash -p` to get a root shell. `p` means "Preserve effective UID", which is `root` in this case.
+
+![](Pasted%20image%2020260302153734.png)
+
+And, we have root access and flag.
+
+![](Pasted%20image%2020260302153838.png)
+
 
 ## Guidance
 
