@@ -40,3 +40,6 @@ Nmap done: 1 IP address (1 host up) scanned in 12.02 seconds
 ```
 
 http://muddy.ugc:8888/muddy/
+
+
+https://medium.com/@ardian.danny/oscp-practice-series-11-proving-grounds-muddy-6aac7695000b
