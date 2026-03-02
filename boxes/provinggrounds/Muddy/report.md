@@ -36,7 +36,15 @@ I then obtained the `passwd.dav` file by targeting `/var/www/html/webdav/passwd.
 ![](Pasted%20image%2020260302134418.png)
 ### Using WebDAV Credentials
 
-tbd.
+I first need to crack the hashed password for the user `administrant`.
+
+![](Pasted%20image%2020260302135402.png)
+
+Shortly after that, we get `sleepless` as the password:
+
+![](Pasted%20image%2020260302135434.png)
+
+The cred is `administrant:sleepless`.
 
 ## Guidance
 
