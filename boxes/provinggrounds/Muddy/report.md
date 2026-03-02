@@ -34,7 +34,7 @@ I then obtained the `passwd.dav` file by targeting `/var/www/html/webdav/passwd.
 ![](Pasted%20image%2020260302134324.png)
 
 ![](Pasted%20image%2020260302134418.png)
-### Using WebDAV Credentials
+### Cracking WebDAV Credentials
 
 I first need to crack the hashed password for the user `administrant`.
 
@@ -45,6 +45,30 @@ Shortly after that, we get `sleepless` as the password:
 ![](Pasted%20image%2020260302135434.png)
 
 The cred is `administrant:sleepless`.
+
+### Using WebDAV Credentials and uploading a PHP web shell
+
+I prepared a PHP web shell to upload, and started a `nc` listener.
+
+![](Pasted%20image%2020260302150652.png)
+
+![](Pasted%20image%2020260302150748.png)
+
+I then uploaded the reverse shell payload:
+
+![](Pasted%20image%2020260302151036.png)
+
+And then I caused the victim PHP runtime to execute our code:
+
+![](Pasted%20image%2020260302151205.png)
+
+Resulting in a functioning reverse shell running in the php user context, `www-data`:
+
+![](Pasted%20image%2020260302151239.png)
+
+### Pivoting: Cron Job Exploitation
+
+tbd.
 
 ## Guidance
 
