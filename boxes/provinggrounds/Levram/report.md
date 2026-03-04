@@ -5,37 +5,37 @@ Henry Post
 
 An `nmap` scan shows two ports open: 22 and 8000.
 
-![](Pasted%20image%2020260304095131.png)
+![](nmap-scan.png)
 
 Port 8000 is running a server that I can log in with the `admin:admin` credential.
 
-![](Pasted%20image%2020260304095251.png)
+![](gerapy-admin-login.png)
 
 I notice that `gerapy 0.9.7` is a version of this web portal.
 
-![](Pasted%20image%2020260304095351.png)
+![](gerapy-version.png)
 
 So I searched for it in `exploit-db.com` and found an exploit.
 
-![](Pasted%20image%2020260304095434.png)
+![](exploit-db-search.png)
 
 ## Exploit
 
 Running the exploit initially fails. I am guessing due to an empty Projects list.
 
-![](Pasted%20image%2020260304100137.png)
+![](exploit-initial-fail.png)
 
 So I create a "project" in gerapy.
 
-![](Pasted%20image%2020260304100213.png)
+![](gerapy-create-project.png)
 
 Then, I run it again, and it works! We have non-root shell.
 
-![](Pasted%20image%2020260304100316.png)
+![](exploit-success-shell.png)
 
 I searched for `setuid` permissions by using `getcap -r / 2>/dev/null`.
 
-![](Pasted%20image%2020260304100357.png)
+![](getcap-setuid.png)
 
 In Linux, `setuid` means that an executable file can be run as the owner, so if the user called `root` owns a binary, we can run it as that user.
 
@@ -43,7 +43,7 @@ I then run `/usr/bin/python3.10 -c 'import os; os.setuid(0); os.system("/bin/bas
 
 And we can steal the root flag.
 
-![](Pasted%20image%2020260304100540.png)
+![](root-flag.png)
 
 ## Recommendations
 
