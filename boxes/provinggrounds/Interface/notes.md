@@ -130,13 +130,31 @@ ffuf -w /home/kali/Downloads/users.txt:USER -w /home/kali/Downloads/passwords.tx
 
 ```
 ffuf -w /home/kali/Downloads/users.txt:USER \
-  -w /home/kali/Downloads/users.txt:PASS \
+  # -w /home/kali/Downloads/users.txt:PASS \
   -u http://192.168.51.106:80/login \
   -X POST \
-  -d '{"username":"USER","password":"PASS"}' \
+  -d '{"username":"USER","password":"admin"}' \
   -H "Content-Type: application/json" \
   -fr "Unauthorized" \
   -fc 200
 
 # fail
+```
+
+dang it. back from the gym. no new ideas. i will revisit this later.
+
+"- Extract user accounts and use a password-spraying technique to authenticate as a valid user."
+
+password spraying...as a valid user.
+
+We must have to use the big json user list.
+
+But what is the password? admin?
+
+let's try something different...
+
+`dirb`. something mentioned subdomains.
+
+```
+gobuster dns -d $TARGET -w /usr/share/wordlists/seclists/Discovery/DNS/subdomains-top1million-5000.txt
 ```
