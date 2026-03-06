@@ -158,3 +158,11 @@ let's try something different...
 ```
 gobuster dns -d $TARGET -w /usr/share/wordlists/seclists/Discovery/DNS/subdomains-top1million-5000.txt
 ```
+
+
+okay. no subdomains.
+
+next goal:
+
+api/users
+brute force with hydra and top 10 passwords.
