@@ -86,6 +86,8 @@ ftp ftp://user:system@192.168.60.183
 
 needed to turn off passive mode.
 
+	passive
+
 packet # 891 is what we want.
 
 0000   50 4f 53 54 20 2f 65 78 69 66 74 65 73 74 2e 70   POST /exiftest.p
