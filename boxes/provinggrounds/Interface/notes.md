@@ -173,3 +173,4 @@ hydra -f -L users.txt -P top10.txt TARGET http-form-post "login=a...
 I should try this for passwords.
 
     /usr/share/wordlists/seclists/Passwords/Default-Credentials/ftp-betterdefaultpasslist.txt
+
