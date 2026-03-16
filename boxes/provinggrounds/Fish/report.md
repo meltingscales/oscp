@@ -136,5 +136,8 @@ We need to scan the `version.dll` DLL first with TotalAV.
 ![](reboot-victim.png)
 
 5. Receive reverse shell connection on attacker
-
 6. We have SYSTEM access.
+
+![](Pasted%20image%2020260315213742.png)
+
+![](Pasted%20image%2020260315213950.png)
