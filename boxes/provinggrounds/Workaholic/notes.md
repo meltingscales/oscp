@@ -59,12 +59,15 @@ ted:$P$BT6Spj.qANCaKd4WR1JGMnC4X.1Kuy/
 
 now to use hashcat.
 
-mode 400
+mode 400. phppass
 
 ```sh
 sudo gunzip /usr/share/wordlists/rockyou.txt.gz
 
-hashcat -m 400 '$P$BDJMoAKLzyLPtatN/WQrbPgHVMmNFn.' /usr/share/wordlists/rockyou.txt #--show #admin
-hashcat -m 400 '$P$Bd.FfZuysLq8evJ/C6xxWtSB1Ne00p.' /usr/share/wordlists/rockyou.txt #--show #charlie
-hashcat -m 400 '$P$BT6Spj.qANCaKd4WR1JGMnC4X.1Kuy/' /usr/share/wordlists/rockyou.txt #--show #ted
+echo '$P$BDJMoAKLzyLPtatN/WQrbPgHVMmNFn.'  > hashes
+echo '$P$Bd.FfZuysLq8evJ/C6xxWtSB1Ne00p.' >> hashes
+echo '$P$BT6Spj.qANCaKd4WR1JGMnC4X.1Kuy/' >> hashes
+
+hashcat -m 400 ./hashes /usr/share/wordlists/rockyou.txt #--show
 ```
+
