@@ -116,12 +116,60 @@ http://medjed:45332/ runs a quiz app. burp will tell us if it's sql injectable.
 
 nope. let's try `45443`. also nope. quiz app is a rabbit hole.
 
-`44330` runs "server demo".
+`44330` runs "server demo". not useful.
 
 okay.
-
 
 https://medium.com/@vivek-kumar/offensive-security-proving-grounds-walk-through-medjed-7570cbbea087
 
 
 I think we need to poke around on FTP.
+
+
+```
+ftp anonymous@MEDJED -p 30021
+```
+
+we can also go to `MEDJED:8000/fs`
+
+```
+http://medjed:8000/fs/C/Users/Jerren/Desktop/local.txt
+
+pwned local flag.
+
+http://medjed:8000/fs/C/Users/Administrator/Desktop/proof.txt
+
+pwned root flag, lmao
+```
+
+well, that was an early pwn. but let's keep going.
+
+```
+
+http://medjed:33033/
+# i can't use the hostname, i must use the IP.
+
+http://192.168.52.127:33033/
+
+```
+
+users:
+
+```
+
+evren eagan
+impossible is just an option
+evren.eagan@company.com
+
+joe webb
+Hold the vision, trust the process
+joe.webb@company.com
+
+Jerren Valon
+Only the paranoid survive.
+jerren.devops@company.com
+
+```
+
+let's try `jerren.devops:paranoid` and load burpsuite to see if we can sql inject.
+
