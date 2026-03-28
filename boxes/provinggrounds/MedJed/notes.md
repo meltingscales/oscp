@@ -226,3 +226,4 @@ nc -nvlp 4444
 # (wait for boot of victim)
 ```
 
+i'm stuck. dang it.
