@@ -161,3 +161,13 @@ works! We have local service.
 whoami
 nt authority\local service
 ```
+
+now, how do we pivot to root?
+
+```
+- Recover default LOCAL SERVICE privileges using a scheduled task.
+- Enable the SeImpersonatePrivilege via a scheduled task with a crafted Principal.
+- Use PrintSpoofer to exploit SeImpersonatePrivilege and achieve SYSTEM-level access.
+```
+
+okay.
