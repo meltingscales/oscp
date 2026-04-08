@@ -1,4 +1,4 @@
-# notes - quackerjack
+	# notes - quackerjack
 
 In this lab, you will exploit rConfig to gain remote code execution. You will then elevate your privileges through a dangerous SUID find utility and extend your access using simple C code to launch a reverse shell. This exercise enhances your skills in exploiting vulnerabilities and privilege escalation techniques.
 
@@ -307,3 +307,14 @@ WdNS
 
 EOF
 ```
+
+claude sez
+
+● You've got a non-root shell and found /usr/bin/find has the SUID bit set. The lab description says to use find for privesc.
+
+Next step: exploit SUID find via GTFOBins                                                                                     
+
+    find . -exec /bin/sh -p \; -quit
+
+
+ The -p flag keeps the elevated privileges (doesn't drop SUID). This should give you a root shell.
