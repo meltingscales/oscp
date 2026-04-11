@@ -173,3 +173,11 @@ python3 -c 'import pty; pty.spawn("/bin/bash")'
 ```
 
 we get reverse shell. great.
+
+we are a sudoer, so
+
+```sh
+sudo bash
+```
+
+we get root.
