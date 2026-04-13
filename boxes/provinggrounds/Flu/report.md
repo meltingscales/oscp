@@ -9,9 +9,12 @@ tbd
 
 # Recommendations
 
+tbd
+
 # Resources
 - CVE-2022-26134
 - https://github.com/nxtexploit/CVE-2022-26134
+- https://github.com/jbaines-r7/through_the_wire/blob/main/through_the_wire.py
 # Recon
 
 We run `nmap -sS -sV FLU`.
