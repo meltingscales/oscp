@@ -184,3 +184,7 @@ python ./RemoteMouse-3.008-Exploit.py --target-ip 192.168.62.199 -v --cmd 'net l
 This seems to fail too.
 
 I think I need to launch `cmd.exe` from within the RemoteMouse GUI, I think that https://www.exploit-db.com/exploits/50047 was actually the right path.
+
+It was! We got root access.
+
+![](Pasted%20image%2020260413141726.png)
