@@ -1,9 +1,20 @@
 # Report - Mice
-
+- Author: Henry Post
+- Target: MICE
+- Target IP: 192.168.62.199
+- Date: 04/13/2026
 # Executive Summary
 
+This machine, Mice, was enumerated by `nmap` to have only port 3389 open.
+
+The machine was running a service called "RemoteMouse" that was vulnerable to command injection. This was used to get a non-SYSTEM shell.
+
+After that, the GUI of RemoteMouse was used, as it runs as SYSTEM, to get a SYSTEM level shell.
 # Recommendations
 
+- Do not use RemoteMouse at all.
+	- Use a safer remote desktop protocol tool like RustDesk or AnyDesk.
+- Do not store credentials in plaintext.
 # Resources
 - https://github.com/p0dalirius/RemoteMouse-3.008-Exploit
 - https://www.exploit-db.com/exploits/50047
