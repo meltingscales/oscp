@@ -5,11 +5,16 @@
 - Date: 04/12/2026
 # Executive Summary
 
-tbd
+This machine, FLU, was enumerated by `nmap` to have ports `22/ssh` and `8090/http` open.
+
+The HTTP server was running `Atlassian Confluence 7.13.6`, which is vulnerable to `CVE-2022-26134`, a Remote Code Execution vulnerability. This was used to get non-root shell.
+
+From there, a cron job was identified using `pspy` that used a bash script that we set the SUID bit on to get root access.
 
 # Recommendations
 
-tbd
+- Upgrade Confluence immediately to a non-vulnerable version.
+- Do not allow the `SUID` bit to be set on scripts that the `root` user runs.
 
 # Resources
 - CVE-2022-26134
@@ -38,7 +43,7 @@ Nmap done: 1 IP address (1 host up) scanned in 17.05 seconds
 
 ![](Pasted%20image%2020260412202929.png)
 
-We notice `ssh:22` and `http:8090` is running.
+We notice `ssh/22` and `http/8090` is running.
 # Non-root access
 
 Visiting http://FLU:8090 shows us that the target serves Confluence.
@@ -222,3 +227,5 @@ whoami
 ```
 
 ![](Pasted%20image%2020260413114849.png)
+
+And we have root access.
