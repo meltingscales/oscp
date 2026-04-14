@@ -88,9 +88,36 @@ Freelance Available
 We also run `dirb https://monster`.
 
 https://monster/blog/admin/
-
-
-
 # Non-root access
+
+Let's use `CeWL` to generate a wordlist, then Hydra to login.
+
+```sh
+cewl             https://monster/ > words.txt
+cewl --lowercase https://monster/ > wordsl.txt
+
+hydra -I -f -L words.txt -P words.txt "http-post-form://monster/blog/admin:login=^USER^&password=^PASS^:F=200"
+```
+
+This is going to take way too long.
+
+Let's try `admin:wazowski`. 
+
+It works! We need to add `monster.pg` to `/etc/hosts`.
+
+![](Pasted%20image%2020260414120839.png)
+
+We can edit templates. This can easily get us reverse shell.
+
+The lab notes say:
+
+> extracting password hashes from its backup system, and cracking them to gain RDP access
+
+I'll do that next.
+
+![](Pasted%20image%2020260414120943.png)
+
+We got a backup.
+
 
 # Root access
