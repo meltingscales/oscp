@@ -119,5 +119,52 @@ I'll do that next.
 
 We got a backup.
 
+```xml
+C:/xampp/htdocs/blog/storage/database/users.table.xml
+  <users>
+    <id>1</id>
+    <uid>de58425259</uid>
+    <firstname/>
+    <lastname/>
+    <twitter/>
+    <skype/>
+    <about_me/>
+    <login>admin</login>
+    <password>a2b4e80cd640aaa6e417febe095dcbfc</password>
+    <email>wazowski@monster.pg</email>
+    <hash>jJkdUX1FOFiI</hash>
+    <date_registered>1645512776</date_registered>
+    <role>admin</role>
+  </users>
+  <users>
+    <id>2</id>
+    <uid>800c7d9797</uid>
+    <firstname/>
+    <lastname/>
+    <twitter/>
+    <skype/>
+    <about_me/>
+    <login>mike</login>
+    <password>844ffc2c7150b93c4133a6ff2e1a2dba</password>
+    <email>mike@monster.pg</email>
+    <hash>8vPjvUPDHhRp</hash>
+    <date_registered>1645512909</date_registered>
+    <role>user</role>
+  </users>
+```
 
+`admin:a2b4e80cd640aaa6e417febe095dcbfc`
+
+`mike:844ffc2c7150b93c4133a6ff2e1a2dba`
+
+Time to run hashcat.
+
+```sh
+echo 'a2b4e80cd640aaa6e417febe095dcbfc' >  hashes
+echo '844ffc2c7150b93c4133a6ff2e1a2dba' >> hashes
+
+sudo gunzip /usr/share/wordlists/rockyou.txt.gz
+
+
+```
 # Root access
