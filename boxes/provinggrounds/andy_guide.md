@@ -1,3 +1,4 @@
+```
 1. make an offsec.com account
 	1. pay $15/mo for their "labs access", don't buy the expensive ones
 2. use LainKusanagi's OSCP list on reddit
@@ -23,3 +24,4 @@
 
 - https://drakonix.systems/pages/tools
 - gtfobins
+```
