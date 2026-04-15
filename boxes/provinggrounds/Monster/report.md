@@ -160,11 +160,22 @@ C:/xampp/htdocs/blog/storage/database/users.table.xml
 Time to run hashcat.
 
 ```sh
+# md5 type hashes
 echo 'a2b4e80cd640aaa6e417febe095dcbfc' >  hashes
 echo '844ffc2c7150b93c4133a6ff2e1a2dba' >> hashes
 
 sudo gunzip /usr/share/wordlists/rockyou.txt.gz
 
+# ls /usr/share/wordlists/seclists/Passwords/Most-Popular-Letter-Passes.txt
 
+# hashcat unsalted fails
+hashcat -O -m 0 hashes /usr/share/wordlists/rockyou.txt
+
+# if hashcat unsalted fails, use salts
+echo 'a2b4e80cd640aaa6e417febe095dcbfc:jJkdUX1FOFiI' >  hashes_salted
+echo '844ffc2c7150b93c4133a6ff2e1a2dba:8vPjvUPDHhRp' >> hashes_salted
+hashcat -O -m 20 hashes_salted /usr/share/wordlists/rockyou.txt
 ```
+
+Hashcat isn't working. Time to consult a guide.
 # Root access
