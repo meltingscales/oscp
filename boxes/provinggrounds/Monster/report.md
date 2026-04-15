@@ -229,8 +229,12 @@ Alrighty, great.
 
 Let's RDP as `mike` using Remmina to get our local flag.
 
+![](Pasted%20image%2020260414213037.png)
 
+Got it.
 
-http://monster.pg/dashboard
+On to opening XAMPP.
+
+http://monster.pg/dashboard - Nope, 404.
 
 # Root access
