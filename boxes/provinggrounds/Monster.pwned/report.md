@@ -1,11 +1,28 @@
 # Report - Monster
-
+- Author: Henry Post
+- Target: MONSTER
+- Target IP: 192.168.62.180
+- Date: 04/15/2026
 # Executive Summary
+This machine, Monster, was enumerated by `nmap` to have ports 80 (HTTP), 443 (HTTPS), and 3389 (RDP) open.
 
+A password of `admin:wazowski` was guessed to authenticate to Monstra CMS on port 80.
+
+We find a backup feature in the CMS, and use it to steal password hashes and crack those hashes.
+
+We use the recovered password to RDP to the target machine as the `mike` user.
+
+From there, we discover that XAMPP version `7.3.10-1` is used, which is vulnerable to Local Privilege Escalation by editing `C:\xampp\xampp-control.ini`.
+
+We use the Local Privilege Escalation vulnerability to connect with reverse shell and get SYSTEM level access.
 # Recommendations
-
+- Upgrade XAMPP to the latest non-vulnerable version immediately.
+- Use strong passwords that are not guessable.
+- Disable RDP if not needed.
 # Resources
-
+- https://www.exploit-db.com/exploits/50337
+- https://simpleinfoseccom.wordpress.com/2018/05/27/monstra-cms-3-0-4-unauthenticated-user-credential-exposure/
+- https://medium.com/@anushka18599/offsec-proving-grounds-walkthrough-monster-774a871c6ad7
 # Recon
 
 ```sh
