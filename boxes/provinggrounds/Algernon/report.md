@@ -54,30 +54,29 @@ We visit http://algernon:9998/interface/root#/login .
 
 It's running SmarterMail v17.
 
-```
-???(kali?kali)-[~]
-??$ searchsploit smartermail
------------------------------------------------------------------------- ---------------------------------
- Exploit Title                                                          |  Path
------------------------------------------------------------------------- ---------------------------------
-SmarterMail 16 - Arbitrary File Upload                                  | multiple/webapps/48580.py
-SmarterMail 7.1.3876 - Directory Traversal                              | windows/remote/15048.txt
-SmarterMail 7.3/7.4 - Multiple Vulnerabilities                          | asp/webapps/16955.txt
-SmarterMail 8.0 - Multiple Cross-Site Scripting Vulnerabilities         | asp/webapps/16975.txt
-SmarterMail < 7.2.3925 - LDAP Injection                                 | asp/webapps/15189.txt
-SmarterMail < 7.2.3925 - Persistent Cross-Site Scripting                | asp/webapps/15185.txt
-SmarterMail Build 6985 - Remote Code Execution                          | windows/remote/49216.py
-SmarterMail Enterprise and Standard 11.x - Persistent Cross-Site Script | asp/webapps/31017.php
-smartermail free 9.2 - Persistent Cross-Site Scripting                  | windows/webapps/20362.py
-SmarterTools SmarterMail 4.3 - 'Subject' HTML Injection                 | php/webapps/31240.txt
-SmarterTools SmarterMail 5.0 - HTTP Request Handling Denial of Service  | windows/dos/31607.py
------------------------------------------------------------------------- ---------------------------------
-Shellcodes: No Results
+https://medium.com/@Dpsypher/pg-practice-algernon-5382b92a8142
 
+We're going to cheat a bit. It's late and I'm tired.
+
+Let's try FTP. `wget -r` dumps all files.
+
+```bash
+wget -r ftp://Anonymous:pass@algernon
 ```
 
+Some interesting files. They use ClamAV.
 
+```
+/home/kali/algernon/Logs/2020.05.12-administrative.log
 
+03:35:45.726 [192.168.118.6] User @ calling create primary system admin, username: admin
+03:35:47.054 [192.168.118.6] Webmail Attempting to login user: admin
+03:35:47.054 [192.168.118.6] Webmail Login successful: With user admin
+03:35:55.820 [192.168.118.6] Webmail Attempting to login user: admin
+03:35:55.820 [192.168.118.6] Webmail Login successful: With user admin
+03:36:00.195 [192.168.118.6] User admin@ calling set setup wizard settings
+03:36:08.242 [192.168.118.6] User admin@ logging out
+```
 
 ## Root access
 
