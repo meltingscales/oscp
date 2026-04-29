@@ -22,6 +22,13 @@ From there, I identified a binary with elevated capabilities and used it to pivo
   1. Use strong credentials.
 3. Do not use `setuid` binary permissions on Python or other binaries. Instead, remove the `setuid` permission from binaries that do not need it.
 
+## Resources
+
+- resource1
+- github link
+- medium link
+- exploit-db link
+
 ## Recon
 
 I ran an nmap scan that enumerated their ports:
