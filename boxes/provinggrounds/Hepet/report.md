@@ -130,7 +130,16 @@ Okay. This writeup seems to help me out. I will return to this after temple.
 
 Try firstname only for creds, then try `telnet hepet 143`.
 
-TODO.
+```
+agnes
+charlotte
+ela
+jonas
+magnus
+martha
+```
+
+
 ## Non-root access
 
 
