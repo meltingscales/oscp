@@ -3,6 +3,7 @@
 - Author: Henry Post
 - Target: hackme.examplebox
 - Target IP: 1.2.3.4
+- Attacker IP: 2.3.4.5
 - Date: 03/01/2026
 
 ## Executive Summary
