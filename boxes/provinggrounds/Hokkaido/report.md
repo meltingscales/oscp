@@ -253,6 +253,50 @@ EOF
 
 It's just `info:info`. Sweet!
 
+We get MySQL shell.
+
+```sh
+impacket-mssqlclient hokkaido-aerospace.com/info:info@192.168.53.40 -windows-auth
+```
+
+```sql
+SELECT IS_SRVROLEMEMBER('sysadmin'); --no
+
+/*
+SQL (HAERO\info  guest@master)> EXEC sp_configure 'show advanced options', 1;
+ERROR(DC\SQLEXPRESS): Line 105: User does not have permission to perform this action.
+*/
+
+--we cannot use xp_cmdshell sadly
+```
+
+Let's try enumerating shares...
+
+```sh
+smbclient //192.168.53.40/C$ -U 'info%info' # fails
+smbclient //192.168.53.40/ADMIN$ -U 'info%info' # fails
+
+smbclient -L //192.168.53.40 -U 'info%info'
+
+<<EOF
+        Sharename       Type      Comment
+        ---------       ----      -------
+        ADMIN$          Disk      Remote Admin
+        C$              Disk      Default share
+        homes           Disk      user homes
+        IPC$            IPC       Remote IPC
+        NETLOGON        Disk      Logon server share 
+        SYSVOL          Disk      Logon server share 
+        UpdateServicesPackages Disk      A network share to be used by client systems for collecting all software packages (usually applications) published on this WSUS system.
+        WsusContent     Disk      A network share to be used by Local Publishing to place published content on this WSUS system.
+        WSUSTemp        Disk      A network share used by Local Publishing from a Remote WSUS Console Instance.
+Reconnecting with SMB1 for workgroup listing.
+do_connect: Connection to 192.168.53.40 failed (Error NT_STATUS_RESOURCE_NAME_NOT_FOUND)
+Unable to connect with SMB1 -- no workgroup available
+
+EOF
+```
+
 
 ## Root access
 
