@@ -415,7 +415,11 @@ Let's try a DC Sync attack.
 nxc smb 192.168.57.40 -u discovery -p 'Start123!' --ntds # fails.
 ```
 
+Alright. I'm stuck.
 
+https://medium.com/@sakyb7/proving-grounds-hokkaido-tjnull-oscp-prep-ca34df1e6491
+
+Okay. So apparently we need to 
 ## Root access
 
 
