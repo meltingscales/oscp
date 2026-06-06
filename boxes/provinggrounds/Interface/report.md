@@ -62,6 +62,19 @@ Now, how should we brute-force this?
 
 A failed login to `/login` gives 401 Unauthorized.
 
+Let's try our own custom fuzzer...
+
+```sh
+sudo gunzip /usr/share/wordlists/rockyou.txt.gz
+
+wget https://raw.githubusercontent.com/meltingscales/oscp/refs/heads/main/boxes/provinggrounds/Interface/brute.py
+
+head -n 1000 /usr/share/wordlists/rockyou.txt > rockyou1000.txt
+
+python brute.py --passwords rockyou1000.txt
+```
+
+
 ## Non-root access
 
 
