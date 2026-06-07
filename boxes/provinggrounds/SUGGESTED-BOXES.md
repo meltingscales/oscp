@@ -2,9 +2,6 @@
 
 ## Finish What You've Started First
 
-**Interface** — Very close. Found `/api/users`, have a user list, know it's a password-spray problem.
-Try spraying `admin` as the password against all users — creds are typically trivially simple on these boxes.
-
 **Hepet** — Full walkthrough in notes but no progress logged. Windows box: LibreOffice macro → Veyon Service binary replacement.
 
 **Hokkaido** — RDP as `molly.smith`, member of WSUS Administrators. SharpWSUS blocked by Defender.
@@ -25,8 +22,7 @@ Try WSUS abuse via PowerShell API directly (no binary needed), or investigate `S
 
 ## Priority Order
 
-1. Interface (20 min, basically there)
-2. Hepet (have the notes, just execute)
-3. Bratarina / Kevin (quick wins to keep momentum)
-4. Access (AD practice without Hokkaido's complexity)
-5. ClamAV (if you want BOF practice)
+1. Hepet (have the notes, just execute)
+2. Bratarina / Kevin (quick wins to keep momentum)
+3. Access (AD practice without Hokkaido's complexity)
+4. ClamAV (if you want BOF practice)
