@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(mv:*)"
+      "Bash(mv:*)",
+      "WebSearch",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
     ]
   }
 }
