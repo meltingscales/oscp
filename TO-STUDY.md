@@ -22,6 +22,12 @@
 - [ ] Redo Hokkaido from scratch — no guide, no AI, target < 4 hrs
 - [ ] Understand what you missed on Jacko, Cobweb, MedJed (don't skip)
 - [ ] Complete 2-3 more AD boxes (Vault, Heist, Hutch on PG)
+
+## PG Practice AD Box Pool (pick 2-3 beyond Vault/Heist/Hutch)
+- Access — intermediate, AD-like, good next step after Hutch
+- Resourced — intermediate, resourced.local domain
+- Nagoya — hard
+- Nara — Windows DC, Kerberos/LDAP/DNS enum focus
 - [ ] Full exam sim: 48hr timer, no AI, write report as you go
 
 ## Scoring Math
