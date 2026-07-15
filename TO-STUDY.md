@@ -30,6 +30,21 @@
 - Nara — Windows DC, Kerberos/LDAP/DNS enum focus
 - [ ] Full exam sim: 48hr timer, no AI, write report as you go
 
+## Post-ADChain_01 — gap analysis (2026-07-15)
+
+ADChain_01 covered: BloodHound collection/analysis, SMB/RDP/WinRM password spray, remote SAM dump (reg save + secretsdump), LSA/DCC2 (mscache2) hash dump + crack, lateral via local acct reuse, NTDS dump + PtH to DA.
+
+Not yet touched, hit these next:
+- **Kerberoasting** (SPN → TGS → crack) — box: `Forest` (HTB), `Support` (HTB), or `Cascade` (PG)
+- **AS-REP Roasting** (no-preauth accounts) — box: `Sauna` (HTB) — good, does Kerberoast+ASREP+gMSA in one
+- **ACL abuse** (GenericAll/WriteDACL/ForceChangePassword/AddMember via BloodHound edges) — box: `Resolute` (HTB), `Cascade` (PG)
+- **Constrained/Unconstrained delegation + RBCD** — box: `Manager` (HTB), or PG `Access` (does have delegation angle)
+- **DCSync abuse** (mimikatz/secretsdump `-just-dc` w/ replication rights, not just local admin) — box: `Reel` or `Sizzle` (HTB)
+- **GPO abuse / SharpGPOAbuse** — box: `Sizzle` (HTB) or `Zephyr` (HTB, harder)
+- **Certificate services (ESC1/ESC8 AD CS)** — not covered anywhere yet, exam-relevant — box: `Certified` (HTB), `Escape` (HTB)
+
+Priority order given exam scope: Kerberoast/ASREP (Sauna) → ACL abuse (Resolute) → DCSync (Sizzle) → delegation/RBCD (Manager) → AD CS (Certified) if time allows.
+
 ## Scoring Math
 - AD chain (40pts) + 2 standalones (40pts) = 80 → pass
 - If AD fails, need 3.5 standalones (70pts) → harder path
