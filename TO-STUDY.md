@@ -43,7 +43,7 @@ Not yet touched, hit these next:
 - **GPO abuse / SharpGPOAbuse** — box: `Sizzle` (HTB) or `Zephyr` (HTB, harder)
 - **Certificate services (ESC1/ESC8 AD CS)** — not covered anywhere yet, exam-relevant — box: `Certified` (HTB), `Escape` (HTB)
 
-Priority order given exam scope: Kerberoast/ASREP (Sauna) → ACL abuse (Resolute) → DCSync (Sizzle) → delegation/RBCD (Manager) → AD CS (Certified) if time allows.
+Priority order given exam scope: Kerberoast/ASREP (Sauna) ✅ → ACL abuse (Resolute) ✅ → DCSync (Sizzle) ← in progress → Reel (DCSync, later) → delegation/RBCD (Manager) → AD CS (Certified) if time allows.
 
 ## Scoring Math
 - AD chain (40pts) + 2 standalones (40pts) = 80 → pass
