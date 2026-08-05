@@ -8,18 +8,18 @@ Go through all the report.md and notes.md files and extract all of the commands 
 Extracted from all `notes.md` / `report.md` files under `boxes/htb/`, `boxes/provinggrounds/`, and `boxes/hackerblueprint/`. Commands are generalized with placeholders (`<IP>`, `<USER>`, `<DOMAIN>`, etc.) where the original notes used a hardcoded value.
 
 ## Table of Contents
-1. Recon / Port Scanning
-2. Web Enumeration
-3. Web Exploitation (by vuln type)
-4. Initial Access / Exploits (CVE-specific)
-5. Buffer Overflow (Windows)
-6. Reverse Shells / File Transfer
-7. Linux Privilege Escalation
-8. Windows Privilege Escalation
-9. Active Directory
-10. Password Cracking
-11. Post-Exploitation / Persistence / Pivoting
-12. Proof Collection
+1. [Recon / Port Scanning](#1-recon--port-scanning)
+2. [Web Enumeration](#2-web-enumeration)
+3. [Web Exploitation (by vuln type)](#3-web-exploitation-by-vuln-type)
+4. [Initial Access / Exploits (CVE-specific)](#4-initial-access--exploits-cve-specific)
+5. [Buffer Overflow (Windows)](#5-buffer-overflow-windows)
+6. [Reverse Shells / File Transfer](#6-reverse-shells--file-transfer)
+7. [Linux Privilege Escalation](#7-linux-privilege-escalation)
+8. [Windows Privilege Escalation](#8-windows-privilege-escalation)
+9. [Active Directory](#9-active-directory)
+10. [Password Cracking](#10-password-cracking)
+11. [Post-Exploitation / Persistence / Pivoting](#11-post-exploitation--persistence--pivoting)
+12. [Proof Collection](#12-proof-collection)
 
 ---
 
