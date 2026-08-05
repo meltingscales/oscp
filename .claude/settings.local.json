@@ -4,7 +4,10 @@
       "Bash(mv:*)",
       "WebSearch",
       "Bash(git add *)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(rm /home/henrypost/Git/oscp/boxes/provinggrounds/count-pwned.sh /home/henrypost/Git/oscp/boxes/provinggrounds/count-pwned.ps1)",
+      "Bash(./count-pwned.sh)",
+      "Bash(xargs -n1 basename)"
     ]
   }
 }
